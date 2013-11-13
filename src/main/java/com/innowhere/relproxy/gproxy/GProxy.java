@@ -56,7 +56,7 @@ public class GProxy
         {
             try
             {   
-                return (Class<T>)engine.loadScriptByName(path + ".groovy");  //inexp/groovyex/GroovyExampleLoadListener.groovy
+                return engine.loadScriptByName(path + ".groovy");  //inexp/groovyex/GroovyExampleLoadListener.groovy
             }
             catch(Exception ex)
             {
