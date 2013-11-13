@@ -9,7 +9,6 @@ import java.util.Map;
 import java.util.Set;
 import javax.tools.FileObject;
 import javax.tools.ForwardingJavaFileManager;
-import javax.tools.JavaFileManager.Location;
 import javax.tools.JavaFileObject;
 import javax.tools.JavaFileObject.Kind;
 import javax.tools.StandardJavaFileManager;

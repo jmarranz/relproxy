@@ -1,9 +1,7 @@
 package com.innowhere.relproxy.impl.jproxy;
 
 import java.io.File;
-import java.io.IOException;
 import java.net.URL;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;

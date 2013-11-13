@@ -209,7 +209,7 @@ public class JReloaderEngine
         }
     }          
     
-    private synchronized void detectChangesInSources()
+    synchronized void detectChangesInSources()
     {
         // boolean firstTime = (sourceFileMap == null); // La primera vez sourceFileMap es null
 
