@@ -1,5 +1,5 @@
 
-package inexp.groovyex;
+package example.groovyex;
 
 import groovy.lang.Binding;
 import groovy.lang.Closure;

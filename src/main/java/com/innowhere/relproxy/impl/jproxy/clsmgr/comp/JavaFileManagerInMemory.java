@@ -1,6 +1,6 @@
-package com.innowhere.relproxy.impl.jproxy.comp;
+package com.innowhere.relproxy.impl.jproxy.clsmgr.comp;
 
-import com.innowhere.relproxy.impl.jproxy.ClassDescriptorSourceFile;
+import com.innowhere.relproxy.impl.jproxy.clsmgr.ClassDescriptorSourceFile;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -9,7 +9,6 @@ import java.util.Map;
 import java.util.Set;
 import javax.tools.FileObject;
 import javax.tools.ForwardingJavaFileManager;
-import javax.tools.JavaFileManager.Location;
 import javax.tools.JavaFileObject;
 import javax.tools.JavaFileObject.Kind;
 import javax.tools.StandardJavaFileManager;

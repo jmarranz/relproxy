@@ -1,4 +1,4 @@
-package com.innowhere.relproxy.impl.jproxy;
+package com.innowhere.relproxy.impl.jproxy.clsmgr;
 
 import java.net.URL;
 

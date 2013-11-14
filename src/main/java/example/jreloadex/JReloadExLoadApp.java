@@ -1,4 +1,4 @@
-package inexp.jreloadex;
+package example.jreloadex;
 
 import com.innowhere.relproxy.jproxy.JProxyListener;
 import com.innowhere.relproxy.jproxy.JProxy;

@@ -1,8 +1,8 @@
-package com.innowhere.relproxy.impl.jproxy.comp;
+package com.innowhere.relproxy.impl.jproxy.clsmgr.comp;
 
-import com.innowhere.relproxy.impl.jproxy.ClassDescriptorInner;
-import com.innowhere.relproxy.impl.jproxy.ClassDescriptorSourceFile;
-import com.innowhere.relproxy.impl.jproxy.JReloaderClassLoader;
+import com.innowhere.relproxy.impl.jproxy.clsmgr.ClassDescriptorInner;
+import com.innowhere.relproxy.impl.jproxy.clsmgr.ClassDescriptorSourceFile;
+import com.innowhere.relproxy.impl.jproxy.clsmgr.JReloaderClassLoader;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;

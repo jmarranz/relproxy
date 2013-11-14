@@ -1,6 +1,6 @@
-package com.innowhere.relproxy.impl.jproxy;
+package com.innowhere.relproxy.impl.jproxy.clsmgr;
 
-import com.innowhere.relproxy.impl.jproxy.comp.JReloaderCompilerInMemory;
+import com.innowhere.relproxy.impl.jproxy.clsmgr.comp.JReloaderCompilerInMemory;
 import java.io.File;
 import java.util.LinkedList;
 import java.util.Map;

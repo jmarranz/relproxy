@@ -1,4 +1,4 @@
-package com.innowhere.relproxy.impl.jproxy;
+package com.innowhere.relproxy.impl.jproxy.clsmgr;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;

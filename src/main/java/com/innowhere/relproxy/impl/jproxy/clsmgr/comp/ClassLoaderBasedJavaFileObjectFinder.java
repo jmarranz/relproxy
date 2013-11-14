@@ -1,6 +1,6 @@
-package com.innowhere.relproxy.impl.jproxy.comp;
+package com.innowhere.relproxy.impl.jproxy.clsmgr.comp;
 
-import com.innowhere.relproxy.impl.jproxy.ClassDescriptor;
+import com.innowhere.relproxy.impl.jproxy.clsmgr.ClassDescriptor;
 import java.io.File;
 import java.io.IOException;
 import java.net.JarURLConnection;

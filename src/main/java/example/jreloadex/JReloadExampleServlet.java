@@ -1,5 +1,5 @@
 
-package inexp.jreloadex;
+package example.jreloadex;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
