@@ -1,25 +1,22 @@
 package com.innowhere.relproxy.impl.gproxy;
 
 import com.innowhere.relproxy.gproxy.GProxyGroovyScriptEngine;
-import com.innowhere.relproxy.gproxy.GProxyListener;
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.Proxy;
+import com.innowhere.relproxy.ProxyListener;
+import com.innowhere.relproxy.impl.GenericProxyImpl;
+import com.innowhere.relproxy.impl.GenericProxyInvocationHandler;
 
 /**
  *
  * @author jmarranz
  */
-public class GProxyImpl 
+public class GProxyImpl extends GenericProxyImpl
 {
     protected GProxyGroovyScriptEngine engine;
-    protected boolean developmentMode = false;
-    protected GProxyListener reloadListener;
     
-    public void init(boolean devMode,GProxyGroovyScriptEngine engine,GProxyListener relListener)
+    public void init(boolean enabled,ProxyListener relListener,GProxyGroovyScriptEngine engine)
     {
+        super.init(enabled, relListener);
         this.engine = engine;
-        this.developmentMode = devMode;
-        this.reloadListener = relListener; 
     }
     
     public GProxyGroovyScriptEngine getGProxyGroovyScriptEngine()
@@ -27,21 +24,9 @@ public class GProxyImpl
         return engine;
     }
     
-    public GProxyListener getGProxyListener()
+    @Override
+    public <T> GenericProxyInvocationHandler<T> createGenericProxyInvocationHandler(T obj)    
     {
-        return reloadListener;
+        return new GProxyInvocationHandler<T>(obj,this);
     }
-    
-    public <T> T create(T obj,Class<T> clasz)
-    {
-        if (!developmentMode || engine == null)
-            return obj;
-        
-        if (obj == null) return null;
-        
-        InvocationHandler handler = new GProxyReloadableInvocationHandler<T>(obj,this);
-        
-        T proxy = (T)Proxy.newProxyInstance(obj.getClass().getClassLoader(),new Class[] { clasz }, handler);   
-        return proxy;
-    }    
 }

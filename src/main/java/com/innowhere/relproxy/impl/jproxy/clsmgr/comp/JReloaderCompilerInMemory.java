@@ -1,5 +1,6 @@
 package com.innowhere.relproxy.impl.jproxy.clsmgr.comp;
 
+import com.innowhere.relproxy.ProxyException;
 import com.innowhere.relproxy.impl.jproxy.clsmgr.ClassDescriptorInner;
 import com.innowhere.relproxy.impl.jproxy.clsmgr.ClassDescriptorSourceFile;
 import com.innowhere.relproxy.impl.jproxy.clsmgr.JReloaderClassLoader;
@@ -46,7 +47,7 @@ public class JReloaderCompilerInMemory
         File sourceFile = sourceFileDesc.getSourceFile();
         LinkedList<JavaFileObjectOutputClass> outClassList = compile(sourceFile,customClassLoader,sourceFileMap);
         
-        if (outClassList == null) throw new RuntimeException("Cannot reload class: " + sourceFileDesc.getClassName());
+        if (outClassList == null) throw new ProxyException("Cannot reload class: " + sourceFileDesc.getClassName());
         
         String className = sourceFileDesc.getClassName();        
         
@@ -69,7 +70,7 @@ public class JReloaderCompilerInMemory
                     // forma de conseguir que se recarguen de forma determinista y si posteriormente se cargara via ClassLoader al usarse no podemos reconocer que es una clase
                     // "hot reloadable" (quizás a través del package respecto a las demás clases hot pero no es muy determinista pues nada impide la mezcla de hot y no hot en el mismo package)
                     // Es una limitación mínima.
-                    throw new RuntimeException("Unexpected class when compiling: " + currClassName + " maybe it is an autonomous private class declared in the same java file of the principal class, this kind of classes are not supported in hot reload");
+                    throw new ProxyException("Unexpected class when compiling: " + currClassName + " maybe it is an autonomous private class declared in the same java file of the principal class, this kind of classes are not supported in hot reload");
                 }
                 
                 sourceFileDesc.setClassBytes(classBytes);                              
@@ -110,7 +111,7 @@ public class JReloaderCompilerInMemory
         }
         finally
         {
-           if (fileManager != null) try { fileManager.close(); } catch(IOException ex) { throw new RuntimeException(ex); }
+           if (fileManager != null) try { fileManager.close(); } catch(IOException ex) { throw new ProxyException(ex); }
         }
     }
 

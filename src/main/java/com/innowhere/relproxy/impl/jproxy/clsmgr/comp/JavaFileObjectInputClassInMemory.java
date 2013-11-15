@@ -1,5 +1,6 @@
 package com.innowhere.relproxy.impl.jproxy.clsmgr.comp;
 
+import com.innowhere.relproxy.ProxyException;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -31,7 +32,7 @@ public class JavaFileObjectInputClassInMemory extends SimpleJavaFileObject
     {
         super(URI.create("string:///" + name.replace('.', '/') + kind.extension), kind);
         
-        if (Kind.SOURCE.equals(kind)) throw new RuntimeException("Unexpected");
+        if (Kind.SOURCE.equals(kind)) throw new ProxyException("Unexpected");
         
         this.binaryName = name;
     }

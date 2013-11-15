@@ -10,7 +10,7 @@
         </init-param>
         <init-param>
             <param-name>initScript</param-name>
-            <param-value>inexp/groovyex/groovy_servlet_init.groovy</param-value>
+            <param-value>example/groovyex/groovy_servlet_init.groovy</param-value>
         </init-param>
     </servlet>
     <servlet-mapping>

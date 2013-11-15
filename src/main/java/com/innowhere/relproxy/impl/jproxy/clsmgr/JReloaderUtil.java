@@ -1,5 +1,6 @@
 package com.innowhere.relproxy.impl.jproxy.clsmgr;
 
+import com.innowhere.relproxy.ProxyException;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -35,7 +36,7 @@ public class JReloaderUtil
             urlCon = url.openConnection(); 
             return readInputStream(urlCon.getInputStream());           
         } 
-        catch (IOException ex) { throw new RuntimeException(ex); }       
+        catch (IOException ex) { throw new ProxyException(ex); }       
     }
    
     public static byte[] readFile(File file)
@@ -47,7 +48,7 @@ public class JReloaderUtil
         }
         catch (FileNotFoundException ex) 
         {
-            throw new RuntimeException(ex);
+            throw new ProxyException(ex);
         }			
 
         return readInputStream(fis);
@@ -73,11 +74,11 @@ public class JReloaderUtil
         }   		
         catch (IOException ex) 
         {
-            throw new RuntimeException(ex);
+            throw new ProxyException(ex);
         }	       
         finally
         {
-            try { is.close(); } catch (IOException ex2) { throw new RuntimeException(ex2); }			
+            try { is.close(); } catch (IOException ex2) { throw new ProxyException(ex2); }			
         }
 
         return out.toByteArray();
@@ -93,11 +94,11 @@ public class JReloaderUtil
         }   		
         catch (IOException ex) 
         {
-            throw new RuntimeException(ex);
+            throw new ProxyException(ex);
         }	       
         finally
         {
-            if (out != null) try { out.close(); } catch (IOException ex2) { throw new RuntimeException(ex2); }			
+            if (out != null) try { out.close(); } catch (IOException ex2) { throw new ProxyException(ex2); }			
         }
     }    
 

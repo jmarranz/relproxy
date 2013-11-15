@@ -1,4 +1,4 @@
-package inexp.groovyex;
+package example.groovyex;
 
 /**
  *

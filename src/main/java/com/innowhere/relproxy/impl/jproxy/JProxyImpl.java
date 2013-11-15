@@ -1,9 +1,9 @@
 package com.innowhere.relproxy.impl.jproxy;
 
+import com.innowhere.relproxy.ProxyListener;
+import com.innowhere.relproxy.impl.GenericProxyImpl;
+import com.innowhere.relproxy.impl.GenericProxyInvocationHandler;
 import com.innowhere.relproxy.impl.jproxy.clsmgr.JReloaderEngine;
-import com.innowhere.relproxy.jproxy.JProxyListener;
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.Proxy;
 import javax.tools.DiagnosticCollector;
 import javax.tools.JavaFileObject;
 
@@ -11,46 +11,32 @@ import javax.tools.JavaFileObject;
  *
  * @author jmarranz
  */
-public class JProxyImpl 
+public class JProxyImpl extends GenericProxyImpl
 {
     protected JReloaderEngine engine;
-    protected boolean developmentMode = false;
-    protected JProxyListener reloadListener;
     
-    public void init(boolean devMode,String pathInput,String classFolder,long scanPeriod,Iterable<String> compilationOptions,DiagnosticCollector<JavaFileObject> diagnostics,JProxyListener relListener)
+    public void init(boolean enabled,ProxyListener relListener,String pathInput,String classFolder,long scanPeriod,Iterable<String> compilationOptions,DiagnosticCollector<JavaFileObject> diagnostics)
     {
+        super.init(enabled, relListener);
+        
         JReloaderEngine engine = null;
-        if (devMode)
+        if (enabled)
         {
             ClassLoader classLoader = Thread.currentThread().getContextClassLoader();      
             engine = new JReloaderEngine(classLoader,pathInput,classFolder,scanPeriod,compilationOptions,diagnostics);          
         }
         
         this.engine = engine;        
-        this.developmentMode = devMode;
-        this.reloadListener = relListener;
     }    
     
     public JReloaderEngine getJReloaderEngine()
     {
         return engine;
     }
-    
-    public JProxyListener getJProxyListener()
+
+    @Override
+    public <T> GenericProxyInvocationHandler<T> createGenericProxyInvocationHandler(T obj)    
     {
-        return reloadListener;
-    }    
-    
-    public <T> T create(T obj,Class<T> clasz)
-    {
-        if (!developmentMode || engine == null)
-            return obj;
-        
-        if (obj == null) return null;
-        
-        InvocationHandler handler = new JProxyReloadableInvocationHandler<T>(obj,this);
-        
-        T proxy = (T)Proxy.newProxyInstance(obj.getClass().getClassLoader(),new Class[] { clasz }, handler);   
-        return proxy;
-    }    
+        return new JProxyInvocationHandler<T>(obj,this);
+    }
 }

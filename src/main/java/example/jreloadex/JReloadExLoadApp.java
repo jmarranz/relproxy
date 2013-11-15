@@ -1,6 +1,6 @@
 package example.jreloadex;
 
-import com.innowhere.relproxy.jproxy.JProxyListener;
+import com.innowhere.relproxy.ProxyListener;
 import com.innowhere.relproxy.jproxy.JProxy;
 import java.lang.reflect.Method;
 import java.util.Arrays;
@@ -26,11 +26,14 @@ public class JReloadExLoadApp
         Iterable<String> compilationOptions = Arrays.asList(new String[]{"-source","1.6","-target","1.6"});
         DiagnosticCollector<JavaFileObject> diagnostics = null;
         
-        JProxy.init(true, pathInput,classFolder, 200,compilationOptions,diagnostics, new JProxyListener() {
+        ProxyListener proxyListener = new ProxyListener() {
             public void onReload(Object objOld, Object objNew, Object proxy, Method method, Object[] args) {
                 System.out.println("Reloaded " + objNew + " Calling method: " + method);
-            }
-        });
+            }        
+        };
+        
+        JProxy.init(true, proxyListener, pathInput,classFolder, 200,compilationOptions,diagnostics);
+
         
         FalseDB db = new FalseDB();
 
@@ -39,7 +42,7 @@ public class JReloadExLoadApp
         ItsNatDocumentTemplate docTemplate;
         docTemplate = itsNatServlet.registerItsNatDocumentTemplate("jreloadex","text/html", pathPrefix + "jreloadex.html");
 
-        ItsNatServletRequestListener listener = JProxy.create(new inexp.jreloadex.JReloadExampleLoadListener(db), ItsNatServletRequestListener.class);
+        ItsNatServletRequestListener listener = JProxy.create(new example.jreloadex.JReloadExampleLoadListener(db), ItsNatServletRequestListener.class);
         docTemplate.addItsNatServletRequestListener(listener);
     } 
 }

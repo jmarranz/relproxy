@@ -1,4 +1,4 @@
-package com.innowhere.relproxy.gproxy;
+package com.innowhere.relproxy;
 
 import java.lang.reflect.Method;
 
@@ -6,7 +6,7 @@ import java.lang.reflect.Method;
  *
  * @author jmarranz
  */
-public interface GProxyListener
+public interface ProxyListener
 {
     public void onReload(Object objOld,Object objNew,Object proxy, Method method, Object[] args);
 }

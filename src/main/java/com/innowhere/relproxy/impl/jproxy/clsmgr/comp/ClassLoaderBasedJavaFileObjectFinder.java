@@ -1,5 +1,6 @@
 package com.innowhere.relproxy.impl.jproxy.clsmgr.comp;
 
+import com.innowhere.relproxy.ProxyException;
 import com.innowhere.relproxy.impl.jproxy.clsmgr.ClassDescriptor;
 import java.io.File;
 import java.io.IOException;
@@ -81,7 +82,7 @@ public class ClassLoaderBasedJavaFileObjectFinder
         }
         catch (Exception e) 
         {
-            throw new RuntimeException("Wasn't able to open " + packageFolderURL + " as a jar file", e);
+            throw new ProxyException("Wasn't able to open " + packageFolderURL + " as a jar file", e);
         }
         return result;
     }

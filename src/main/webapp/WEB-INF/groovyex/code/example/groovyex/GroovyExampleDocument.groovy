@@ -1,5 +1,5 @@
 
-package inexp.groovyex;
+package example.groovyex;
 
 import org.w3c.dom.events.Event
 import org.w3c.dom.events.EventListener
@@ -26,7 +26,8 @@ class GroovyExampleDocument
         buttonElem.addEventListener("click", 
              { Event evt -> def text = textInput.getText(); resultsElem.setTextContent(text); } as EventListener, false)
 
-        def closure = { println("GroovyExampleDocument closure 1 ") }
+        def closure = { println("GroovyExampleDocument closure 2 ") }
+        closure();
         
         this.resultsElem = doc.getElementById("resultsId")
         

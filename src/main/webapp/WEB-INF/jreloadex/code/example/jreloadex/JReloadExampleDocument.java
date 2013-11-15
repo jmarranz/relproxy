@@ -1,4 +1,4 @@
-package inexp.jreloadex;
+package example.jreloadex;
 
 import example.jreloadex.FalseDB;
 import org.itsnat.comp.ItsNatComponentManager;
