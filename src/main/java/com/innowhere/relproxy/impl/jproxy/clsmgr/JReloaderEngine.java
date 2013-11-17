@@ -112,18 +112,25 @@ public class JReloaderEngine
         this.customClassLoader = new JReloaderClassLoader(this,parentClassLoader);               
     }
     
-    private void compileReloadAndSaveSource(ClassDescriptorSourceFile sourceFile)
+    private void cleanBeforeCompile(ClassDescriptorSourceFile sourceFile)
     {
-        if (isSaveClassesMode()) deleteClasses(sourceFile); // Antes de que nos las carguemos en memoria la clase principal y las inner tras recompilar
+        if (isSaveClassesMode()) 
+            deleteClasses(sourceFile); // Antes de que nos las carguemos en memoria la clase principal y las inner tras recompilar
             
-        sourceFile.cleanOnSourceCodeChanged(); // El código fuente nuevo puede haber cambiado totalmente las innerclasses antiguas (añadido, eliminado)
-        
-        compiler.compileSourceFile(sourceFile,customClassLoader,sourceFileMap);
-        
+        sourceFile.cleanOnSourceCodeChanged(); // El código fuente nuevo puede haber cambiado totalmente las innerclasses antiguas (añadido, eliminado) y por supuesto el bytecode necesita olvidarse   
+    }
+    
+    private void compile(ClassDescriptorSourceFile sourceFile)
+    {       
+        compiler.compileSourceFile(sourceFile,customClassLoader,sourceFileMap);      
+    }        
+    
+    private void reloadAndSaveSource(ClassDescriptorSourceFile sourceFile)
+    {       
         reloadSource(sourceFile,false); // No hace falta que detectemos las innerclasses porque al compilar se "descubren" todas
 
         if (isSaveClassesMode()) saveClasses(sourceFile);        
-    }        
+    }       
     
     private void reloadSource(ClassDescriptorSourceFile sourceFile,boolean detectInnerClasses)
     {
@@ -223,13 +230,26 @@ public class JReloaderEngine
         {   
             addNewClassLoader();
                         
-            if (!updatedSourceFiles.isEmpty()) 
-                for(ClassDescriptorSourceFile sourceFile : updatedSourceFiles)            
-                    compileReloadAndSaveSource(sourceFile);
+            LinkedList<ClassDescriptorSourceFile> sourceFilesToRecompile = new LinkedList<ClassDescriptorSourceFile>();
+            sourceFilesToRecompile.addAll(updatedSourceFiles);
+            sourceFilesToRecompile.addAll(newSourceFiles);            
             
-            if (!newSourceFiles.isEmpty())             
-                for(ClassDescriptorSourceFile sourceFile : newSourceFiles)
-                    compileReloadAndSaveSource(sourceFile);
+            updatedSourceFiles = null;
+            newSourceFiles = null;
+            
+            if (!sourceFilesToRecompile.isEmpty())             
+            {
+                // Eliminamos el estado de la anterior compilación de todas las clases que van a recompilarse antes de compilarlas porque al compilar una clase es posible que
+                // se necesite recompilar al mismo tiempo una dependiente de otra (ej clase base) y luego se intente compilar la dependiente y sería un problema que limpiáramos antes de compilar cada archivo
+                for(ClassDescriptorSourceFile sourceFile : sourceFilesToRecompile)            
+                    cleanBeforeCompile(sourceFile);   
+                
+                for(ClassDescriptorSourceFile sourceFile : sourceFilesToRecompile)            
+                    compile(sourceFile);        
+                
+                for(ClassDescriptorSourceFile sourceFile : sourceFilesToRecompile)            
+                    reloadAndSaveSource(sourceFile);                
+            }
 
             if (isSaveClassesMode() && !deletedSourceFiles.isEmpty())
                 for(ClassDescriptorSourceFile sourceFile : deletedSourceFiles)
@@ -240,11 +260,9 @@ public class JReloaderEngine
             {
                 //String className = entry.getKey();
                 ClassDescriptorSourceFile sourceFile = entry.getValue();
-                if (updatedSourceFiles.contains(sourceFile))
+                if (sourceFilesToRecompile.contains(sourceFile))
                     continue;
-                if (newSourceFiles.contains(sourceFile))
-                    continue;   
-                
+                // las clases deleted no están en sourceFileMap por lo que no hay que filtrarlas
                 reloadSource(sourceFile,true); // Ponemos detectInnerClasses a true porque son archivos fuente que posiblemente nunca se hayan tocado desde la carga inicial y por tanto quizás se desconocen las innerclasses
             }
          

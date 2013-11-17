@@ -64,7 +64,7 @@ public class JavaFileManagerInMemory extends ForwardingJavaFileManager
             return super.list(location, packageName, kinds, recurse);  // Aquí nunca (con PLATFORM_CLASS_PATH) va a encontrar nuestros sources         
         else if (location == StandardLocation.CLASS_PATH && kinds.contains(JavaFileObject.Kind.CLASS)) 
         {
-            if (packageName.startsWith("java."))  // a hack to let standard manager handle locations like "java.lang" or "java.util". 
+            if (packageName.startsWith("java."))  // a hack to let standard manager handle locations like "java.lang" or "java.util". Estrictamente no es un necesario.
                 return super.list(location, packageName, kinds, recurse);
             else
             {   // app specific classes are here

@@ -20,9 +20,10 @@ import java.util.jar.JarEntry;
  */
 public class ClassLoaderBasedJavaFileObjectFinder 
 {
-    private ClassLoader classLoader;
     private static final String CLASS_FILE_EXTENSION = ".class";
 
+    private final ClassLoader classLoader;    
+    
     public ClassLoaderBasedJavaFileObjectFinder(ClassLoader classLoader) 
     {
         this.classLoader = classLoader;

@@ -79,11 +79,17 @@ public class JReloaderClassLoader extends ClassLoader
         // necesitamos detectar las innerclasses para cargarlas también tras la carga de la clase contenedora,
         // para ello ejecutamos Class.getDeclaredClasses() para que cargue las innerclasses indirectamente, pasando entonces por aquí.
 
+        // Hay un caso más y es el de la clase base que es una clase hot loadable con su propio archivo, al ejecutar el defineClass en la clase
+        // derivada la clase base también debe cargarse en ese momento y es posible que no haya sido hecho explícitamente (por ej porque no ha cambiado o su carga va después)
+        // por lo que pasaremos por aquí y debemos cargarla aquí, luego no hay problema de recarga explícita porque sabemos que ha sido ya cargada
+        // y tampoco hay problema de auto-salvado del .class o eliminación del mismo puesto que al ser un archivo fuente normal se tratará por si mismo
+        // aunque la carga en el class loader se haya hecho a través de una clase derivada quizás antes
+        
         Class<?> cls = findLoadedClass(name);
         if (cls == null)
         {            
             ClassDescriptor classDesc = engine.getClassDescriptor(name); // Si es una inner class se crea el descriptor y se añade al source file asociado automáticamente
-            if (classDesc != null && classDesc.isInnerClass())
+            if (classDesc != null)
             {
                 byte[] classBytes = classDesc.getClassBytes();
                 if (classBytes == null) 

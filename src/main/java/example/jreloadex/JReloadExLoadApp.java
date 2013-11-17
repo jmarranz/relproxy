@@ -22,7 +22,7 @@ public class JReloadExLoadApp
     {    
         ServletContext context = itsNatServlet.getItsNatServletContext().getServletContext();
         String pathInput = context.getRealPath("/") + "/WEB-INF/jreloadex/code/";           
-        String classFolder = context.getRealPath("/") + "/WEB-INF/classes";
+        String classFolder = null; // context.getRealPath("/") + "/WEB-INF/classes";
         Iterable<String> compilationOptions = Arrays.asList(new String[]{"-source","1.6","-target","1.6"});
         DiagnosticCollector<JavaFileObject> diagnostics = null;
         

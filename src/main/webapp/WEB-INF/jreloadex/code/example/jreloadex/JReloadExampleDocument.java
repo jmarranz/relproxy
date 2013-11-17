@@ -1,6 +1,5 @@
 package example.jreloadex;
 
-import example.jreloadex.FalseDB;
 import org.itsnat.comp.ItsNatComponentManager;
 import org.itsnat.comp.text.ItsNatHTMLInputText;
 import org.itsnat.core.ItsNatServletRequest;
@@ -11,7 +10,7 @@ import org.w3c.dom.events.EventListener;
 import org.w3c.dom.events.EventTarget;
 import org.w3c.dom.html.HTMLDocument;
 
-public class JReloadExampleDocument
+public class JReloadExampleDocument extends JReloadExampleDocumentBase
 {
     protected ItsNatHTMLDocument itsNatDoc; // ItsNatHTMLDocument
     protected ItsNatHTMLInputText textInput; // ItsNatHTMLInputText
@@ -64,7 +63,7 @@ public class JReloadExampleDocument
 
         this.resultsElem = doc.getElementById("resultsId");
         
-        System.out.println("JReloadExampleDocument 10 " + this.getClass().getClassLoader().hashCode());        
+        System.out.println("JReloadExampleDocument 15 " + this.getClass().getClassLoader().hashCode());        
         new AuxMemberInMethod().log();
         AuxMember.log();
         JReloadExampleAux.log();

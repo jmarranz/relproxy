@@ -47,7 +47,8 @@ public class JReloaderCompilerInMemory
         File sourceFile = sourceFileDesc.getSourceFile();
         LinkedList<JavaFileObjectOutputClass> outClassList = compile(sourceFile,customClassLoader,sourceFileMap);
         
-        if (outClassList == null) throw new ProxyException("Cannot reload class: " + sourceFileDesc.getClassName());
+        if (outClassList == null) 
+            throw new ProxyException("Cannot reload class: " + sourceFileDesc.getClassName());
         
         String className = sourceFileDesc.getClassName();        
         
