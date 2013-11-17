@@ -29,7 +29,7 @@
         <artifactId>ItsNat-jar</artifactId>
         <version>1.3.1</version>
         <scope>system</scope>
-        <systemPath>${basedir}/src/main/webapp/WEB-INF/lib/ItsNat_1.3.1.jar</systemPath>
+        <systemPath>${basedir}/src/main/webapp/WEB-INF/lib/ItsNat-1.3.1.jar</systemPath>
     </dependency>
 
     <dependency>
