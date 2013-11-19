@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Set;
 import javax.tools.FileObject;
 import javax.tools.ForwardingJavaFileManager;
+import javax.tools.JavaFileManager;
 import javax.tools.JavaFileObject;
 import javax.tools.JavaFileObject.Kind;
 import javax.tools.StandardJavaFileManager;
@@ -28,13 +29,13 @@ public class JavaFileManagerInMemory extends ForwardingJavaFileManager
     * Instance of JavaClassObject that will store the
     * compiled bytecode of our class
     */
-    private LinkedList<JavaFileObjectOutputClass> outputClassList = new LinkedList<JavaFileObjectOutputClass>();
+    private final LinkedList<JavaFileObjectOutputClass> outputClassList = new LinkedList<JavaFileObjectOutputClass>();
     private final ClassLoaderBasedJavaFileObjectFinder classFinder;    
     protected Map<String,ClassDescriptorSourceFile> sourceFileMap;
     
-    public JavaFileManagerInMemory(StandardJavaFileManager standardManager,ClassLoader classLoader,Map<String,ClassDescriptorSourceFile> sourceFileMap) 
+    public JavaFileManagerInMemory(StandardJavaFileManager standardFileManager,ClassLoader classLoader,Map<String,ClassDescriptorSourceFile> sourceFileMap) 
     {
-        super(standardManager);
+        super(standardFileManager);
         this.sourceFileMap = sourceFileMap;
         this.classFinder = new ClassLoaderBasedJavaFileObjectFinder(classLoader);        
     }
@@ -44,10 +45,6 @@ public class JavaFileManagerInMemory extends ForwardingJavaFileManager
         return outputClassList;
     }
     
-    /**
-    * Gives the compiler an instance of the JavaClassObject
-    * so that the compiler can write the byte code into it.
-    */
     @Override
     public JavaFileObject getJavaFileForOutput(Location location,String className, Kind kind, FileObject sibling) throws IOException 
     {
@@ -84,7 +81,7 @@ public class JavaFileManagerInMemory extends ForwardingJavaFileManager
                     ClassDescriptorSourceFile sourceFileDesc = sourceFileMap.get(className);
                     if (sourceFileDesc != null && sourceFileDesc.getClassBytes() != null)
                     {
-                        JavaFileObjectInputClassInMemory fileInput = new JavaFileObjectInputClassInMemory(className,Kind.CLASS);
+                        JavaFileObjectInputClassInMemory fileInput = new JavaFileObjectInputClassInMemory(className);
                         fileInput.openOutputStream().write(sourceFileDesc.getClassBytes());
                         fileInput.openOutputStream().close();
                         result.add(fileInput);

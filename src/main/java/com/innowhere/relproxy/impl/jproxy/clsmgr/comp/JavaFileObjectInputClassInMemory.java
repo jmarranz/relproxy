@@ -25,14 +25,10 @@ public class JavaFileObjectInputClassInMemory extends SimpleJavaFileObject
     *
     * @param name
     *            Full name of the compiled class
-    * @param kind
-    *            Kind of the data. It will be CLASS in our case
     */
-    public JavaFileObjectInputClassInMemory(String name, Kind kind) 
+    public JavaFileObjectInputClassInMemory(String name) 
     {
-        super(URI.create("string:///" + name.replace('.', '/') + kind.extension), kind);
-        
-        if (Kind.SOURCE.equals(kind)) throw new ProxyException("Unexpected");
+        super(URI.create("string:///" + name.replace('.', '/') + Kind.CLASS.extension), Kind.CLASS);
         
         this.binaryName = name;
     }
