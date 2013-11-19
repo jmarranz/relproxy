@@ -10,16 +10,11 @@ public class JReloaderClassLoader extends ClassLoader
 {
     protected JReloaderEngine engine;
     
-    public JReloaderClassLoader(JReloaderEngine engine,ClassLoader classLoader)
+    public JReloaderClassLoader(JReloaderEngine engine)
     {
-        super(classLoader);
+        super(engine.getRootClassLoader());
         
         this.engine = engine;
-    }
-    
-    public JReloaderEngine getJReloaderEngine()
-    {
-        return engine;
     }
     
     public synchronized Class defineClass(ClassDescriptor classDesc)

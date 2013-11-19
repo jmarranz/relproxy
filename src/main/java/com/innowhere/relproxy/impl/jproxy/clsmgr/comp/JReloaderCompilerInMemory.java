@@ -93,14 +93,21 @@ public class JReloaderCompilerInMemory
         // http://stackoverflow.com/questions/1563909/how-to-set-classpath-when-i-use-javax-tools-javacompiler-compile-the-source
         // http://stackoverflow.com/questions/10767048/javacompiler-with-custom-classloader-and-filemanager
 
-        List<File> sourceFileList = new ArrayList<File>();
-        sourceFileList.add(sourceFile);
 
         StandardJavaFileManager fileManager = null;
         try
         {
             fileManager = compiler.getStandardFileManager(diagnostics, null, null);
+            List<File> sourceFileList = new ArrayList<File>();
+            sourceFileList.add(sourceFile);            
             Iterable<? extends JavaFileObject> compilationUnits = fileManager.getJavaFileObjectsFromFiles(sourceFileList);
+
+/*            
+LinkedList<JavaFileObject> compilationUnitsTmp = new LinkedList<JavaFileObject>();            
+String prueba = "public class Prueba { public static void main() { System.out.println(\"hola\"); } }";
+compilationUnitsTmp.add(new JavaFileObjectInputSourceInMemory("Prueba",prueba,"UTF-8"));            
+compilationUnits = compilationUnitsTmp;
+*/
 
             JavaFileManagerInMemory fileManagerInMemory = new JavaFileManagerInMemory(fileManager,classLoader,sourceFileMap);
 

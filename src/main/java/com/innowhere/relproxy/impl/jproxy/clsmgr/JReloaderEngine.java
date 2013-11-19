@@ -16,19 +16,21 @@ import javax.tools.JavaFileObject;
 public class JReloaderEngine 
 {
     protected JReloaderCompilerInMemory compiler;
-    protected ClassLoader parentClassLoader;
+    protected ClassLoader rootClassLoader;
     protected JReloaderClassLoader customClassLoader;
     protected JavaSourcesSearch sourcesSearch;
     protected Map<String,ClassDescriptorSourceFile> sourceFileMap;
     protected String classFolder; // Puede ser nulo (es decir NO salvar como .class los cambios)
     
+    protected String sourceEncoding = "UTF-8"; // Por ahora, provisional
+    
     public JReloaderEngine(ClassLoader parentClassLoader,String pathSources,String classFolder,long scanPeriod,Iterable<String> compilationOptions,DiagnosticCollector<JavaFileObject> diagnostics)
     {
-        this.parentClassLoader = parentClassLoader;
+        this.rootClassLoader = parentClassLoader;
         this.classFolder = classFolder;
         this.compiler = new JReloaderCompilerInMemory(compilationOptions,diagnostics);        
-        this.customClassLoader = new JReloaderClassLoader(this,parentClassLoader);
-        this.sourcesSearch = new JavaSourcesSearch(pathSources,parentClassLoader);       
+        this.customClassLoader = new JReloaderClassLoader(this);
+        this.sourcesSearch = new JavaSourcesSearch(this,pathSources);       
         detectChangesInSources(); // Primera vez para detectar cambios en los .java respecto a los .class mientras el servidor estaba parado
         
         
@@ -51,16 +53,15 @@ public class JReloaderEngine
         timer.schedule(task, scanPeriod, scanPeriod);  // Ojo, después de recursiveJavaFileSearch()      
     }
     
-    /*
-    public synchronized boolean isHotLoadableClass(String className)
+    public ClassLoader getRootClassLoader()
     {
-        // Las innerclasses no están como tales en sourceFileMap pues sólo está la clase contenedora pero también la consideramos hotloadable
-        int pos = className.lastIndexOf('$');
-        if (pos != -1) className = className.substring(0, pos);
-
-        return sourceFileMap.containsKey(className);
+        return rootClassLoader;
     }
-    */
+    
+    public String getSourceEncoding()
+    {
+        return sourceEncoding;
+    }
     
     public boolean isSaveClassesMode()
     {
@@ -109,7 +110,7 @@ public class JReloaderEngine
             sourceFile.resetLastLoadedClass(); // resetea también las innerclasses
         }
         
-        this.customClassLoader = new JReloaderClassLoader(this,parentClassLoader);               
+        this.customClassLoader = new JReloaderClassLoader(this);               
     }
     
     private void cleanBeforeCompile(ClassDescriptorSourceFile sourceFile)

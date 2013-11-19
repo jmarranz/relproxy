@@ -7,19 +7,30 @@ import java.util.LinkedList;
  *
  * @author jmarranz
  */
-public class ClassDescriptorSourceFile extends ClassDescriptor
+public abstract class ClassDescriptorSourceFile extends ClassDescriptor
 {
+    protected JReloaderEngine engine;
     protected long timestamp;
     protected File sourceFile; 
     protected LinkedList<ClassDescriptorInner> innerClasses;
     
-    public ClassDescriptorSourceFile(String className,File sourceFile, long timestamp) 
+    public ClassDescriptorSourceFile(JReloaderEngine engine,String className,File sourceFile, long timestamp) 
     {
         super(className);
+        this.engine = engine;
         this.sourceFile = sourceFile;
         this.timestamp = timestamp;
     }
 
+    public static ClassDescriptorSourceFile create(String extension,JReloaderEngine engine,String className,File sourceFile, long timestamp)
+    {
+        if ("java".equals(extension))
+            return new ClassDescriptorSourceFileJava(engine,className,sourceFile,timestamp);
+        else if ("jsh".equals(extension))
+            return new ClassDescriptorSourceFileJsh(engine,className,sourceFile,timestamp);        
+        return null;
+    }
+    
     public boolean isInnerClass()
     {
         return false;
