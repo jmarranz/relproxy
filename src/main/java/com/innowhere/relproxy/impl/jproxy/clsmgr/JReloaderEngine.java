@@ -2,6 +2,7 @@ package com.innowhere.relproxy.impl.jproxy.clsmgr;
 
 import com.innowhere.relproxy.impl.jproxy.clsmgr.comp.JReloaderCompilerInMemory;
 import java.io.File;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Timer;
@@ -13,7 +14,7 @@ import javax.tools.JavaFileObject;
  *
  * @author jmarranz
  */
-public class JReloaderEngine 
+public abstract class JReloaderEngine 
 {
     protected JReloaderCompilerInMemory compiler;
     protected ClassLoader rootClassLoader;
@@ -33,24 +34,26 @@ public class JReloaderEngine
         this.sourcesSearch = new JavaSourcesSearch(this,pathSources);       
         detectChangesInSources(); // Primera vez para detectar cambios en los .java respecto a los .class mientras el servidor estaba parado
         
-        
-        Timer timer = new Timer();        
-        TimerTask task = new TimerTask()
+        if (scanPeriod > 0)  // Si es 0 o negativo sólo se recargan una vez (la inicial ya ejecutada)
         {
-            @Override
-            public void run() 
+            Timer timer = new Timer();        
+            TimerTask task = new TimerTask()
             {
-                try
+                @Override
+                public void run() 
                 {
-                    detectChangesInSources();
-                }        
-                catch(Exception ex)
-                {
-                    ex.printStackTrace(System.err); // Si dejamos subir la excepción se acabó el timer
+                    try
+                    {
+                        detectChangesInSources();
+                    }        
+                    catch(Exception ex)
+                    {
+                        ex.printStackTrace(System.err); // Si dejamos subir la excepción se acabó el timer
+                    }
                 }
-            }
-        };                
-        timer.schedule(task, scanPeriod, scanPeriod);  // Ojo, después de recursiveJavaFileSearch()      
+            };                
+            timer.schedule(task, scanPeriod, scanPeriod);  // Ojo, después de detectChangesInSources() 
+        }
     }
     
     public ClassLoader getRootClassLoader()
@@ -225,7 +228,12 @@ public class JReloaderEngine
         LinkedList<ClassDescriptorSourceFile> newSourceFiles = new LinkedList<ClassDescriptorSourceFile>();        
         LinkedList<ClassDescriptorSourceFile> deletedSourceFiles = new LinkedList<ClassDescriptorSourceFile>();
         
-        this.sourceFileMap = sourcesSearch.javaFileSearch(sourceFileMap,updatedSourceFiles,newSourceFiles,deletedSourceFiles);  
+        Map<String,ClassDescriptorSourceFile> oldSourceFileMap = this.sourceFileMap; // Puede ser null (la primera vez)
+        Map<String,ClassDescriptorSourceFile> newSourceFileMap = new HashMap<String,ClassDescriptorSourceFile>();
+        
+        sourcesSearch.sourceFileSearch(oldSourceFileMap,newSourceFileMap,updatedSourceFiles,newSourceFiles,deletedSourceFiles);
+        
+        this.sourceFileMap = newSourceFileMap;
 
         if (!updatedSourceFiles.isEmpty() || !newSourceFiles.isEmpty() || !deletedSourceFiles.isEmpty()) // También el hecho de eliminar una clase debe implicar crear un ClassLoader nuevo para que dicha clase desaparezca de las clases cargadas aunque será muy raro que sólo eliminemos un .java y no añadamos/cambiemos otros, otro motico es porque si tenemos configurado el autosalvado de .class tenemos que eliminar en ese caso
         {   

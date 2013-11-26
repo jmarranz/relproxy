@@ -11,7 +11,7 @@ import javax.tools.JavaFileObject;
  *
  * @author jmarranz
  */
-public class JProxyImpl extends GenericProxyImpl
+public abstract class JProxyImpl extends GenericProxyImpl
 {
     protected JReloaderEngine engine;
     
@@ -19,14 +19,12 @@ public class JProxyImpl extends GenericProxyImpl
     {
         super.init(enabled, relListener);
         
-        JReloaderEngine engine = null;
         if (enabled)
         {
             ClassLoader classLoader = Thread.currentThread().getContextClassLoader();      
-            engine = new JReloaderEngine(classLoader,pathInput,classFolder,scanPeriod,compilationOptions,diagnostics);          
+            this.engine = createJReloaderEngine(classLoader,pathInput,classFolder,scanPeriod,compilationOptions,diagnostics);          
         }
-        
-        this.engine = engine;        
+        else this.engine = null;
     }    
     
     public JReloaderEngine getJReloaderEngine()
@@ -39,4 +37,6 @@ public class JProxyImpl extends GenericProxyImpl
     {
         return new JProxyInvocationHandler<T>(obj,this);
     }
+    
+    public abstract JReloaderEngine createJReloaderEngine(ClassLoader parentClassLoader,String pathSources,String classFolder,long scanPeriod,Iterable<String> compilationOptions,DiagnosticCollector<JavaFileObject> diagnostics);
 }

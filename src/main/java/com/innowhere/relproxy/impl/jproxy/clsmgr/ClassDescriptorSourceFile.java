@@ -22,13 +22,12 @@ public abstract class ClassDescriptorSourceFile extends ClassDescriptor
         this.timestamp = timestamp;
     }
 
-    public static ClassDescriptorSourceFile create(String extension,JReloaderEngine engine,String className,File sourceFile, long timestamp)
+    public static ClassDescriptorSourceFile create(boolean script,JReloaderEngine engine,String className,File sourceFile, long timestamp)
     {
-        if ("java".equals(extension))
+        if (script)
+            return new ClassDescriptorSourceFileScript(engine,className,sourceFile,timestamp);  
+        else
             return new ClassDescriptorSourceFileJava(engine,className,sourceFile,timestamp);
-        else if ("jsh".equals(extension))
-            return new ClassDescriptorSourceFileJsh(engine,className,sourceFile,timestamp);        
-        return null;
     }
     
     public boolean isInnerClass()
@@ -48,14 +47,7 @@ public abstract class ClassDescriptorSourceFile extends ClassDescriptor
 
     public void updateTimestamp(long timestamp)
     {
-        //long oldTimestamp = this.timestamp;
         this.timestamp = timestamp;
-        /*
-        if (oldTimestamp != timestamp)
-        {
-            cleanOnSourceCodeChanged();
-        }
-        */
     }
 
     public void cleanOnSourceCodeChanged()
@@ -128,18 +120,4 @@ public abstract class ClassDescriptorSourceFile extends ClassDescriptor
         }   
     }
     
-    public static String getClassNameFromSourceFileAbsPath(String path,String rootPathOfSources)
-    {
-        // path y rootPathOfSources son absolutos, preferentemente obtenidos con File.getAbsolutePath()
-        int pos = path.indexOf(rootPathOfSources); 
-        if (pos != 0) // DEBE SER 0, NO debería ocurrir
-            return null;
-        path = path.substring(rootPathOfSources.length() + 1); // Sumamos +1 para quitar también el / separador del pathInput y el path relativo de la clase
-        // Quitamos la extensión (.java)
-        pos = path.lastIndexOf('.');        
-        if (pos == -1) return null; // NO debe ocurrir
-        path = path.substring(0, pos);        
-        path = path.replace(File.separatorChar, '.');  // getAbsolutePath() normaliza con el caracter de la plataforma
-        return path;
-    }      
 }

@@ -1,0 +1,4 @@
+#!/bin/sh
+
+"/C/Archivos de programa/Java/jdk1.7.0_45/bin/java" -classpath /C/trabajo/empresa/opensource/relproxy_dev/target/classes com.innowhere.relproxy.jproxy.JProxyShell "$@"
+

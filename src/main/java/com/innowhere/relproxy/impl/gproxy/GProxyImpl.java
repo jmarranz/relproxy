@@ -11,6 +11,8 @@ import com.innowhere.relproxy.impl.GenericProxyInvocationHandler;
  */
 public class GProxyImpl extends GenericProxyImpl
 {
+    public static final GProxyImpl SINGLETON = new GProxyImpl();    
+    
     protected GProxyGroovyScriptEngine engine;
     
     public void init(boolean enabled,ProxyListener relListener,GProxyGroovyScriptEngine engine)
