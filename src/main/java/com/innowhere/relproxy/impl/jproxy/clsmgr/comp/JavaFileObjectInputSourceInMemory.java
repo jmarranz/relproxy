@@ -23,7 +23,7 @@ public class JavaFileObjectInputSourceInMemory extends SimpleJavaFileObject
     
     public JavaFileObjectInputSourceInMemory(String name,String source,String encoding) 
     {
-        super(URI.create("string:///" + name.replace('.', '/') + Kind.SOURCE.extension), Kind.SOURCE);
+        super(URI.create("string:///" + name.replace('.', '/') + Kind.SOURCE.extension), Kind.SOURCE);  // La extensión .java es necesaria aunque sea falsa sino da error
         
         this.binaryName = name;
         this.source = source;

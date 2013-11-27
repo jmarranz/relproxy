@@ -3,6 +3,7 @@ package com.innowhere.relproxy.impl.jproxy;
 import com.innowhere.relproxy.ProxyListener;
 import com.innowhere.relproxy.impl.GenericProxyImpl;
 import com.innowhere.relproxy.impl.GenericProxyInvocationHandler;
+import com.innowhere.relproxy.impl.jproxy.clsmgr.ClassDescriptorSourceFileScript;
 import com.innowhere.relproxy.impl.jproxy.clsmgr.JReloaderEngine;
 import javax.tools.DiagnosticCollector;
 import javax.tools.JavaFileObject;
@@ -13,18 +14,16 @@ import javax.tools.JavaFileObject;
  */
 public abstract class JProxyImpl extends GenericProxyImpl
 {
+    public static JProxyImpl SINGLETON;      
     protected JReloaderEngine engine;
     
-    public void init(boolean enabled,ProxyListener relListener,String pathInput,String classFolder,long scanPeriod,Iterable<String> compilationOptions,DiagnosticCollector<JavaFileObject> diagnostics)
+    public ClassDescriptorSourceFileScript init(ProxyListener relListener,String pathInput,String classFolder,long scanPeriod,Iterable<String> compilationOptions,DiagnosticCollector<JavaFileObject> diagnostics)
     {
-        super.init(enabled, relListener);
+        super.init(relListener);
         
-        if (enabled)
-        {
-            ClassLoader classLoader = Thread.currentThread().getContextClassLoader();      
-            this.engine = createJReloaderEngine(classLoader,pathInput,classFolder,scanPeriod,compilationOptions,diagnostics);          
-        }
-        else this.engine = null;
+        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();      
+        this.engine = createJReloaderEngine(classLoader,pathInput,classFolder,scanPeriod,compilationOptions,diagnostics);          
+        return engine.init();
     }    
     
     public JReloaderEngine getJReloaderEngine()

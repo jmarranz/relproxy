@@ -29,7 +29,7 @@ dependencies {
   runtime 'org.codehaus.groovy:groovy-all:2.1.6'
 }
 
-sourceSets.main.java.srcDirs 'src/main/webapp/WEB-INF/jreloadex/code'
+sourceSets.main.java.srcDirs 'src/main/webapp/WEB-INF/javaex/code'
 sourceSets.main.java.srcDirs 'src/main/webapp/WEB-INF/groovyex/code'
 
 task explodedWar(type: Copy) {

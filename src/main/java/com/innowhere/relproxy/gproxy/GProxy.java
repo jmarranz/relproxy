@@ -12,11 +12,11 @@ public class GProxy
 {
     public static void init(boolean enabled,ProxyListener relListener,GProxyGroovyScriptEngine engine)
     {
-        GProxyImpl.SINGLETON.init(enabled,relListener, engine);
+        GProxyImpl.initStatic(enabled,relListener, engine);
     }
     
     public static <T> T create(T obj,Class<T> clasz)
     {
-        return GProxyImpl.SINGLETON.create(obj, clasz);
+        return GProxyImpl.createStatic(obj, clasz);
     }   
 }

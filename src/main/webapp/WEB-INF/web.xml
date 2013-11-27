@@ -19,11 +19,11 @@
     </servlet-mapping>
     <servlet>
         <servlet-name>ItsNatJReloadServlet</servlet-name>
-        <servlet-class>example.jreloadex.JReloadExampleServlet</servlet-class>
+        <servlet-class>example.javaex.JReloadExampleServlet</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>ItsNatJReloadServlet</servlet-name>
-        <url-pattern>/jreloadex</url-pattern>
+        <url-pattern>/javaex</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>

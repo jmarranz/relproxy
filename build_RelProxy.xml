@@ -24,15 +24,13 @@
         <copy file="${program}/README.md" tofile="${distribution_project}/README.md" />
         <copy file="${program}/CHANGES.txt" tofile="${distribution_project}/CHANGES.txt" />
 
-        <zip basedir="${distribution_project}" destfile="${distribution_project}/../ReloadProxy_bin_${program.version}.zip " />
-        <!-- Cleaning binaries here -->
-        <!-- <ant antfile="build.xml" target="clean" inheritAll="false" /> -->
-        <!-- <zip basedir="${program}" destfile="${program}/../ReloadProxy_src_${program.version}.zip " /> -->
-
+        <property name="distribution_file" value="${distribution_project}/../RelProxy_bin_${program.version}.zip" />        
+        <delete file="${distribution_file}" />
+        <zip basedir="${distribution_project}" destfile="${distribution_file}" />
     </target>
 
     <target name="deploy_jar">  <!-- ,deploy_manual -->
-        <echo message="DO NOT FORGET TO CHANGE version num in conf.properties, ReloadProxy.getVersion() and generate PDF and HTML docs before" />
+        <echo message="DO NOT FORGET TO CHANGE version num in conf.properties, RelProxy.getVersion() and generate PDF and HTML docs before" />
 
         <property name="pom" value="${program}/pom.xml" />
         <artifact:mvn pom="${pom}" mavenHome="${maven_folder}" fork="true"> <!-- fork="true" is needed: https://netbeans.org/bugzilla/show_bug.cgi?format=multiple&id=47645 -->
@@ -94,9 +92,11 @@
         <property name="program_docs_src" value="${program}/docs_src" />
         <property name="distribution_project_docs" value="${distribution_project}/docs" />
 
+        <delete dir="${distribution_project_docs}" />        
+        
         <copy file="${program_docs_src}/jeplayer_manual.pdf" todir="${distribution_project_docs}" preservelastmodified="true"   />
         <copy file="${program_docs_src}/jeplayer_manual.htm" todir="${distribution_project_docs}" preservelastmodified="true"   />
-        <delete dir="${distribution_project_docs}/jeplayer_manual_archivos" />
+
         <copy todir="${distribution_project_docs}/jeplayer_manual_archivos" >
             <fileset dir="${program_docs_src}/jeplayer_manual_archivos" />
         </copy>

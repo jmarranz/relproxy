@@ -1,5 +1,6 @@
-package example.jreloadex;
+package example.javaex;
 
+import example.javaex.FalseDB;
 import org.itsnat.comp.ItsNatComponentManager;
 import org.itsnat.comp.text.ItsNatHTMLInputText;
 import org.itsnat.core.ItsNatServletRequest;

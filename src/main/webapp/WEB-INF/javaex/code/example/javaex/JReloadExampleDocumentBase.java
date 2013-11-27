@@ -1,4 +1,4 @@
-package example.jreloadex;
+package example.javaex;
 
 /**
  *

@@ -11,6 +11,6 @@ public class JReloaderEngineDefault extends JReloaderEngine
 {
     public JReloaderEngineDefault(ClassLoader parentClassLoader,String pathSources,String classFolder,long scanPeriod,Iterable<String> compilationOptions,DiagnosticCollector<JavaFileObject> diagnostics)
     {
-        super(parentClassLoader, pathSources, classFolder, scanPeriod, compilationOptions, diagnostics);
+        super(null,parentClassLoader, pathSources, classFolder, scanPeriod, compilationOptions, diagnostics);
     }    
 }

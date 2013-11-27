@@ -4,7 +4,7 @@ package com.innowhere.relproxy;
  *
  * @author jmarranz
  */
-public class ReloadProxy
+public class RelProxy
 {
     public static String getVersion()
     {

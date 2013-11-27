@@ -10,16 +10,14 @@ import java.lang.reflect.Proxy;
  */
 public abstract class GenericProxyImpl
 {
-    protected boolean enabled = false;    
     protected ProxyListener reloadListener;
     
     public GenericProxyImpl()
     {
     }
 
-    protected void init(boolean enabled,ProxyListener relListener)
+    protected void init(ProxyListener relListener)
     {
-        this.enabled = enabled;
         this.reloadListener = relListener; 
     }    
     
@@ -30,9 +28,6 @@ public abstract class GenericProxyImpl
     
     public <T> T create(T obj,Class<T> clasz)
     {
-        if (!enabled)
-            return obj;
-        
         if (obj == null) return null;
         
         InvocationHandler handler = createGenericProxyInvocationHandler(obj);

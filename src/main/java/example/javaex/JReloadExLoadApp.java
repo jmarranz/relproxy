@@ -1,4 +1,4 @@
-package example.jreloadex;
+package example.javaex;
 
 import com.innowhere.relproxy.ProxyListener;
 import com.innowhere.relproxy.jproxy.JProxy;
@@ -21,7 +21,7 @@ public class JReloadExLoadApp
     public static void init(ItsNatHttpServlet itsNatServlet,ServletConfig config)
     {    
         ServletContext context = itsNatServlet.getItsNatServletContext().getServletContext();
-        String pathInput = context.getRealPath("/") + "/WEB-INF/jreloadex/code/";           
+        String pathInput = context.getRealPath("/") + "/WEB-INF/javaex/code/";           
         String classFolder = null; // context.getRealPath("/") + "/WEB-INF/classes";
         Iterable<String> compilationOptions = Arrays.asList(new String[]{"-source","1.6","-target","1.6"});
         DiagnosticCollector<JavaFileObject> diagnostics = null;
@@ -37,12 +37,12 @@ public class JReloadExLoadApp
         
         FalseDB db = new FalseDB();
 
-        String pathPrefix = context.getRealPath("/") + "/WEB-INF/jreloadex/pages/";
+        String pathPrefix = context.getRealPath("/") + "/WEB-INF/javaex/pages/";
 
         ItsNatDocumentTemplate docTemplate;
-        docTemplate = itsNatServlet.registerItsNatDocumentTemplate("jreloadex","text/html", pathPrefix + "jreloadex.html");
+        docTemplate = itsNatServlet.registerItsNatDocumentTemplate("javaex","text/html", pathPrefix + "javaex.html");
 
-        ItsNatServletRequestListener listener = JProxy.create(new example.jreloadex.JReloadExampleLoadListener(db), ItsNatServletRequestListener.class);
+        ItsNatServletRequestListener listener = JProxy.create(new example.javaex.JReloadExampleLoadListener(db), ItsNatServletRequestListener.class);
         docTemplate.addItsNatServletRequestListener(listener);
     } 
 }

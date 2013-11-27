@@ -3,7 +3,10 @@ package com.innowhere.relproxy.impl.jproxy.clsmgr.comp;
 import com.innowhere.relproxy.ProxyException;
 import com.innowhere.relproxy.impl.jproxy.clsmgr.ClassDescriptorInner;
 import com.innowhere.relproxy.impl.jproxy.clsmgr.ClassDescriptorSourceFile;
+import com.innowhere.relproxy.impl.jproxy.clsmgr.ClassDescriptorSourceFileJava;
+import com.innowhere.relproxy.impl.jproxy.clsmgr.ClassDescriptorSourceFileScript;
 import com.innowhere.relproxy.impl.jproxy.clsmgr.JReloaderClassLoader;
+import com.innowhere.relproxy.impl.jproxy.clsmgr.JReloaderUtil;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -44,8 +47,8 @@ public class JReloaderCompilerInMemory
     
     public void compileSourceFile(ClassDescriptorSourceFile sourceFileDesc,JReloaderClassLoader customClassLoader,Map<String,ClassDescriptorSourceFile> sourceFileMap)
     {
-        File sourceFile = sourceFileDesc.getSourceFile();
-        LinkedList<JavaFileObjectOutputClass> outClassList = compile(sourceFile,customClassLoader,sourceFileMap);
+        //File sourceFile = sourceFileDesc.getSourceFile();
+        LinkedList<JavaFileObjectOutputClass> outClassList = compile(sourceFileDesc,customClassLoader,sourceFileMap);
         
         if (outClassList == null) 
             throw new ProxyException("Cannot reload class: " + sourceFileDesc.getClassName());
@@ -79,7 +82,7 @@ public class JReloaderCompilerInMemory
         }
     }        
     
-    private LinkedList<JavaFileObjectOutputClass> compile(File sourceFile,ClassLoader classLoader,Map<String,ClassDescriptorSourceFile> sourceFileMap)
+    private LinkedList<JavaFileObjectOutputClass> compile(ClassDescriptorSourceFile sourceFileDesc,ClassLoader classLoader,Map<String,ClassDescriptorSourceFile> sourceFileMap)
     {
         // http://stackoverflow.com/questions/12173294/compiling-fully-in-memory-with-javax-tools-javacompiler
         // http://www.accordess.com/wpblog/an-overview-of-java-compilation-api-jsr-199/
@@ -98,16 +101,27 @@ public class JReloaderCompilerInMemory
         try
         {
             fileManager = compiler.getStandardFileManager(diagnostics, null, null);
-            List<File> sourceFileList = new ArrayList<File>();
-            sourceFileList.add(sourceFile);            
-            Iterable<? extends JavaFileObject> compilationUnits = fileManager.getJavaFileObjectsFromFiles(sourceFileList);
-
-/*            
-LinkedList<JavaFileObject> compilationUnitsTmp = new LinkedList<JavaFileObject>();            
-String prueba = "public class Prueba { public static void main() { System.out.println(\"hola\"); } }";
-compilationUnitsTmp.add(new JavaFileObjectInputSourceInMemory("Prueba",prueba,"UTF-8"));            
-compilationUnits = compilationUnitsTmp;
-*/
+            
+            Iterable<? extends JavaFileObject> compilationUnits;
+            
+            if (sourceFileDesc instanceof ClassDescriptorSourceFileJava)
+            {
+                List<File> sourceFileList = new ArrayList<File>();
+                sourceFileList.add(sourceFileDesc.getSourceFile());            
+                compilationUnits = fileManager.getJavaFileObjectsFromFiles(sourceFileList);
+            }
+            else if (sourceFileDesc instanceof ClassDescriptorSourceFileScript)
+            {
+                ClassDescriptorSourceFileScript sourceFileDescScript = ((ClassDescriptorSourceFileScript)sourceFileDesc);
+                LinkedList<JavaFileObject> compilationUnitsList = new LinkedList<JavaFileObject>();            
+                String code = sourceFileDescScript.getSourceCode();
+                compilationUnitsList.add(new JavaFileObjectInputSourceInMemory(sourceFileDesc.getClassName(),code,sourceFileDescScript.getEncoding()));            
+                compilationUnits = compilationUnitsList;                
+            }
+            else
+            {
+                throw new ProxyException("Internal error");
+            }
 
             JavaFileManagerInMemory fileManagerInMemory = new JavaFileManagerInMemory(fileManager,classLoader,sourceFileMap);
 

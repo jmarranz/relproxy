@@ -1,4 +1,4 @@
-package example.jreloadex;
+package example.javaex;
 
 /**
  *
@@ -24,8 +24,8 @@ public class JReloadExampleLoadListener implements ItsNatServletRequestListener
 
     public void processRequest(ItsNatServletRequest request, ItsNatServletResponse response)
     { 
-        System.out.println("JReloadExampleLoadListener 4 " + this.getClass().getClassLoader().hashCode());
+        System.out.println("JReloadExampleLoadListener 5 " + this.getClass().getClassLoader().hashCode());
         
-        new example.jreloadex.JReloadExampleDocument(request,(ItsNatHTMLDocument)request.getItsNatDocument(),db);
+        new example.javaex.JReloadExampleDocument(request,(ItsNatHTMLDocument)request.getItsNatDocument(),db);
     }
 }

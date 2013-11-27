@@ -19,6 +19,15 @@ import java.net.URLConnection;
  */
 public class JReloaderUtil 
 {    
+    public static String getFileExtension(File file)
+    {
+        String path = file.getAbsolutePath();
+        int pos = path.lastIndexOf('.');        
+        if (pos != -1) 
+            return path.substring(pos + 1);    
+        return "";
+    }    
+    
     public static File getParentDir(String absFilePath)
     {
         File file = new File(absFilePath);

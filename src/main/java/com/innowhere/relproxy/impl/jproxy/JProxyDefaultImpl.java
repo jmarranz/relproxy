@@ -11,20 +11,19 @@ import javax.tools.JavaFileObject;
  * @author jmarranz
  */
 public class JProxyDefaultImpl extends JProxyImpl
-{
-    public static JProxyDefaultImpl SINGLETON;       
-
+{     
     public static void initStatic(boolean enabled,ProxyListener relListener,String pathInput,String classFolder,long scanPeriod,Iterable<String> compilationOptions,DiagnosticCollector<JavaFileObject> diagnostics)
     {
-        SINGLETON = new JProxyDefaultImpl();
+        if (!enabled) return;
         
-        SINGLETON.init(enabled,relListener, pathInput, classFolder, scanPeriod, compilationOptions, diagnostics);
+        SINGLETON = new JProxyDefaultImpl();
+        SINGLETON.init(relListener, pathInput, classFolder, scanPeriod, compilationOptions, diagnostics);
     }    
     
     public static <T> T createStatic(T obj,Class<T> clasz)
     {
         if (SINGLETON == null) 
-            return obj; // No se ha llamado al init
+            return obj; // No se ha llamado al init o enabled = false
         
         return SINGLETON.create(obj, clasz);
     }    

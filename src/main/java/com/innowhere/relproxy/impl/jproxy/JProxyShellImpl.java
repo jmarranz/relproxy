@@ -1,10 +1,13 @@
 package com.innowhere.relproxy.impl.jproxy;
 
+import com.innowhere.relproxy.ProxyException;
 import com.innowhere.relproxy.ProxyListener;
+import com.innowhere.relproxy.impl.jproxy.clsmgr.ClassDescriptorSourceFileScript;
 import com.innowhere.relproxy.impl.jproxy.clsmgr.JReloaderEngine;
 import com.innowhere.relproxy.impl.jproxy.clsmgr.JReloaderEngineShell;
 import com.innowhere.relproxy.impl.jproxy.clsmgr.JReloaderUtil;
 import java.io.File;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import javax.tools.DiagnosticCollector;
@@ -15,14 +18,13 @@ import javax.tools.JavaFileObject;
  * @author jmarranz
  */
 public class JProxyShellImpl extends JProxyImpl
-{
-    public static JProxyShellImpl SINGLETON;       
+{     
     protected File scriptFile;
     
     public static void main(String[] args)
     {       
         SINGLETON = new JProxyShellImpl();
-        SINGLETON.init(args);
+        ((JProxyShellImpl)SINGLETON).init(args);
     }    
     
     public void init(String[] args)
@@ -31,8 +33,7 @@ public class JProxyShellImpl extends JProxyImpl
         File parentDir = JReloaderUtil.getParentDir(scriptFile.getAbsolutePath());        
         
         // TODO: PARAMETRIZAR POR LINEA DE COMANDOS
-        
-        boolean enabled = true;        
+                
         String pathInput = parentDir.getAbsolutePath();           
         String classFolder = null; 
         long scanPeriod = -1;
@@ -46,7 +47,20 @@ public class JProxyShellImpl extends JProxyImpl
             }        
         };        
         
-        super.init(enabled,proxyListener,pathInput,classFolder,scanPeriod,compilationOptions,diagnostics);
+        ClassDescriptorSourceFileScript scriptFileDesc = super.init(proxyListener,pathInput,classFolder,scanPeriod,compilationOptions,diagnostics);
+        Class scriptClass = scriptFileDesc.getLastLoadedClass();
+        try
+        {
+            Object obj = scriptClass.newInstance();
+            Method method = scriptClass.getDeclaredMethod("init",new Class[]{ String[].class });
+            method.invoke(obj, new Object[]{args}); // REVISAR EL PASO DE ARGUMENTOS pues estamos pasando las "options"
+        }
+        catch (InstantiationException ex) { throw new ProxyException(ex); }
+        catch (IllegalAccessException ex) { throw new ProxyException(ex); }
+        catch (NoSuchMethodException ex) { throw new ProxyException(ex); }
+        catch (SecurityException ex) { throw new ProxyException(ex); }
+        catch (IllegalArgumentException ex) { throw new ProxyException(ex); }
+        catch (InvocationTargetException ex) { throw new ProxyException(ex); }
     }
     
     @Override

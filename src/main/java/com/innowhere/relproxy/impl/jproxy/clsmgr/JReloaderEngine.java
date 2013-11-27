@@ -16,23 +16,31 @@ import javax.tools.JavaFileObject;
  */
 public abstract class JReloaderEngine 
 {
+    protected File scriptFile;
     protected JReloaderCompilerInMemory compiler;
     protected ClassLoader rootClassLoader;
     protected JReloaderClassLoader customClassLoader;
     protected JavaSourcesSearch sourcesSearch;
     protected Map<String,ClassDescriptorSourceFile> sourceFileMap;
     protected String classFolder; // Puede ser nulo (es decir NO salvar como .class los cambios)
+    protected long scanPeriod;
     
     protected String sourceEncoding = "UTF-8"; // Por ahora, provisional
     
-    public JReloaderEngine(ClassLoader parentClassLoader,String pathSources,String classFolder,long scanPeriod,Iterable<String> compilationOptions,DiagnosticCollector<JavaFileObject> diagnostics)
+    public JReloaderEngine(File scriptFile,ClassLoader parentClassLoader,String pathSources,String classFolder,long scanPeriod,Iterable<String> compilationOptions,DiagnosticCollector<JavaFileObject> diagnostics)
     {
+        this.scriptFile = scriptFile;
         this.rootClassLoader = parentClassLoader;
         this.classFolder = classFolder;
+        this.scanPeriod = scanPeriod;
         this.compiler = new JReloaderCompilerInMemory(compilationOptions,diagnostics);        
         this.customClassLoader = new JReloaderClassLoader(this);
         this.sourcesSearch = new JavaSourcesSearch(this,pathSources);       
-        detectChangesInSources(); // Primera vez para detectar cambios en los .java respecto a los .class mientras el servidor estaba parado
+    }
+    
+    public ClassDescriptorSourceFileScript init()
+    {
+        ClassDescriptorSourceFileScript scriptFileDesc = detectChangesInSources(); // Primera vez para detectar cambios en los .java respecto a los .class mientras el servidor estaba parado
         
         if (scanPeriod > 0)  // Si es 0 o negativo sólo se recargan una vez (la inicial ya ejecutada)
         {
@@ -53,7 +61,9 @@ public abstract class JReloaderEngine
                 }
             };                
             timer.schedule(task, scanPeriod, scanPeriod);  // Ojo, después de detectChangesInSources() 
-        }
+        }        
+        
+        return scriptFileDesc;
     }
     
     public ClassLoader getRootClassLoader()
@@ -220,7 +230,7 @@ public abstract class JReloaderEngine
         }
     }          
     
-    private synchronized void detectChangesInSources()
+    private synchronized ClassDescriptorSourceFileScript detectChangesInSources()
     {
         // boolean firstTime = (sourceFileMap == null); // La primera vez sourceFileMap es null
 
@@ -231,7 +241,7 @@ public abstract class JReloaderEngine
         Map<String,ClassDescriptorSourceFile> oldSourceFileMap = this.sourceFileMap; // Puede ser null (la primera vez)
         Map<String,ClassDescriptorSourceFile> newSourceFileMap = new HashMap<String,ClassDescriptorSourceFile>();
         
-        sourcesSearch.sourceFileSearch(oldSourceFileMap,newSourceFileMap,updatedSourceFiles,newSourceFiles,deletedSourceFiles);
+        ClassDescriptorSourceFileScript scriptFileDesc = sourcesSearch.sourceFileSearch(scriptFile,oldSourceFileMap,newSourceFileMap,updatedSourceFiles,newSourceFiles,deletedSourceFiles);
         
         this.sourceFileMap = newSourceFileMap;
 
@@ -274,8 +284,9 @@ public abstract class JReloaderEngine
                 // las clases deleted no están en sourceFileMap por lo que no hay que filtrarlas
                 reloadSource(sourceFile,true); // Ponemos detectInnerClasses a true porque son archivos fuente que posiblemente nunca se hayan tocado desde la carga inicial y por tanto quizás se desconocen las innerclasses
             }
-         
         }
+        
+        return scriptFileDesc;
     }
     
 }

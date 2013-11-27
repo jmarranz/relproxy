@@ -1,5 +1,6 @@
 package com.innowhere.relproxy.impl.jproxy.clsmgr;
 
+import com.innowhere.relproxy.ProxyException;
 import java.io.File;
 
 /**
@@ -10,12 +11,36 @@ public class ClassDescriptorSourceFileScript extends ClassDescriptorSourceFile
 {
     protected String source;
     
-    public ClassDescriptorSourceFileScript(JReloaderEngine engine,String name,File sourceFile,long timestamp)
+    public ClassDescriptorSourceFileScript(JReloaderEngine engine,String className,File sourceFile,long timestamp)
     {
-        super(engine,name, sourceFile, timestamp);
+        super(engine,className, sourceFile, timestamp);
         
-        // HACER: filtrar/ignorar el #!
-        this.source = JReloaderUtil.readTextFile(sourceFile,engine.getSourceEncoding());        
+        
+        String codeBody = JReloaderUtil.readTextFile(sourceFile,getEncoding());         
+        // Eliminamos la primera línea #!  (debe estar en la primera línea y sin espacios antes)
+        if (!codeBody.startsWith("#!"))
+            throw new ProxyException("The first line of the script must start with #!");
+        
+        int pos = codeBody.indexOf('\n');
+        if (pos != -1) // Rarísimo que sólo esté el hash bang (script vacío)
+        {
+            codeBody = codeBody.substring(pos + 1);
+        }
+        
+        StringBuilder code = new StringBuilder();
+        code.append("public class " + className + "\n");
+        code.append("{\n");  
+        code.append("  public void init(String[] args)\n");        
+        code.append("  {\n");   
+        code.append(codeBody);        
+        code.append("  }\n");        
+        code.append("}\n");         
+        this.source = code.toString();        
+    }
+    
+    public final String getEncoding()
+    {
+        return engine.getSourceEncoding();
     }
     
     @Override
@@ -23,7 +48,7 @@ public class ClassDescriptorSourceFileScript extends ClassDescriptorSourceFile
     {
         long oldTimestamp = this.timestamp;
         if (oldTimestamp != timestamp)
-            JReloaderUtil.readTextFile(sourceFile,engine.getSourceEncoding());   
+            JReloaderUtil.readTextFile(sourceFile,getEncoding());   
         super.updateTimestamp(timestamp);
     }
     
