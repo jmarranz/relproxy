@@ -1,6 +1,5 @@
 package example.javaex;
 
-import example.javaex.FalseDB;
 import org.itsnat.comp.ItsNatComponentManager;
 import org.itsnat.comp.text.ItsNatHTMLInputText;
 import org.itsnat.core.ItsNatServletRequest;
@@ -11,7 +10,7 @@ import org.w3c.dom.events.EventListener;
 import org.w3c.dom.events.EventTarget;
 import org.w3c.dom.html.HTMLDocument;
 
-public class JReloadExampleDocument extends JReloadExampleDocumentBase
+public class JProxyExampleDocument extends JProxyExampleDocumentBase
 {
     protected ItsNatHTMLDocument itsNatDoc; // ItsNatHTMLDocument
     protected ItsNatHTMLInputText textInput; // ItsNatHTMLInputText
@@ -26,13 +25,13 @@ public class JReloadExampleDocument extends JReloadExampleDocumentBase
     }
            
     
-    public JReloadExampleDocument(ItsNatServletRequest request,ItsNatHTMLDocument itsNatDoc,FalseDB db)
+    public JProxyExampleDocument(ItsNatServletRequest request,ItsNatHTMLDocument itsNatDoc,FalseDB db)
     {
         class AuxMemberInMethod 
         { 
             public void log()
             {
-                System.out.println("JReloadExampleDocument.AuxMemberInMethod: 1 " + AuxMemberInMethod.class.getClassLoader().hashCode());
+                System.out.println("JProxyExampleDocument.AuxMemberInMethod: 1 " + AuxMemberInMethod.class.getClassLoader().hashCode());
             }        
         }        
         
@@ -49,7 +48,7 @@ public class JReloadExampleDocument extends JReloadExampleDocumentBase
        EventListener listener = new EventListener()
        {    
             {
-                System.out.println("JReloadExampleDocument Anonymous Inner 21 " + this.getClass().getClassLoader().hashCode());
+                System.out.println("JProxyExampleDocument Anonymous Inner 21 " + this.getClass().getClassLoader().hashCode());
             }
            
             public void handleEvent(Event evt) 
@@ -64,9 +63,9 @@ public class JReloadExampleDocument extends JReloadExampleDocumentBase
 
         this.resultsElem = doc.getElementById("resultsId");
         
-        System.out.println("JReloadExampleDocument 15 " + this.getClass().getClassLoader().hashCode());        
+        System.out.println("JProxyExampleDocument 15 " + this.getClass().getClassLoader().hashCode());        
         new AuxMemberInMethod().log();
         AuxMember.log();
-        JReloadExampleAux.log();
+        JProxyExampleAux.log();
     }
 }

@@ -14,8 +14,12 @@ public class ClassDescriptorSourceFileScript extends ClassDescriptorSourceFile
     public ClassDescriptorSourceFileScript(JReloaderEngine engine,String className,File sourceFile,long timestamp)
     {
         super(engine,className, sourceFile, timestamp);
-        
-        
+                
+        generateSourceCode();
+    }
+    
+    private void generateSourceCode()
+    {
         String codeBody = JReloaderUtil.readTextFile(sourceFile,getEncoding());         
         // Eliminamos la primera línea #!  (debe estar en la primera línea y sin espacios antes)
         if (!codeBody.startsWith("#!"))
@@ -28,10 +32,7 @@ public class ClassDescriptorSourceFileScript extends ClassDescriptorSourceFile
         }
         
         StringBuilder code = new StringBuilder();
-        code.append("public class " + className + "\n");
-        code.append("{\n");  
-        code.append("  public void init(String[] args)\n");        
-        code.append("  {\n");   
+        code.append("public class " + className + " { public void init(String[] args) {\n"); // Lo ponemos todo en una línea para que en caso de error la línea de error coincida con el script original pues hemos quitado la primera línea #!
         code.append(codeBody);        
         code.append("  }\n");        
         code.append("}\n");         
@@ -48,7 +49,7 @@ public class ClassDescriptorSourceFileScript extends ClassDescriptorSourceFile
     {
         long oldTimestamp = this.timestamp;
         if (oldTimestamp != timestamp)
-            JReloaderUtil.readTextFile(sourceFile,getEncoding());   
+            generateSourceCode();   
         super.updateTimestamp(timestamp);
     }
     

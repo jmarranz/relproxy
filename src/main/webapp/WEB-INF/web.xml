@@ -18,11 +18,11 @@
         <url-pattern>/groovyex</url-pattern>
     </servlet-mapping>
     <servlet>
-        <servlet-name>ItsNatJReloadServlet</servlet-name>
-        <servlet-class>example.javaex.JReloadExampleServlet</servlet-class>
+        <servlet-name>ItsNatJProxyServlet</servlet-name>
+        <servlet-class>example.javaex.JProxyExampleServlet</servlet-class>
     </servlet>
     <servlet-mapping>
-        <servlet-name>ItsNatJReloadServlet</servlet-name>
+        <servlet-name>ItsNatJProxyServlet</servlet-name>
         <url-pattern>/javaex</url-pattern>
     </servlet-mapping>
     <session-config>

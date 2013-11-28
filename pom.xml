@@ -23,6 +23,14 @@
       <version>2.1</version>
       <scope>provided</scope>
     </dependency>
+    <!-- http://stackoverflow.com/tags/jstl/info http://stackoverflow.com/questions/2276083/include-jstl-dependency-with-maven -->  
+    <dependency>
+        <groupId>javax.servlet</groupId>
+        <artifactId>jstl</artifactId>
+        <version>1.2</version>
+        <!--<scope>provided</scope>-->
+    </dependency>  
+ 
     
     <dependency>
         <groupId>ItsNat</groupId>
@@ -97,7 +105,10 @@
        </resource>  
        <resource>
          <directory>src/main/webapp/WEB-INF/javaex/code</directory>         
-       </resource>        
+       </resource>
+       <resource>
+         <directory>src/main/webapp/WEB-INF/javashellex/code</directory>         
+       </resource>                
     </resources>    
   </build>
   

@@ -10,9 +10,9 @@ import org.itsnat.core.http.HttpServletWrapper;
  * 
  * @author jmarranz
  */
-public class JReloadExampleServlet extends HttpServletWrapper
+public class JProxyExampleServlet extends HttpServletWrapper
 {  
-    public JReloadExampleServlet()
+    public JProxyExampleServlet()
     {
     }
     
@@ -21,7 +21,7 @@ public class JReloadExampleServlet extends HttpServletWrapper
     {
         super.init(config);
 
-        JReloadExLoadApp.init(itsNatServlet, config);
+        JProxyExLoadApp.init(itsNatServlet, config);
     }    
  
 }

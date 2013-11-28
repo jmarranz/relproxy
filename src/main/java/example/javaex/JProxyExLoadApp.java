@@ -16,7 +16,7 @@ import org.itsnat.core.event.ItsNatServletRequestListener;
  *
  * @author jmarranz
  */
-public class JReloadExLoadApp
+public class JProxyExLoadApp
 {
     public static void init(ItsNatHttpServlet itsNatServlet,ServletConfig config)
     {    
@@ -42,7 +42,7 @@ public class JReloadExLoadApp
         ItsNatDocumentTemplate docTemplate;
         docTemplate = itsNatServlet.registerItsNatDocumentTemplate("javaex","text/html", pathPrefix + "javaex.html");
 
-        ItsNatServletRequestListener listener = JProxy.create(new example.javaex.JReloadExampleLoadListener(db), ItsNatServletRequestListener.class);
+        ItsNatServletRequestListener listener = JProxy.create(new example.javaex.JProxyExampleLoadListener(db), ItsNatServletRequestListener.class);
         docTemplate.addItsNatServletRequestListener(listener);
     } 
 }
