@@ -3,7 +3,6 @@ package com.innowhere.relproxy.impl.jproxy.clsmgr;
 import java.io.File;
 import java.net.URL;
 import java.util.LinkedList;
-import java.util.Map;
 
 /**
  *
@@ -11,28 +10,28 @@ import java.util.Map;
  */
 public class JavaSourcesSearch 
 {
-    protected JReloaderEngine engine;
+    protected JProxyEngine engine;
     protected String pathSources;
     
-    public JavaSourcesSearch(JReloaderEngine engine,String pathSources)
+    public JavaSourcesSearch(JProxyEngine engine,String pathSources)
     {
         this.engine = engine;
         this.pathSources = new File(pathSources).getAbsolutePath(); // Para normalizar
     }
 
-    public ClassDescriptorSourceFileScript sourceFileSearch(File scriptFile,Map<String,ClassDescriptorSourceFile> oldSourceFileMap,Map<String,ClassDescriptorSourceFile> newSourceFileMap,LinkedList<ClassDescriptorSourceFile> updatedSourceFiles,LinkedList<ClassDescriptorSourceFile> newSourceFiles,LinkedList<ClassDescriptorSourceFile> deletedSourceFiles)
+    public ClassDescriptorSourceFileScript sourceFileSearch(File scriptFile,ClassDescriptorSourceFileRegistry oldSourceFileMap,ClassDescriptorSourceFileRegistry newSourceFileMap,LinkedList<ClassDescriptorSourceFile> updatedSourceFiles,LinkedList<ClassDescriptorSourceFile> newSourceFiles,LinkedList<ClassDescriptorSourceFile> deletedSourceFiles)
     {
         ClassDescriptorSourceFileScript scriptFileDesc = (scriptFile == null) ? null : processSourceFileScript(scriptFile,oldSourceFileMap,newSourceFileMap,updatedSourceFiles,newSourceFiles,deletedSourceFiles);
         
         String[] children = new File(pathSources).list(); 
         recursiveSourceFileJavaSearch(pathSources,children,oldSourceFileMap,newSourceFileMap,updatedSourceFiles,newSourceFiles,deletedSourceFiles);
         if (oldSourceFileMap != null && !oldSourceFileMap.isEmpty())        
-            deletedSourceFiles.addAll(oldSourceFileMap.values());
+            deletedSourceFiles.addAll(oldSourceFileMap.getClassDescriptorSourceFileColl());
         
         return scriptFileDesc;
     }
     
-    private void recursiveSourceFileJavaSearch(String parentPath,String[] relPathList,Map<String,ClassDescriptorSourceFile> oldSourceFileMap,Map<String,ClassDescriptorSourceFile> newSourceFileMap,LinkedList<ClassDescriptorSourceFile> updatedSourceFiles,LinkedList<ClassDescriptorSourceFile> newSourceFiles,LinkedList<ClassDescriptorSourceFile> deletedSourceFiles)
+    private void recursiveSourceFileJavaSearch(String parentPath,String[] relPathList,ClassDescriptorSourceFileRegistry oldSourceFileMap,ClassDescriptorSourceFileRegistry newSourceFileMap,LinkedList<ClassDescriptorSourceFile> updatedSourceFiles,LinkedList<ClassDescriptorSourceFile> newSourceFiles,LinkedList<ClassDescriptorSourceFile> deletedSourceFiles)
     {
         for(String relPath : relPathList)
         {
@@ -56,27 +55,27 @@ public class JavaSourcesSearch
         }
     }    
     
-    private ClassDescriptorSourceFileScript processSourceFileScript(File file,Map<String,ClassDescriptorSourceFile> oldSourceFileMap,Map<String,ClassDescriptorSourceFile> newSourceFileMap,LinkedList<ClassDescriptorSourceFile> updatedSourceFiles,LinkedList<ClassDescriptorSourceFile> newSourceFiles,LinkedList<ClassDescriptorSourceFile> deletedSourceFiles)
+    private ClassDescriptorSourceFileScript processSourceFileScript(File file,ClassDescriptorSourceFileRegistry oldSourceFileMap,ClassDescriptorSourceFileRegistry newSourceFileMap,LinkedList<ClassDescriptorSourceFile> updatedSourceFiles,LinkedList<ClassDescriptorSourceFile> newSourceFiles,LinkedList<ClassDescriptorSourceFile> deletedSourceFiles)
     {    
         String path = file.getAbsolutePath();                
         String className = ClassDescriptorSourceFileScript.getClassNameFromSourceFileScriptAbsPath(path, pathSources);                
         return (ClassDescriptorSourceFileScript)processSourceFile(file,className,true,oldSourceFileMap,newSourceFileMap,updatedSourceFiles,newSourceFiles,deletedSourceFiles);        
     }    
     
-    private ClassDescriptorSourceFileJava processSourceFileJava(File file,Map<String,ClassDescriptorSourceFile> oldSourceFileMap,Map<String,ClassDescriptorSourceFile> newSourceFileMap,LinkedList<ClassDescriptorSourceFile> updatedSourceFiles,LinkedList<ClassDescriptorSourceFile> newSourceFiles,LinkedList<ClassDescriptorSourceFile> deletedSourceFiles)
+    private ClassDescriptorSourceFileJava processSourceFileJava(File file,ClassDescriptorSourceFileRegistry oldSourceFileMap,ClassDescriptorSourceFileRegistry newSourceFileMap,LinkedList<ClassDescriptorSourceFile> updatedSourceFiles,LinkedList<ClassDescriptorSourceFile> newSourceFiles,LinkedList<ClassDescriptorSourceFile> deletedSourceFiles)
     {    
         String path = file.getAbsolutePath();                
         String className = ClassDescriptorSourceFileJava.getClassNameFromSourceFileJavaAbsPath(path, pathSources);                
         return (ClassDescriptorSourceFileJava)processSourceFile(file,className,false,oldSourceFileMap,newSourceFileMap,updatedSourceFiles,newSourceFiles,deletedSourceFiles);        
     }
     
-    private ClassDescriptorSourceFile processSourceFile(File file,String className,boolean script,Map<String,ClassDescriptorSourceFile> oldSourceFileMap,Map<String,ClassDescriptorSourceFile> newSourceFileMap,LinkedList<ClassDescriptorSourceFile> updatedSourceFiles,LinkedList<ClassDescriptorSourceFile> newSourceFiles,LinkedList<ClassDescriptorSourceFile> deletedSourceFiles)
+    private ClassDescriptorSourceFile processSourceFile(File file,String className,boolean script,ClassDescriptorSourceFileRegistry oldSourceFileMap,ClassDescriptorSourceFileRegistry newSourceFileMap,LinkedList<ClassDescriptorSourceFile> updatedSourceFiles,LinkedList<ClassDescriptorSourceFile> newSourceFiles,LinkedList<ClassDescriptorSourceFile> deletedSourceFiles)
     {
         long timestampSourceFile = file.lastModified();
         ClassDescriptorSourceFile sourceFile;
         if (oldSourceFileMap != null)
         {
-            sourceFile = oldSourceFileMap.get(className);
+            sourceFile = oldSourceFileMap.getClassDescriptorSourceFile(className);
 
             if (sourceFile != null) // Cambiado
             {
@@ -87,7 +86,7 @@ public class JavaSourcesSearch
                     updatedSourceFiles.add(sourceFile);
                 }
 
-                oldSourceFileMap.remove(className); // Para que sólo queden las clases que han sido eliminadas
+                oldSourceFileMap.removeClassDescriptorSourceFile(className); // Para que sólo queden las clases que han sido eliminadas
             }          
             else // Clase nueva
             {
@@ -116,7 +115,7 @@ public class JavaSourcesSearch
                 {
                     // Esto es lo normal en carga si no hemos tocado el código tras el deploy, que el .class sea más reciente que el .java
                     sourceFile = ClassDescriptorSourceFile.create(script,engine,className,file,timestampCompiledClass);
-                    byte[] classBytes = JReloaderUtil.readURL(urlClass);
+                    byte[] classBytes = JProxyUtil.readURL(urlClass);
                     sourceFile.setClassBytes(classBytes);  
                     // Falta cargar las posibles inner classes, hay que tener en cuenta que este archivo NO se va a compilar porque no ha cambiado respecto a .class conocido
 
@@ -131,7 +130,7 @@ public class JavaSourcesSearch
             }
         }
 
-        newSourceFileMap.put(className,sourceFile);
+        newSourceFileMap.addClassDescriptorSourceFile(sourceFile);
         
         return sourceFile;
     }                

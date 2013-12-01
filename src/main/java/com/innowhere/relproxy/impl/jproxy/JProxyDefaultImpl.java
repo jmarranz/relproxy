@@ -1,8 +1,8 @@
 package com.innowhere.relproxy.impl.jproxy;
 
 import com.innowhere.relproxy.ProxyListener;
-import com.innowhere.relproxy.impl.jproxy.clsmgr.JReloaderEngine;
-import com.innowhere.relproxy.impl.jproxy.clsmgr.JReloaderEngineDefault;
+import com.innowhere.relproxy.impl.jproxy.clsmgr.JProxyEngine;
+import com.innowhere.relproxy.impl.jproxy.clsmgr.JProxyEngineDefault;
 import javax.tools.DiagnosticCollector;
 import javax.tools.JavaFileObject;
 
@@ -29,8 +29,8 @@ public class JProxyDefaultImpl extends JProxyImpl
     }    
 
     @Override
-    public JReloaderEngine createJReloaderEngine(ClassLoader parentClassLoader, String pathSources, String classFolder, long scanPeriod, Iterable<String> compilationOptions, DiagnosticCollector<JavaFileObject> diagnostics)
+    public JProxyEngine createJProxyEngine(ClassLoader parentClassLoader, String pathSources, String classFolder, long scanPeriod, Iterable<String> compilationOptions, DiagnosticCollector<JavaFileObject> diagnostics)
     {
-        return new JReloaderEngineDefault(parentClassLoader,pathSources,classFolder,scanPeriod,compilationOptions,diagnostics);  
+        return new JProxyEngineDefault(parentClassLoader,pathSources,classFolder,scanPeriod,compilationOptions,diagnostics);  
     }
 }

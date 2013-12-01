@@ -11,7 +11,7 @@ public class ClassDescriptorSourceFileScript extends ClassDescriptorSourceFile
 {
     protected String source;
     
-    public ClassDescriptorSourceFileScript(JReloaderEngine engine,String className,File sourceFile,long timestamp)
+    public ClassDescriptorSourceFileScript(JProxyEngine engine,String className,File sourceFile,long timestamp)
     {
         super(engine,className, sourceFile, timestamp);
                 
@@ -20,7 +20,7 @@ public class ClassDescriptorSourceFileScript extends ClassDescriptorSourceFile
     
     private void generateSourceCode()
     {
-        String codeBody = JReloaderUtil.readTextFile(sourceFile,getEncoding());         
+        String codeBody = JProxyUtil.readTextFile(sourceFile,getEncoding());         
         // Eliminamos la primera línea #!  (debe estar en la primera línea y sin espacios antes)
         if (!codeBody.startsWith("#!"))
             throw new ProxyException("The first line of the script must start with #!");
@@ -37,11 +37,6 @@ public class ClassDescriptorSourceFileScript extends ClassDescriptorSourceFile
         code.append("  }\n");        
         code.append("}\n");         
         this.source = code.toString();        
-    }
-    
-    public final String getEncoding()
-    {
-        return engine.getSourceEncoding();
     }
     
     @Override

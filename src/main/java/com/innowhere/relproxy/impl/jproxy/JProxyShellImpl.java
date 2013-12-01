@@ -3,9 +3,9 @@ package com.innowhere.relproxy.impl.jproxy;
 import com.innowhere.relproxy.ProxyException;
 import com.innowhere.relproxy.ProxyListener;
 import com.innowhere.relproxy.impl.jproxy.clsmgr.ClassDescriptorSourceFileScript;
-import com.innowhere.relproxy.impl.jproxy.clsmgr.JReloaderEngine;
-import com.innowhere.relproxy.impl.jproxy.clsmgr.JReloaderEngineShell;
-import com.innowhere.relproxy.impl.jproxy.clsmgr.JReloaderUtil;
+import com.innowhere.relproxy.impl.jproxy.clsmgr.JProxyEngine;
+import com.innowhere.relproxy.impl.jproxy.clsmgr.JProxyEngineShell;
+import com.innowhere.relproxy.impl.jproxy.clsmgr.JProxyUtil;
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -30,7 +30,7 @@ public class JProxyShellImpl extends JProxyImpl
     public void init(String[] args)
     {    
         this.scriptFile = new File(args[0]);
-        File parentDir = JReloaderUtil.getParentDir(scriptFile.getAbsolutePath());        
+        File parentDir = JProxyUtil.getParentDir(scriptFile.getAbsolutePath());        
         
         // TODO: PARAMETRIZAR POR LINEA DE COMANDOS
                 
@@ -64,8 +64,8 @@ public class JProxyShellImpl extends JProxyImpl
     }
     
     @Override
-    public JReloaderEngine createJReloaderEngine(ClassLoader parentClassLoader, String pathSources, String classFolder, long scanPeriod, Iterable<String> compilationOptions, DiagnosticCollector<JavaFileObject> diagnostics)
+    public JProxyEngine createJProxyEngine(ClassLoader parentClassLoader, String pathSources, String classFolder, long scanPeriod, Iterable<String> compilationOptions, DiagnosticCollector<JavaFileObject> diagnostics)
     {
-        return new JReloaderEngineShell(scriptFile,parentClassLoader,pathSources,classFolder,scanPeriod,compilationOptions,diagnostics);  
+        return new JProxyEngineShell(scriptFile,parentClassLoader,pathSources,classFolder,scanPeriod,compilationOptions,diagnostics);  
     }    
 }

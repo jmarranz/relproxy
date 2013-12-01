@@ -8,9 +8,9 @@ import javax.tools.JavaFileObject;
  *
  * @author jmarranz
  */
-public class JReloaderEngineShell extends JReloaderEngine
+public class JProxyEngineShell extends JProxyEngine
 {
-    public JReloaderEngineShell(File scriptFile,ClassLoader parentClassLoader,String pathSources,String classFolder,long scanPeriod,Iterable<String> compilationOptions,DiagnosticCollector<JavaFileObject> diagnostics)
+    public JProxyEngineShell(File scriptFile,ClassLoader parentClassLoader,String pathSources,String classFolder,long scanPeriod,Iterable<String> compilationOptions,DiagnosticCollector<JavaFileObject> diagnostics)
     {
         super(scriptFile,parentClassLoader, pathSources, classFolder, scanPeriod, compilationOptions, diagnostics);
     }        

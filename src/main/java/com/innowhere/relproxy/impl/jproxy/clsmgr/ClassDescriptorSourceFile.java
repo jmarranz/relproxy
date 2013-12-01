@@ -9,12 +9,12 @@ import java.util.LinkedList;
  */
 public abstract class ClassDescriptorSourceFile extends ClassDescriptor
 {
-    protected JReloaderEngine engine;
+    protected JProxyEngine engine;
     protected long timestamp;
     protected File sourceFile; 
     protected LinkedList<ClassDescriptorInner> innerClasses;
     
-    public ClassDescriptorSourceFile(JReloaderEngine engine,String className,File sourceFile, long timestamp) 
+    public ClassDescriptorSourceFile(JProxyEngine engine,String className,File sourceFile, long timestamp) 
     {
         super(className);
         this.engine = engine;
@@ -22,12 +22,17 @@ public abstract class ClassDescriptorSourceFile extends ClassDescriptor
         this.timestamp = timestamp;
     }
 
-    public static ClassDescriptorSourceFile create(boolean script,JReloaderEngine engine,String className,File sourceFile, long timestamp)
+    public static ClassDescriptorSourceFile create(boolean script,JProxyEngine engine,String className,File sourceFile, long timestamp)
     {
         if (script)
             return new ClassDescriptorSourceFileScript(engine,className,sourceFile,timestamp);  
         else
             return new ClassDescriptorSourceFileJava(engine,className,sourceFile,timestamp);
+    }
+    
+    public String getEncoding()
+    {
+        return engine.getSourceEncoding();
     }
     
     public boolean isInnerClass()

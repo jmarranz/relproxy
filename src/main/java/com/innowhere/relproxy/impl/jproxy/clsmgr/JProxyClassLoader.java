@@ -6,11 +6,11 @@ import java.net.URL;
  *
  * @author jmarranz
  */
-public class JReloaderClassLoader extends ClassLoader
+public class JProxyClassLoader extends ClassLoader
 {
-    protected JReloaderEngine engine;
+    protected final JProxyEngine engine;
     
-    public JReloaderClassLoader(JReloaderEngine engine)
+    public JProxyClassLoader(JProxyEngine engine)
     {
         super(engine.getRootClassLoader());
         
@@ -83,17 +83,20 @@ public class JReloaderClassLoader extends ClassLoader
         Class<?> cls = findLoadedClass(name);
         if (cls == null)
         {            
-            ClassDescriptor classDesc = engine.getClassDescriptor(name); // Si es una inner class se crea el descriptor y se añade al source file asociado automáticamente
-            if (classDesc != null)
+            synchronized(engine)
             {
-                byte[] classBytes = classDesc.getClassBytes();
-                if (classBytes == null) 
+                ClassDescriptor classDesc = engine.getClassDescriptor(name); // Si es una inner class se crea el descriptor y se añade al source file asociado automáticamente
+                if (classDesc != null)
                 {
-                    classBytes = getClassBytesFromResource(name);   // No puede ser nulo
-                    classDesc.setClassBytes(classBytes);
+                    byte[] classBytes = classDesc.getClassBytes();
+                    if (classBytes == null) 
+                    {
+                        classBytes = getClassBytesFromResource(name);   // No puede ser nulo
+                        classDesc.setClassBytes(classBytes);
+                    }
+
+                    cls = defineClass(classDesc); 
                 }
-                
-                cls = defineClass(classDesc); 
             }
             
             if (cls == null)
@@ -115,6 +118,6 @@ public class JReloaderClassLoader extends ClassLoader
         String relClassPath = ClassDescriptor.getRelativeClassFilePathFromClassName(className); 
         URL urlClass = getResource(relClassPath);
         if (urlClass == null) return null;
-        return JReloaderUtil.readURL(urlClass);    
+        return JProxyUtil.readURL(urlClass);    
     }
 }

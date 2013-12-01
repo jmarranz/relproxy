@@ -8,7 +8,7 @@ import java.io.File;
  */
 public class ClassDescriptorSourceFileJava extends ClassDescriptorSourceFile
 {
-    public ClassDescriptorSourceFileJava(JReloaderEngine engine,String className, File sourceFile, long timestamp)
+    public ClassDescriptorSourceFileJava(JProxyEngine engine,String className, File sourceFile, long timestamp)
     {
         super(engine,className, sourceFile, timestamp);
     }

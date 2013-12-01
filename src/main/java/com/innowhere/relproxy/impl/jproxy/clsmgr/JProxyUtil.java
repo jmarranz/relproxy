@@ -17,7 +17,7 @@ import java.net.URLConnection;
  *
  * @author jmarranz
  */
-public class JReloaderUtil 
+public class JProxyUtil 
 {    
     public static String getFileExtension(File file)
     {

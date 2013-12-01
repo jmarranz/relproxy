@@ -4,9 +4,9 @@ import com.innowhere.relproxy.ProxyException;
 import com.innowhere.relproxy.impl.jproxy.clsmgr.ClassDescriptorInner;
 import com.innowhere.relproxy.impl.jproxy.clsmgr.ClassDescriptorSourceFile;
 import com.innowhere.relproxy.impl.jproxy.clsmgr.ClassDescriptorSourceFileJava;
+import com.innowhere.relproxy.impl.jproxy.clsmgr.ClassDescriptorSourceFileRegistry;
 import com.innowhere.relproxy.impl.jproxy.clsmgr.ClassDescriptorSourceFileScript;
-import com.innowhere.relproxy.impl.jproxy.clsmgr.JReloaderClassLoader;
-import com.innowhere.relproxy.impl.jproxy.clsmgr.JReloaderUtil;
+import com.innowhere.relproxy.impl.jproxy.clsmgr.JProxyClassLoader;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -25,14 +25,14 @@ import javax.tools.ToolProvider;
  *
  * @author jmarranz
  */
-public class JReloaderCompilerInMemory
+public class JProxyCompilerInMemory
 {
     protected JavaCompiler compiler;
     protected Iterable<String> compilationOptions; // puede ser null
     protected DiagnosticCollector<JavaFileObject> diagnostics; // puede ser null
     protected boolean outDefaultDiagnostics = false;
             
-    public JReloaderCompilerInMemory(Iterable<String> compilationOptions,DiagnosticCollector<JavaFileObject> diagnostics)
+    public JProxyCompilerInMemory(Iterable<String> compilationOptions,DiagnosticCollector<JavaFileObject> diagnostics)
     {
         this.compilationOptions = compilationOptions;
         this.diagnostics = diagnostics;
@@ -41,14 +41,14 @@ public class JReloaderCompilerInMemory
         if (diagnostics == null)
         {
             this.diagnostics = new DiagnosticCollector<JavaFileObject>();
-            outDefaultDiagnostics = true;
+            this.outDefaultDiagnostics = true;
         }        
     }
     
-    public void compileSourceFile(ClassDescriptorSourceFile sourceFileDesc,JReloaderClassLoader customClassLoader,Map<String,ClassDescriptorSourceFile> sourceFileMap)
+    public void compileSourceFile(ClassDescriptorSourceFile sourceFileDesc,JProxyClassLoader customClassLoader,ClassDescriptorSourceFileRegistry sourceRegistry)
     {
         //File sourceFile = sourceFileDesc.getSourceFile();
-        LinkedList<JavaFileObjectOutputClass> outClassList = compile(sourceFileDesc,customClassLoader,sourceFileMap);
+        LinkedList<JavaFileObjectOutputClass> outClassList = compile(sourceFileDesc,customClassLoader,sourceRegistry);
         
         if (outClassList == null) 
             throw new ProxyException("Cannot reload class: " + sourceFileDesc.getClassName());
@@ -82,7 +82,7 @@ public class JReloaderCompilerInMemory
         }
     }        
     
-    private LinkedList<JavaFileObjectOutputClass> compile(ClassDescriptorSourceFile sourceFileDesc,ClassLoader classLoader,Map<String,ClassDescriptorSourceFile> sourceFileMap)
+    private LinkedList<JavaFileObjectOutputClass> compile(ClassDescriptorSourceFile sourceFileDesc,ClassLoader classLoader,ClassDescriptorSourceFileRegistry sourceRegistry)
     {
         // http://stackoverflow.com/questions/12173294/compiling-fully-in-memory-with-javax-tools-javacompiler
         // http://www.accordess.com/wpblog/an-overview-of-java-compilation-api-jsr-199/
@@ -97,10 +97,10 @@ public class JReloaderCompilerInMemory
         // http://stackoverflow.com/questions/10767048/javacompiler-with-custom-classloader-and-filemanager
 
 
-        StandardJavaFileManager fileManager = null;
+        StandardJavaFileManager standardFileManager = null;
         try
         {
-            fileManager = compiler.getStandardFileManager(diagnostics, null, null);
+            standardFileManager = compiler.getStandardFileManager(diagnostics, null, null);
             
             Iterable<? extends JavaFileObject> compilationUnits;
             
@@ -108,14 +108,14 @@ public class JReloaderCompilerInMemory
             {
                 List<File> sourceFileList = new ArrayList<File>();
                 sourceFileList.add(sourceFileDesc.getSourceFile());            
-                compilationUnits = fileManager.getJavaFileObjectsFromFiles(sourceFileList);
+                compilationUnits = standardFileManager.getJavaFileObjectsFromFiles(sourceFileList);
             }
             else if (sourceFileDesc instanceof ClassDescriptorSourceFileScript)
             {
-                ClassDescriptorSourceFileScript sourceFileDescScript = ((ClassDescriptorSourceFileScript)sourceFileDesc);
+                ClassDescriptorSourceFileScript sourceFileDescScript = (ClassDescriptorSourceFileScript)sourceFileDesc;
                 LinkedList<JavaFileObject> compilationUnitsList = new LinkedList<JavaFileObject>();            
                 String code = sourceFileDescScript.getSourceCode();
-                compilationUnitsList.add(new JavaFileObjectInputSourceInMemory(sourceFileDesc.getClassName(),code,sourceFileDescScript.getEncoding()));            
+                compilationUnitsList.add(new JavaFileObjectInputSourceInMemory(sourceFileDescScript.getClassName(),code,sourceFileDescScript.getEncoding()));            
                 compilationUnits = compilationUnitsList;                
             }
             else
@@ -123,7 +123,7 @@ public class JReloaderCompilerInMemory
                 throw new ProxyException("Internal error");
             }
 
-            JavaFileManagerInMemory fileManagerInMemory = new JavaFileManagerInMemory(fileManager,classLoader,sourceFileMap);
+            JavaFileManagerInMemory fileManagerInMemory = new JavaFileManagerInMemory(standardFileManager,classLoader,sourceRegistry);
 
             boolean success = compile(compilationUnits,fileManagerInMemory);
             if (!success) return null;
@@ -133,7 +133,7 @@ public class JReloaderCompilerInMemory
         }
         finally
         {
-           if (fileManager != null) try { fileManager.close(); } catch(IOException ex) { throw new ProxyException(ex); }
+           if (standardFileManager != null) try { standardFileManager.close(); } catch(IOException ex) { throw new ProxyException(ex); }
         }
     }
 
@@ -153,18 +153,18 @@ public class JReloaderCompilerInMemory
             List<Diagnostic<? extends JavaFileObject>> diagList = diagnostics.getDiagnostics();
             if (!diagList.isEmpty())
             {
-                System.out.println("Problems compiling: " + compilationUnits);
+                System.err.println("Problems compiling: " + compilationUnits);
                 int i = 1;
                 for (Diagnostic diagnostic : diagList)
                 {
-                   System.out.println(" Diagnostic " + i);
-                   System.out.println("  code: " + diagnostic.getCode());
-                   System.out.println("  kind: " + diagnostic.getKind());
-                   System.out.println("  position: " + diagnostic.getPosition());
-                   System.out.println("  start position: " + diagnostic.getStartPosition());
-                   System.out.println("  end position: " + diagnostic.getEndPosition());
-                   System.out.println("  source: " + diagnostic.getSource());
-                   System.out.println("  message: " + diagnostic.getMessage(null));
+                   System.err.println(" Diagnostic " + i);
+                   System.err.println("  code: " + diagnostic.getCode());
+                   System.err.println("  kind: " + diagnostic.getKind());
+                   System.err.println("  position: " + diagnostic.getPosition());
+                   System.err.println("  start position: " + diagnostic.getStartPosition());
+                   System.err.println("  end position: " + diagnostic.getEndPosition());
+                   System.err.println("  source: " + diagnostic.getSource());
+                   System.err.println("  message: " + diagnostic.getMessage(null));
                    i++;
                 }
             }

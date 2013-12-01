@@ -40,6 +40,7 @@ public class JavaFileObjectOutputClass extends SimpleJavaFileObject {
         this.binaryName = name;
     }
 
+
     public String binaryName()
     {
         return binaryName;

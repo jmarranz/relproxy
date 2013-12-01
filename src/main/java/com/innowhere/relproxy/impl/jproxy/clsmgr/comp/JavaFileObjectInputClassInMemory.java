@@ -1,6 +1,5 @@
 package com.innowhere.relproxy.impl.jproxy.clsmgr.comp;
 
-import com.innowhere.relproxy.ProxyException;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -14,7 +13,7 @@ import javax.tools.SimpleJavaFileObject;
  * 
  * @author jmarranz
  */
-public class JavaFileObjectInputClassInMemory extends SimpleJavaFileObject 
+public class JavaFileObjectInputClassInMemory extends SimpleJavaFileObject implements JProxyJavaFileObjectInput
 {
     protected final ByteArrayOutputStream bos = new ByteArrayOutputStream();
     protected String binaryName;
@@ -56,7 +55,8 @@ public class JavaFileObjectInputClassInMemory extends SimpleJavaFileObject
         return bos;
     }
     
-    public String binaryName()
+    @Override    
+    public String getBinaryName()
     {
         return binaryName;
     }

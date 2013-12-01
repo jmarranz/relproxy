@@ -13,7 +13,7 @@ import javax.tools.JavaFileObject;
  *
  * @author jmarranz
  */
-public abstract class JavaFileObjectInputClassInFileSystem implements JavaFileObject
+public abstract class JavaFileObjectInputClassInFileSystem implements JavaFileObject,JProxyJavaFileObjectInput
 {
     protected final String binaryName;
     protected final URI uri;
@@ -36,7 +36,8 @@ public abstract class JavaFileObjectInputClassInFileSystem implements JavaFileOb
         return name;
     }
     
-    public String binaryName() {
+    @Override    
+    public String getBinaryName() {
         return binaryName;
     }    
     

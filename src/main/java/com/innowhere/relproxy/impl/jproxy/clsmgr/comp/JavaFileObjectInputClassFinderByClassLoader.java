@@ -18,13 +18,13 @@ import java.util.jar.JarEntry;
  *
  * @author jmarranz
  */
-public class ClassLoaderBasedJavaFileObjectFinder 
+public class JavaFileObjectInputClassFinderByClassLoader 
 {
     private static final String CLASS_FILE_EXTENSION = ".class";
 
     private final ClassLoader classLoader;    
     
-    public ClassLoaderBasedJavaFileObjectFinder(ClassLoader classLoader) 
+    public JavaFileObjectInputClassFinderByClassLoader(ClassLoader classLoader) 
     {
         this.classLoader = classLoader;
     }
@@ -102,7 +102,6 @@ public class ClassLoaderBasedJavaFileObjectFinder
             if (name.endsWith(CLASS_FILE_EXTENSION)) 
             {
                 String binaryName = ClassDescriptor.getClassNameFromPackageAndClassFileName(packageName,name);
-                
                 result.add(new JavaFileObjectInputClassInFile(childFile,binaryName, childFile.toURI()));
             }            
         }

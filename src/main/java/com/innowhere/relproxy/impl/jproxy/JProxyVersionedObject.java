@@ -1,7 +1,7 @@
 package com.innowhere.relproxy.impl.jproxy;
 
 import com.innowhere.relproxy.impl.GenericProxyVersionedObject;
-import com.innowhere.relproxy.impl.jproxy.clsmgr.JReloaderEngine;
+import com.innowhere.relproxy.impl.jproxy.clsmgr.JProxyEngine;
 import java.lang.reflect.Field;
 
 /**
@@ -32,7 +32,7 @@ public class JProxyVersionedObject<T> extends GenericProxyVersionedObject<T>
     @Override
     protected <T> Class<T> reloadClass() 
     {
-        JReloaderEngine engine = getJProxyInvocationHandler().getJProxyImpl().getJReloaderEngine();        
+        JProxyEngine engine = getJProxyInvocationHandler().getJProxyImpl().getJProxyEngine();        
         return (Class<T>)engine.findClass(className);           
     }
    

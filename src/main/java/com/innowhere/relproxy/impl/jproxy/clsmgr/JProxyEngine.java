@@ -1,10 +1,8 @@
 package com.innowhere.relproxy.impl.jproxy.clsmgr;
 
-import com.innowhere.relproxy.impl.jproxy.clsmgr.comp.JReloaderCompilerInMemory;
+import com.innowhere.relproxy.impl.jproxy.clsmgr.comp.JProxyCompilerInMemory;
 import java.io.File;
-import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 import javax.tools.DiagnosticCollector;
@@ -14,27 +12,27 @@ import javax.tools.JavaFileObject;
  *
  * @author jmarranz
  */
-public abstract class JReloaderEngine 
+public abstract class JProxyEngine 
 {
     protected File scriptFile;
-    protected JReloaderCompilerInMemory compiler;
+    protected JProxyCompilerInMemory compiler;
     protected ClassLoader rootClassLoader;
-    protected JReloaderClassLoader customClassLoader;
+    protected JProxyClassLoader customClassLoader;
     protected JavaSourcesSearch sourcesSearch;
-    protected Map<String,ClassDescriptorSourceFile> sourceFileMap;
     protected String classFolder; // Puede ser nulo (es decir NO salvar como .class los cambios)
     protected long scanPeriod;
+    protected ClassDescriptorSourceFileRegistry sourceRegistry;
     
     protected String sourceEncoding = "UTF-8"; // Por ahora, provisional
     
-    public JReloaderEngine(File scriptFile,ClassLoader parentClassLoader,String pathSources,String classFolder,long scanPeriod,Iterable<String> compilationOptions,DiagnosticCollector<JavaFileObject> diagnostics)
+    public JProxyEngine(File scriptFile,ClassLoader parentClassLoader,String pathSources,String classFolder,long scanPeriod,Iterable<String> compilationOptions,DiagnosticCollector<JavaFileObject> diagnostics)
     {
         this.scriptFile = scriptFile;
         this.rootClassLoader = parentClassLoader;
         this.classFolder = classFolder;
         this.scanPeriod = scanPeriod;
-        this.compiler = new JReloaderCompilerInMemory(compilationOptions,diagnostics);        
-        this.customClassLoader = new JReloaderClassLoader(this);
+        this.compiler = new JProxyCompilerInMemory(compilationOptions,diagnostics);        
+        this.customClassLoader = new JProxyClassLoader(this);
         this.sourcesSearch = new JavaSourcesSearch(this,pathSources);       
     }
     
@@ -76,36 +74,19 @@ public abstract class JReloaderEngine
         return sourceEncoding;
     }
     
-    public boolean isSaveClassesMode()
+    private boolean isSaveClassesMode()
     {
         return (classFolder != null);
     }
     
     public synchronized ClassDescriptor getClassDescriptor(String className)
     {
-        // Puede ser el de una innerclass
-        // Las innerclasses no están como tales en sourceFileMap pues sólo está la clase contenedora pero también la consideramos hotloadable
-        String parentClassName;
-        int pos = className.lastIndexOf('$');        
-        boolean inner;        
-        if (pos != -1)
-        {
-            parentClassName = className.substring(0, pos);
-            inner = true;
-        }
-        else
-        {
-            parentClassName = className;
-            inner = false;
-        }
-        ClassDescriptorSourceFile sourceDesc = sourceFileMap.get(parentClassName);        
-        if (!inner) return sourceDesc;
-        return sourceDesc.getInnerClassDescriptor(className,true);
+        return sourceRegistry.getClassDescriptor(className);
     }
             
     public synchronized <T> Class<?> findClass(String className)
     {     
-        // Si ya está cargada la devuelve, y si no se cargó por ningún JReloaderClassLoader se intenta cargar por el parent ClassLoader, por lo que siempre devolverá distinto de null si la clase está en el classpath, que debería ser lo normal       
+        // Si ya está cargada la devuelve, y si no se cargó por ningún JProxyClassLoader se intenta cargar por el parent ClassLoader, por lo que siempre devolverá distinto de null si la clase está en el classpath, que debería ser lo normal       
         try 
         { 
             return customClassLoader.findClass(className); 
@@ -116,14 +97,14 @@ public abstract class JReloaderEngine
         }
     }
     
-    private synchronized void addNewClassLoader()
+    private void addNewClassLoader()
     {
-        for(ClassDescriptorSourceFile sourceFile : sourceFileMap.values())
+        for(ClassDescriptorSourceFile sourceFile : sourceRegistry.getClassDescriptorSourceFileColl())
         {
             sourceFile.resetLastLoadedClass(); // resetea también las innerclasses
         }
         
-        this.customClassLoader = new JReloaderClassLoader(this);               
+        this.customClassLoader = new JProxyClassLoader(this);               
     }
     
     private void cleanBeforeCompile(ClassDescriptorSourceFile sourceFile)
@@ -136,7 +117,10 @@ public abstract class JReloaderEngine
     
     private void compile(ClassDescriptorSourceFile sourceFile)
     {       
-        compiler.compileSourceFile(sourceFile,customClassLoader,sourceFileMap);      
+        if (sourceFile.getClassBytes() != null)
+            return; // Ya ha sido compilado seguramente por dependencia de un archivo compilado inmediatamente antes, recuerda que el atributo classBytes se pone a null antes de compilar los archivos cambiados/nuevos
+        
+        compiler.compileSourceFile(sourceFile,customClassLoader,sourceRegistry);      
     }        
     
     private void reloadAndSaveSource(ClassDescriptorSourceFile sourceFile)
@@ -161,7 +145,7 @@ public abstract class JReloaderEngine
         else if (detectInnerClasses)
         {
             // Aprovechando la carga de la clase, hacemos el esfuerzo de cargar todas las clases dependientes lo más posible
-            clasz.getDeclaredClasses(); // Provoca que las inner clases miembro indirectamente se procesen y carguen a través del JReloaderClassLoader de la clase padre clasz
+            clasz.getDeclaredClasses(); // Provoca que las inner clases miembro indirectamente se procesen y carguen a través del JProxyClassLoader de la clase padre clasz
             
             // Ahora bien, lo anterior NO sirve para las anonymous inner classes, afortunadamente en ese caso podemos conocer y cargar por fuerza bruta
             // http://stackoverflow.com/questions/1654889/java-reflection-how-can-i-retrieve-anonymous-inner-classes?rq=1
@@ -186,7 +170,7 @@ public abstract class JReloaderEngine
         // Salvamos la clase principal
         {
             String classFilePath = ClassDescriptor.getAbsoluteClassFilePathFromClassNameAndClassPath(sourceFile.getClassName(),classFolder);
-            JReloaderUtil.saveFile(classFilePath,sourceFile.getClassBytes());
+            JProxyUtil.saveFile(classFilePath,sourceFile.getClassBytes());
         }
 
         // Salvamos las innerclasses si hay, no hay problema de clases inner no detectadas pues lo están todas pues sólo se salva tras una compilación
@@ -196,7 +180,7 @@ public abstract class JReloaderEngine
             for(ClassDescriptorInner innerClassDesc : innerClassDescList)
             {
                 String classFilePath = ClassDescriptor.getAbsoluteClassFilePathFromClassNameAndClassPath(innerClassDesc.getClassName(),classFolder);
-                JReloaderUtil.saveFile(classFilePath,innerClassDesc.getClassBytes());                
+                JProxyUtil.saveFile(classFilePath,innerClassDesc.getClassBytes());                
             }
         }                           
     }    
@@ -215,7 +199,7 @@ public abstract class JReloaderEngine
         // que no podríamos detectarlas), pero el que haya .class sobrantes antiguos no es gran problema.
         
         String classFilePath = ClassDescriptor.getAbsoluteClassFilePathFromClassNameAndClassPath(sourceFile.getClassName(),classFolder);        
-        File parentDir = JReloaderUtil.getParentDir(classFilePath);
+        File parentDir = JProxyUtil.getParentDir(classFilePath);
         String[] fileNameList = parentDir.list(); // Es más ligero que listFiles() que crea File por cada resultado
         for (String fileName : fileNameList) 
         {
@@ -230,7 +214,7 @@ public abstract class JReloaderEngine
         }
     }          
     
-    private synchronized ClassDescriptorSourceFileScript detectChangesInSources()
+    public synchronized ClassDescriptorSourceFileScript detectChangesInSources()
     {
         // boolean firstTime = (sourceFileMap == null); // La primera vez sourceFileMap es null
 
@@ -238,12 +222,12 @@ public abstract class JReloaderEngine
         LinkedList<ClassDescriptorSourceFile> newSourceFiles = new LinkedList<ClassDescriptorSourceFile>();        
         LinkedList<ClassDescriptorSourceFile> deletedSourceFiles = new LinkedList<ClassDescriptorSourceFile>();
         
-        Map<String,ClassDescriptorSourceFile> oldSourceFileMap = this.sourceFileMap; // Puede ser null (la primera vez)
-        Map<String,ClassDescriptorSourceFile> newSourceFileMap = new HashMap<String,ClassDescriptorSourceFile>();
+        ClassDescriptorSourceFileRegistry oldSourceRegistry = this.sourceRegistry; // Puede ser null (la primera vez)
+        ClassDescriptorSourceFileRegistry newSourceRegistry = new ClassDescriptorSourceFileRegistry();
         
-        ClassDescriptorSourceFileScript scriptFileDesc = sourcesSearch.sourceFileSearch(scriptFile,oldSourceFileMap,newSourceFileMap,updatedSourceFiles,newSourceFiles,deletedSourceFiles);
+        ClassDescriptorSourceFileScript scriptFileDesc = sourcesSearch.sourceFileSearch(scriptFile,oldSourceRegistry,newSourceRegistry,updatedSourceFiles,newSourceFiles,deletedSourceFiles);
         
-        this.sourceFileMap = newSourceFileMap;
+        this.sourceRegistry = newSourceRegistry;
 
         if (!updatedSourceFiles.isEmpty() || !newSourceFiles.isEmpty() || !deletedSourceFiles.isEmpty()) // También el hecho de eliminar una clase debe implicar crear un ClassLoader nuevo para que dicha clase desaparezca de las clases cargadas aunque será muy raro que sólo eliminemos un .java y no añadamos/cambiemos otros, otro motico es porque si tenemos configurado el autosalvado de .class tenemos que eliminar en ese caso
         {   
@@ -275,10 +259,8 @@ public abstract class JReloaderEngine
                     deleteClasses(sourceFile);                     
             
             
-            for(Map.Entry<String,ClassDescriptorSourceFile> entry : sourceFileMap.entrySet())
+            for(ClassDescriptorSourceFile sourceFile : sourceRegistry.getClassDescriptorSourceFileColl())
             {
-                //String className = entry.getKey();
-                ClassDescriptorSourceFile sourceFile = entry.getValue();
                 if (sourceFilesToRecompile.contains(sourceFile))
                     continue;
                 // las clases deleted no están en sourceFileMap por lo que no hay que filtrarlas

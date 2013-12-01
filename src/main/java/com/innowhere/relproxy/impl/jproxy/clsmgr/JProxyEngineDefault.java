@@ -7,9 +7,9 @@ import javax.tools.JavaFileObject;
  *
  * @author jmarranz
  */
-public class JReloaderEngineDefault extends JReloaderEngine
+public class JProxyEngineDefault extends JProxyEngine
 {
-    public JReloaderEngineDefault(ClassLoader parentClassLoader,String pathSources,String classFolder,long scanPeriod,Iterable<String> compilationOptions,DiagnosticCollector<JavaFileObject> diagnostics)
+    public JProxyEngineDefault(ClassLoader parentClassLoader,String pathSources,String classFolder,long scanPeriod,Iterable<String> compilationOptions,DiagnosticCollector<JavaFileObject> diagnostics)
     {
         super(null,parentClassLoader, pathSources, classFolder, scanPeriod, compilationOptions, diagnostics);
     }    

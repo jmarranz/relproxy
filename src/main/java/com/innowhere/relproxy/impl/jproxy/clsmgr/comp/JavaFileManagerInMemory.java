@@ -1,15 +1,14 @@
 package com.innowhere.relproxy.impl.jproxy.clsmgr.comp;
 
 import com.innowhere.relproxy.impl.jproxy.clsmgr.ClassDescriptorSourceFile;
+import com.innowhere.relproxy.impl.jproxy.clsmgr.ClassDescriptorSourceFileRegistry;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import javax.tools.FileObject;
 import javax.tools.ForwardingJavaFileManager;
-import javax.tools.JavaFileManager;
 import javax.tools.JavaFileObject;
 import javax.tools.JavaFileObject.Kind;
 import javax.tools.StandardJavaFileManager;
@@ -22,22 +21,17 @@ import javax.tools.StandardLocation;
  * 
  * @author jmarranz
  */
-
 public class JavaFileManagerInMemory extends ForwardingJavaFileManager 
 {
-    /**
-    * Instance of JavaClassObject that will store the
-    * compiled bytecode of our class
-    */
     private final LinkedList<JavaFileObjectOutputClass> outputClassList = new LinkedList<JavaFileObjectOutputClass>();
-    private final ClassLoaderBasedJavaFileObjectFinder classFinder;    
-    protected Map<String,ClassDescriptorSourceFile> sourceFileMap;
+    private final JavaFileObjectInputClassFinderByClassLoader classFinder;    
+    private final ClassDescriptorSourceFileRegistry sourceRegistry;
     
-    public JavaFileManagerInMemory(StandardJavaFileManager standardFileManager,ClassLoader classLoader,Map<String,ClassDescriptorSourceFile> sourceFileMap) 
+    public JavaFileManagerInMemory(StandardJavaFileManager standardFileManager,ClassLoader classLoader,ClassDescriptorSourceFileRegistry sourceRegistry) 
     {
         super(standardFileManager);
-        this.sourceFileMap = sourceFileMap;
-        this.classFinder = new ClassLoaderBasedJavaFileObjectFinder(classLoader);        
+        this.sourceRegistry = sourceRegistry;
+        this.classFinder = new JavaFileObjectInputClassFinderByClassLoader(classLoader);        
     }
 
     public LinkedList<JavaFileObjectOutputClass> getJavaFileObjectOutputClassList()
@@ -58,17 +52,20 @@ public class JavaFileManagerInMemory extends ForwardingJavaFileManager
     public Iterable list(Location location, String packageName, Set kinds, boolean recurse) throws IOException 
     {
         if (location == StandardLocation.PLATFORM_CLASS_PATH) // let standard manager hanfle         
-            return super.list(location, packageName, kinds, recurse);  // Aquí nunca (con PLATFORM_CLASS_PATH) va a encontrar nuestros sources         
+            return super.list(location, packageName, kinds, recurse);  // En este caso nunca (con PLATFORM_CLASS_PATH) va a encontrar nuestros sources ni .class
         else if (location == StandardLocation.CLASS_PATH && kinds.contains(JavaFileObject.Kind.CLASS)) 
         {
-            if (packageName.startsWith("java."))  // a hack to let standard manager handle locations like "java.lang" or "java.util". Estrictamente no es un necesario.
+            if (packageName.startsWith("java.") || packageName.startsWith("javax."))  // a hack to let standard manager handle locations like "java.lang" or "java.util". Estrictamente no es necesario pero derivamos la inmensa mayoría de las clases estándar al método por defecto
                 return super.list(location, packageName, kinds, recurse);
             else
-            {   // app specific classes are here
+            {
                 
-                // No necesitamos llamar a: super.list(location, packageName, kinds, recurse);  por ejemplo para obtener los archivos de código fuente
-                // si hubiéramos pasado en el classpath del compilador el path raiz donde están los .java, pues tenemos el bytecode de la compilación última o de la inicial
-                // en archivo (los .class) que obtenemos a través del ClassLoader.
+                // No necesitamos llamar a super.list(location, packageName, kinds, recurse); para obtener los .class pues los obtendría de archivo y a través del ClassLoader por defecto
+                // y nos interesa obtenerlos de archivo siempre que no haya una compilación más reciente guardada sólo en memoria, el problema es que a través de los JavaFileObject devueltos
+                // no podemos conocer el archivo original etc, por eso lo hacemos "a mano" y obtenemos los .class con más control nosotros mismos a través del ClassLoader.
+                // Por otra parte los archivos fuente tampoco se van a encontrar via super.list porque no se como pasarle el directorio de los archivos fuente,
+                // podemos pasar en el classpath del compilador el path raiz donde están los .java pero no se hacerlo para obtener un StandardJavaFileManager
+
                 
                 List<JavaFileObject> result = new LinkedList<JavaFileObject>();
                 
@@ -77,8 +74,8 @@ public class JavaFileManagerInMemory extends ForwardingJavaFileManager
                 // Reemplazamos los .class de classList que son los que están en archivo "deployados" que pueden ser más antiguos que los que están en memoria
                 for(JavaFileObjectInputClassInFileSystem fileObj : classList)
                 {
-                    String className = fileObj.binaryName();
-                    ClassDescriptorSourceFile sourceFileDesc = sourceFileMap.get(className);
+                    String className = fileObj.getBinaryName();
+                    ClassDescriptorSourceFile sourceFileDesc = sourceRegistry.getClassDescriptorSourceFile(className);
                     if (sourceFileDesc != null && sourceFileDesc.getClassBytes() != null)
                     {
                         JavaFileObjectInputClassInMemory fileInput = new JavaFileObjectInputClassInMemory(className);
@@ -92,6 +89,12 @@ public class JavaFileManagerInMemory extends ForwardingJavaFileManager
                     }
                 }
                 
+
+/*                
+ClassDescriptorSourceFile pruebaDesc = sourceFileMap.get("example.javashellex.JProxyShellExample");
+JavaFileObjectInputSourceInFile prueba = new JavaFileObjectInputSourceInFile(pruebaDesc.getClassName(),pruebaDesc.getSourceFile(),pruebaDesc.getEncoding());
+result.add(prueba);
+*/                
                 return result;
             }
         }
@@ -101,10 +104,8 @@ public class JavaFileManagerInMemory extends ForwardingJavaFileManager
     @Override
     public String inferBinaryName(Location location, JavaFileObject file) 
     {
-        if (file instanceof JavaFileObjectInputClassInFileSystem)
-            return ((JavaFileObjectInputClassInFileSystem)file).binaryName();
-        else if (file instanceof JavaFileObjectInputClassInMemory)
-            return ((JavaFileObjectInputClassInMemory)file).binaryName();
+        if (file instanceof JProxyJavaFileObjectInput)
+            return ((JProxyJavaFileObjectInput)file).getBinaryName();
 
         return super.inferBinaryName(location, file);
     }
