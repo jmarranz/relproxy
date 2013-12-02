@@ -7,12 +7,12 @@ import com.innowhere.relproxy.impl.jproxy.clsmgr.ClassDescriptorSourceFileJava;
 import com.innowhere.relproxy.impl.jproxy.clsmgr.ClassDescriptorSourceFileRegistry;
 import com.innowhere.relproxy.impl.jproxy.clsmgr.ClassDescriptorSourceFileScript;
 import com.innowhere.relproxy.impl.jproxy.clsmgr.JProxyClassLoader;
+import com.innowhere.relproxy.impl.jproxy.clsmgr.JProxyEngine;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import javax.tools.Diagnostic;
 import javax.tools.DiagnosticCollector;
 import javax.tools.JavaCompiler;
@@ -27,13 +27,15 @@ import javax.tools.ToolProvider;
  */
 public class JProxyCompilerInMemory
 {
+    protected JProxyEngine engine;
     protected JavaCompiler compiler;
     protected Iterable<String> compilationOptions; // puede ser null
     protected DiagnosticCollector<JavaFileObject> diagnostics; // puede ser null
     protected boolean outDefaultDiagnostics = false;
             
-    public JProxyCompilerInMemory(Iterable<String> compilationOptions,DiagnosticCollector<JavaFileObject> diagnostics)
+    public JProxyCompilerInMemory(JProxyEngine engine,Iterable<String> compilationOptions,DiagnosticCollector<JavaFileObject> diagnostics)
     {
+        this.engine = engine;
         this.compilationOptions = compilationOptions;
         this.diagnostics = diagnostics;
         this.compiler = ToolProvider.getSystemJavaCompiler();
@@ -55,29 +57,39 @@ public class JProxyCompilerInMemory
         
         String className = sourceFileDesc.getClassName();        
         
-        // Puede haber más de un resultado cuando hay inner classes y/o clase privada en el mismo archivo
+        // Puede haber más de un resultado cuando hay inner classes y/o clase privada en el mismo archivo o bien simplemente clases dependientes
         for(JavaFileObjectOutputClass outClass : outClassList)
         {
             String currClassName = outClass.binaryName();
-            byte[] classBytes = outClass.getBytes();      
-            ClassDescriptorInner innerClass = sourceFileDesc.getInnerClassDescriptor(currClassName,true);
-            if (innerClass != null)
-            {               
-                innerClass.setClassBytes(classBytes);                       
+            byte[] classBytes = outClass.getBytes();            
+            if (className.equals(currClassName))            
+            {
+                sourceFileDesc.setClassBytes(classBytes); 
             }
             else
             {
-                if (!className.equals(currClassName))
-                {
-                    // Seguramente es debido a que el archivo java tiene una clase privada autónoma declarada en el mismo archivo .java, no permitimos estas clases porque sólo podemos
-                    // detectarlas cuando cambiamos el código fuente, pero no si el código fuente no se ha tocado, por ejemplo no tenemos
-                    // forma de conseguir que se recarguen de forma determinista y si posteriormente se cargara via ClassLoader al usarse no podemos reconocer que es una clase
-                    // "hot reloadable" (quizás a través del package respecto a las demás clases hot pero no es muy determinista pues nada impide la mezcla de hot y no hot en el mismo package)
-                    // Es una limitación mínima.
-                    throw new ProxyException("Unexpected class when compiling: " + currClassName + " maybe it is an autonomous private class declared in the same java file of the principal class, this kind of classes are not supported in hot reload");
+                ClassDescriptorInner innerClass = sourceFileDesc.getInnerClassDescriptor(currClassName,true);
+                if (innerClass != null)
+                {            
+                    innerClass.setClassBytes(classBytes);                       
                 }
-                
-                sourceFileDesc.setClassBytes(classBytes);                              
+                else
+                {
+                    ClassDescriptorSourceFile dependentClass = sourceRegistry.getClassDescriptorSourceFile(currClassName);
+                    if (dependentClass != null)
+                    {
+                        dependentClass.setClassBytes(classBytes); 
+                    }
+                    else
+                    {
+                        // Seguramente es debido a que el archivo java tiene una clase privada autónoma declarada en el mismo archivo .java, no permitimos estas clases porque sólo podemos
+                        // detectarlas cuando cambiamos el código fuente, pero no si el código fuente no se ha tocado, por ejemplo no tenemos
+                        // forma de conseguir que se recarguen de forma determinista y si posteriormente se cargara via ClassLoader al usarse no podemos reconocer que es una clase
+                        // "hot reloadable" (quizás a través del package respecto a las demás clases hot pero no es muy determinista pues nada impide la mezcla de hot y no hot en el mismo package)
+                        // Es una limitación mínima.
+                        throw new ProxyException("Unexpected class when compiling: " + currClassName + " maybe it is an autonomous private class declared in the same java file of the principal class, this kind of classes are not supported in hot reload");
+                    }                              
+                }
             }
         }
     }        
@@ -115,7 +127,7 @@ public class JProxyCompilerInMemory
                 ClassDescriptorSourceFileScript sourceFileDescScript = (ClassDescriptorSourceFileScript)sourceFileDesc;
                 LinkedList<JavaFileObject> compilationUnitsList = new LinkedList<JavaFileObject>();            
                 String code = sourceFileDescScript.getSourceCode();
-                compilationUnitsList.add(new JavaFileObjectInputSourceInMemory(sourceFileDescScript.getClassName(),code,sourceFileDescScript.getEncoding()));            
+                compilationUnitsList.add(new JavaFileObjectInputSourceInMemory(sourceFileDescScript.getClassName(),code,sourceFileDescScript.getEncoding(),sourceFileDescScript.getTimestamp()));            
                 compilationUnits = compilationUnitsList;                
             }
             else
@@ -141,11 +153,15 @@ public class JProxyCompilerInMemory
     {
         /*
         String systemClassPath = System.getProperty("java.class.path");
-        String[] compileOptions = new String[]
-            {"-classpath",engine.getPathSources()}; // No hacen falta los demás (sistema, Tomcat, /classes /lib etc) porque se obtienen via ClassLoader
         */
 
-        JavaCompiler.CompilationTask task = compiler.getTask(null, fileManager, diagnostics, compilationOptions,null, compilationUnits);
+        LinkedList<String> finalCompilationOptions = new LinkedList<String>();
+        if (compilationOptions != null)        
+            for(String option : compilationOptions) finalCompilationOptions.add(option);
+        finalCompilationOptions.add("-classpath");
+        finalCompilationOptions.add(engine.getPathSources());        
+        
+        JavaCompiler.CompilationTask task = compiler.getTask(null, fileManager, diagnostics, finalCompilationOptions,null, compilationUnits);
         boolean success = task.call();
 
         if (outDefaultDiagnostics)

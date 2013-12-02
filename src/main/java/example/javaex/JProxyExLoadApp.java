@@ -25,6 +25,7 @@ public class JProxyExLoadApp
         String classFolder = null; // context.getRealPath("/") + "/WEB-INF/classes";
         Iterable<String> compilationOptions = Arrays.asList(new String[]{"-source","1.6","-target","1.6"});
         DiagnosticCollector<JavaFileObject> diagnostics = null;
+        long scanPeriod = 200;
         
         ProxyListener proxyListener = new ProxyListener() {
             public void onReload(Object objOld, Object objNew, Object proxy, Method method, Object[] args) {
@@ -32,7 +33,7 @@ public class JProxyExLoadApp
             }        
         };
         
-        JProxy.init(true, proxyListener, pathInput,classFolder, 200,compilationOptions,diagnostics);
+        JProxy.init(true, proxyListener, pathInput,classFolder, scanPeriod,compilationOptions,diagnostics);
 
         
         FalseDB db = new FalseDB();

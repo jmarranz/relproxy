@@ -27,4 +27,10 @@ public class JavaFileObjectInputSourceInFile extends JavaFileObjectInputSourceBa
         this.source = JProxyUtil.readTextFile(file, encoding);
         return source;
     }     
+    
+    @Override
+    public long getLastModified() 
+    {
+        return file.lastModified();
+    }    
 }

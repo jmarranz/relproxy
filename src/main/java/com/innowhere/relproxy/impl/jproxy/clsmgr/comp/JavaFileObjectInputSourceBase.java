@@ -54,7 +54,7 @@ public abstract class JavaFileObjectInputSourceBase extends SimpleJavaFileObject
     @Override
     public OutputStream openOutputStream() throws IOException 
     {
-        return null; // bos;
+        throw new UnsupportedOperationException();
     }
     
     public String getBinaryName()

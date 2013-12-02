@@ -11,18 +11,16 @@ import java.util.LinkedList;
 public class JavaSourcesSearch 
 {
     protected JProxyEngine engine;
-    protected String pathSources;
     
-    public JavaSourcesSearch(JProxyEngine engine,String pathSources)
+    public JavaSourcesSearch(JProxyEngine engine)
     {
         this.engine = engine;
-        this.pathSources = new File(pathSources).getAbsolutePath(); // Para normalizar
     }
 
     public ClassDescriptorSourceFileScript sourceFileSearch(File scriptFile,ClassDescriptorSourceFileRegistry oldSourceFileMap,ClassDescriptorSourceFileRegistry newSourceFileMap,LinkedList<ClassDescriptorSourceFile> updatedSourceFiles,LinkedList<ClassDescriptorSourceFile> newSourceFiles,LinkedList<ClassDescriptorSourceFile> deletedSourceFiles)
     {
         ClassDescriptorSourceFileScript scriptFileDesc = (scriptFile == null) ? null : processSourceFileScript(scriptFile,oldSourceFileMap,newSourceFileMap,updatedSourceFiles,newSourceFiles,deletedSourceFiles);
-        
+        String pathSources = engine.getPathSources();
         String[] children = new File(pathSources).list(); 
         recursiveSourceFileJavaSearch(pathSources,children,oldSourceFileMap,newSourceFileMap,updatedSourceFiles,newSourceFiles,deletedSourceFiles);
         if (oldSourceFileMap != null && !oldSourceFileMap.isEmpty())        
@@ -58,14 +56,14 @@ public class JavaSourcesSearch
     private ClassDescriptorSourceFileScript processSourceFileScript(File file,ClassDescriptorSourceFileRegistry oldSourceFileMap,ClassDescriptorSourceFileRegistry newSourceFileMap,LinkedList<ClassDescriptorSourceFile> updatedSourceFiles,LinkedList<ClassDescriptorSourceFile> newSourceFiles,LinkedList<ClassDescriptorSourceFile> deletedSourceFiles)
     {    
         String path = file.getAbsolutePath();                
-        String className = ClassDescriptorSourceFileScript.getClassNameFromSourceFileScriptAbsPath(path, pathSources);                
+        String className = ClassDescriptorSourceFileScript.getClassNameFromSourceFileScriptAbsPath(path,engine.getPathSources());                
         return (ClassDescriptorSourceFileScript)processSourceFile(file,className,true,oldSourceFileMap,newSourceFileMap,updatedSourceFiles,newSourceFiles,deletedSourceFiles);        
     }    
     
     private ClassDescriptorSourceFileJava processSourceFileJava(File file,ClassDescriptorSourceFileRegistry oldSourceFileMap,ClassDescriptorSourceFileRegistry newSourceFileMap,LinkedList<ClassDescriptorSourceFile> updatedSourceFiles,LinkedList<ClassDescriptorSourceFile> newSourceFiles,LinkedList<ClassDescriptorSourceFile> deletedSourceFiles)
     {    
         String path = file.getAbsolutePath();                
-        String className = ClassDescriptorSourceFileJava.getClassNameFromSourceFileJavaAbsPath(path, pathSources);                
+        String className = ClassDescriptorSourceFileJava.getClassNameFromSourceFileJavaAbsPath(path, engine.getPathSources());                
         return (ClassDescriptorSourceFileJava)processSourceFile(file,className,false,oldSourceFileMap,newSourceFileMap,updatedSourceFiles,newSourceFiles,deletedSourceFiles);        
     }
     

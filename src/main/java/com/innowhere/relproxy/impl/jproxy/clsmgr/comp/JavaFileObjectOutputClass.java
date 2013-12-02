@@ -36,33 +36,23 @@ public class JavaFileObjectOutputClass extends SimpleJavaFileObject {
     {
         super(URI.create("string:///" + name.replace('.', '/') + kind.extension), kind);
         
-        if (Kind.SOURCE.equals(kind)) throw new ProxyException("Unexpected");
+        if (!Kind.CLASS.equals(kind)) throw new ProxyException("Unexpected");
         this.binaryName = name;
     }
-
 
     public String binaryName()
     {
         return binaryName;
     }
     
-    /**
-    * Will be used by our file manager to get the byte code that
-    * can be put into memory to instantiate our class
-    *
-    * @return compiled byte code
-    */
-    public byte[] getBytes() {
+    public byte[] getBytes() 
+    {
         return bos.toByteArray();
     }
 
-    /**
-    * Will provide the compiler with an output stream that leads
-    * to our byte array. This way the compiler will write everything
-    * into the byte array that we will instantiate later
-    */
     @Override
-    public OutputStream openOutputStream() throws IOException {
+    public OutputStream openOutputStream() throws IOException 
+    {
         return bos;
     }
 

@@ -10,23 +10,29 @@ import java.net.URI;
  */
 public class JavaFileObjectInputClassInJar extends JavaFileObjectInputClassInFileSystem  
 {
-    public JavaFileObjectInputClassInJar(String binaryName, URI uri) 
+    protected long timestamp;
+    
+    public JavaFileObjectInputClassInJar(String binaryName, URI uri,long timestamp) 
     {
         super(binaryName,uri,uri.getSchemeSpecificPart());        
+        this.timestamp = timestamp;
     }
 
     @Override
-    public InputStream openInputStream() throws IOException {
+    public InputStream openInputStream() throws IOException 
+    {
         return uri.toURL().openStream(); // easy way to handle any URI!
     }
 
     @Override
-    public long getLastModified() {
-        return 0;
+    public long getLastModified() 
+    {
+        return timestamp;
     }
 
     @Override
-    public String toString() {
+    public String toString() 
+    {
         return "JavaFileObjectInputClassInJar{uri=" + uri + '}';
     }
 }

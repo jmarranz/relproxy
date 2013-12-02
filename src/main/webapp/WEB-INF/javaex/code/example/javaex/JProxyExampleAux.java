@@ -8,7 +8,7 @@ public class JProxyExampleAux
 {
     public static void log()
     {
-        System.out.println("JProxyExampleAux: 49 " + JProxyExampleAux.class.getClassLoader().hashCode());
+        System.out.println("JProxyExampleAux: 1 " + JProxyExampleAux.class.getClassLoader().hashCode());
     }
 }
 

@@ -15,33 +15,29 @@ import javax.tools.SimpleJavaFileObject;
  */
 public class JavaFileObjectInputClassInMemory extends SimpleJavaFileObject implements JProxyJavaFileObjectInput
 {
-    protected final ByteArrayOutputStream bos = new ByteArrayOutputStream();
     protected String binaryName;
+    protected byte[] byteCode;
+    protected long timestamp;
     
-    /**
-    * Registers the compiled class object under URI
-    * containing the class full name
-    *
-    * @param name
-    *            Full name of the compiled class
-    */
-    public JavaFileObjectInputClassInMemory(String name) 
+    public JavaFileObjectInputClassInMemory(String name,byte[] byteCode,long timestamp) 
     {
         super(URI.create("string:///" + name.replace('.', '/') + Kind.CLASS.extension), Kind.CLASS);
         
         this.binaryName = name;
+        this.byteCode = byteCode;
+        this.timestamp = timestamp;
     }
 
-    /**
-    * Will be used by our file manager to get the byte code that
-    * can be put into memory to instantiate our class
-    *
-    * @return compiled byte code
-    */
     public byte[] getBytes() 
     {
-        return bos.toByteArray();
+        return byteCode;
     }
+    
+    @Override    
+    public long getLastModified() 
+    {
+        return timestamp;
+    }    
     
     @Override
     public InputStream openInputStream() throws IOException 
@@ -52,7 +48,7 @@ public class JavaFileObjectInputClassInMemory extends SimpleJavaFileObject imple
     @Override
     public OutputStream openOutputStream() throws IOException 
     {
-        return bos;
+        throw new UnsupportedOperationException();
     }
     
     @Override    

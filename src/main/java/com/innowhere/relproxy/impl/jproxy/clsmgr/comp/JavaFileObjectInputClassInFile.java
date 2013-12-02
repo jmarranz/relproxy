@@ -25,7 +25,7 @@ public class JavaFileObjectInputClassInFile extends JavaFileObjectInputClassInFi
     public InputStream openInputStream() throws IOException 
     {
         // Podríamos hacer uri.toURL().openStream() pero si tenemos el File es para algo
-        return new BufferedInputStream(new FileInputStream(file),10 * 1024); // easy way to handle any URI!
+        return new BufferedInputStream(new FileInputStream(file),10 * 1024); 
     }
     
     @Override

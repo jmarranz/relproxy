@@ -14,9 +14,10 @@ import javax.tools.JavaFileObject;
  */
 public abstract class JProxyEngine 
 {
+    protected JProxyCompilerInMemory compiler;    
     protected File scriptFile;
-    protected JProxyCompilerInMemory compiler;
     protected ClassLoader rootClassLoader;
+    protected String pathSources;
     protected JProxyClassLoader customClassLoader;
     protected JavaSourcesSearch sourcesSearch;
     protected String classFolder; // Puede ser nulo (es decir NO salvar como .class los cambios)
@@ -25,15 +26,16 @@ public abstract class JProxyEngine
     
     protected String sourceEncoding = "UTF-8"; // Por ahora, provisional
     
-    public JProxyEngine(File scriptFile,ClassLoader parentClassLoader,String pathSources,String classFolder,long scanPeriod,Iterable<String> compilationOptions,DiagnosticCollector<JavaFileObject> diagnostics)
+    public JProxyEngine(File scriptFile,ClassLoader rootClassLoader,String pathSources,String classFolder,long scanPeriod,Iterable<String> compilationOptions,DiagnosticCollector<JavaFileObject> diagnostics)
     {
         this.scriptFile = scriptFile;
-        this.rootClassLoader = parentClassLoader;
+        this.rootClassLoader = rootClassLoader;
+        this.pathSources = new File(pathSources).getAbsolutePath(); // Para normalizar;
         this.classFolder = classFolder;
         this.scanPeriod = scanPeriod;
-        this.compiler = new JProxyCompilerInMemory(compilationOptions,diagnostics);        
+        this.compiler = new JProxyCompilerInMemory(this,compilationOptions,diagnostics);        
         this.customClassLoader = new JProxyClassLoader(this);
-        this.sourcesSearch = new JavaSourcesSearch(this,pathSources);       
+        this.sourcesSearch = new JavaSourcesSearch(this);       
     }
     
     public ClassDescriptorSourceFileScript init()
@@ -62,6 +64,11 @@ public abstract class JProxyEngine
         }        
         
         return scriptFileDesc;
+    }
+    
+    public String getPathSources()
+    {
+        return pathSources;
     }
     
     public ClassLoader getRootClassLoader()

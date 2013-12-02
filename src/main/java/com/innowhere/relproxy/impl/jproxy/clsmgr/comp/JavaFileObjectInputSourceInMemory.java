@@ -8,11 +8,13 @@ package com.innowhere.relproxy.impl.jproxy.clsmgr.comp;
 public class JavaFileObjectInputSourceInMemory extends JavaFileObjectInputSourceBase 
 {
     protected String source;
+    protected long timestamp;
     
-    public JavaFileObjectInputSourceInMemory(String name,String source,String encoding) 
+    public JavaFileObjectInputSourceInMemory(String name,String source,String encoding,long timestamp) 
     {
         super(name,encoding);
         this.source = source;
+        this.timestamp = timestamp;
     }
 
     @Override
@@ -20,4 +22,10 @@ public class JavaFileObjectInputSourceInMemory extends JavaFileObjectInputSource
     {
         return source;
     }         
+    
+    @Override    
+    public long getLastModified() 
+    {
+        return timestamp;
+    }        
 }

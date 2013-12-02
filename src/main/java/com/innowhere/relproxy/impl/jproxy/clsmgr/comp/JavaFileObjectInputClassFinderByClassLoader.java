@@ -76,8 +76,7 @@ public class JavaFileObjectInputClassFinderByClassLoader
                 {
                     URI uri = URI.create(jarUri + "!/" + name);
                     String binaryName = ClassDescriptor.getClassNameFromRelativeClassFilePath(name);
-
-                    result.add(new JavaFileObjectInputClassInJar(binaryName, uri));
+                    result.add(new JavaFileObjectInputClassInJar(binaryName, uri,jarEntry.getTime()));
                 }
             }
         }

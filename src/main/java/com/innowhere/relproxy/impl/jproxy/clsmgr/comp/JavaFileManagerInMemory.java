@@ -3,7 +3,9 @@ package com.innowhere.relproxy.impl.jproxy.clsmgr.comp;
 import com.innowhere.relproxy.impl.jproxy.clsmgr.ClassDescriptorSourceFile;
 import com.innowhere.relproxy.impl.jproxy.clsmgr.ClassDescriptorSourceFileRegistry;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -59,15 +61,28 @@ public class JavaFileManagerInMemory extends ForwardingJavaFileManager
                 return super.list(location, packageName, kinds, recurse);
             else
             {
+                // El StandardJavaFileManager al que hacemos forward es "configurado" por el compilador al que está asociado cuando hay una tarea de compilación
+                // dicha configuración es por ejemplo el classpath tanto para encontrar .class como .java
+                // En nuestro caso no disponemos del classpath de los .class, disponemos del ClassLoader a través del cual podemos obtener "a mano" via resources los 
+                // JavaFileObject de los .class que necesitamos.
+                // Ahora bien, no es el caso de los archivos fuente en donde sí tenemos un path claro el cual pasamos como classpath al compilador y por tanto un super.list(location, packageName, kinds, recurse)
+                // nos devolverá los .java (como JavaFileObject claro) si encuentra archivos correspondientes al package buscado.
+                               
+                LinkedList<JavaFileObject> result = new LinkedList<JavaFileObject>();                
                 
-                // No necesitamos llamar a super.list(location, packageName, kinds, recurse); para obtener los .class pues los obtendría de archivo y a través del ClassLoader por defecto
-                // y nos interesa obtenerlos de archivo siempre que no haya una compilación más reciente guardada sólo en memoria, el problema es que a través de los JavaFileObject devueltos
-                // no podemos conocer el archivo original etc, por eso lo hacemos "a mano" y obtenemos los .class con más control nosotros mismos a través del ClassLoader.
-                // Por otra parte los archivos fuente tampoco se van a encontrar via super.list porque no se como pasarle el directorio de los archivos fuente,
-                // podemos pasar en el classpath del compilador el path raiz donde están los .java pero no se hacerlo para obtener un StandardJavaFileManager
-
-                
-                List<JavaFileObject> result = new LinkedList<JavaFileObject>();
+                Iterable inFileMgr = super.list(location, packageName, kinds, recurse); // Esperamos o archivos fuente o .class de clases no recargables
+                if (inFileMgr instanceof Collection)
+                {
+                    result.addAll((Collection)inFileMgr);
+                }
+                else
+                {
+                    for(Iterator it = inFileMgr.iterator(); it.hasNext(); )
+                    {
+                        JavaFileObject file = (JavaFileObject)it.next();
+                        result.add(file);
+                    }
+                }
                 
                 List<JavaFileObjectInputClassInFileSystem> classList = classFinder.find(packageName);
                 
@@ -78,9 +93,7 @@ public class JavaFileManagerInMemory extends ForwardingJavaFileManager
                     ClassDescriptorSourceFile sourceFileDesc = sourceRegistry.getClassDescriptorSourceFile(className);
                     if (sourceFileDesc != null && sourceFileDesc.getClassBytes() != null)
                     {
-                        JavaFileObjectInputClassInMemory fileInput = new JavaFileObjectInputClassInMemory(className);
-                        fileInput.openOutputStream().write(sourceFileDesc.getClassBytes());
-                        fileInput.openOutputStream().close();
+                        JavaFileObjectInputClassInMemory fileInput = new JavaFileObjectInputClassInMemory(className,sourceFileDesc.getClassBytes(),sourceFileDesc.getTimestamp());
                         result.add(fileInput);
                     }
                     else
@@ -89,12 +102,8 @@ public class JavaFileManagerInMemory extends ForwardingJavaFileManager
                     }
                 }
                 
+                // Los JavaFileObject de archivos fuente pueden ser los mimas clases que los de .class, el compilador se encargará de comparar los timestamp y elegir el .class o el source
 
-/*                
-ClassDescriptorSourceFile pruebaDesc = sourceFileMap.get("example.javashellex.JProxyShellExample");
-JavaFileObjectInputSourceInFile prueba = new JavaFileObjectInputSourceInFile(pruebaDesc.getClassName(),pruebaDesc.getSourceFile(),pruebaDesc.getEncoding());
-result.add(prueba);
-*/                
                 return result;
             }
         }
