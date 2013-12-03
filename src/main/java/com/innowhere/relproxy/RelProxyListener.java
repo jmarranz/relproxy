@@ -6,7 +6,7 @@ import java.lang.reflect.Method;
  *
  * @author jmarranz
  */
-public interface ProxyListener
+public interface RelProxyListener
 {
     public void onReload(Object objOld,Object objNew,Object proxy, Method method, Object[] args);
 }

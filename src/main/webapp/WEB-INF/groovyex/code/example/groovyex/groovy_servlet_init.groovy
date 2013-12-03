@@ -5,7 +5,7 @@ import org.itsnat.core.http.ItsNatHttpServlet;
 import org.itsnat.core.tmpl.ItsNatDocumentTemplate;
 import org.itsnat.core.event.ItsNatServletRequestListener;
 import java.lang.reflect.Method;
-import com.innowhere.relproxy.ProxyListener;
+import com.innowhere.relproxy.RelProxyListener;
 import com.innowhere.relproxy.gproxy.GProxy;
 import com.innowhere.relproxy.gproxy.GProxyGroovyScriptEngine;
 
@@ -24,7 +24,7 @@ GProxyGroovyScriptEngine groovyEngine =
 GProxy.init(true,{ 
         Object objOld,Object objNew,Object proxy, Method method, Object[] args -> 
            println("Reloaded " + objNew + " Calling method: " + method)
-      } as ProxyListener,
+      } as RelProxyListener,
       groovyEngine
     );
 

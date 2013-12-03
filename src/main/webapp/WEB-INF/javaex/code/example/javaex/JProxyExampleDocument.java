@@ -20,7 +20,7 @@ public class JProxyExampleDocument extends JProxyExampleDocumentBase
     { 
         public static void log()
         {
-            System.out.println(AuxMember.class.getName() + ": 13 " + AuxMember.class.getClassLoader().hashCode());
+            System.out.println(AuxMember.class.getName() + ": 14 " + AuxMember.class.getClassLoader().hashCode());
         }        
     }
            

@@ -12,6 +12,4 @@ public class JProxyShell
     {       
          JProxyShellImpl.main(args);
     }
-    
-
 }

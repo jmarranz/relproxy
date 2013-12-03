@@ -1,6 +1,6 @@
 package example.javaex;
 
-import com.innowhere.relproxy.ProxyListener;
+import com.innowhere.relproxy.RelProxyListener;
 import com.innowhere.relproxy.jproxy.JProxy;
 import java.lang.reflect.Method;
 import java.util.Arrays;
@@ -27,7 +27,7 @@ public class JProxyExLoadApp
         DiagnosticCollector<JavaFileObject> diagnostics = null;
         long scanPeriod = 200;
         
-        ProxyListener proxyListener = new ProxyListener() {
+        RelProxyListener proxyListener = new RelProxyListener() {
             public void onReload(Object objOld, Object objNew, Object proxy, Method method, Object[] args) {
                 System.out.println("Reloaded " + objNew + " Calling method: " + method);
             }        

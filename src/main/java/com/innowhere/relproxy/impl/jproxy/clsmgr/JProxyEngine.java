@@ -17,10 +17,10 @@ public abstract class JProxyEngine
     protected JProxyCompilerInMemory compiler;    
     protected File scriptFile;
     protected ClassLoader rootClassLoader;
-    protected String pathSources;
+    protected File folderSources;
     protected JProxyClassLoader customClassLoader;
     protected JavaSourcesSearch sourcesSearch;
-    protected String classFolder; // Puede ser nulo (es decir NO salvar como .class los cambios)
+    protected String folderClasses; // Puede ser nulo (es decir NO salvar como .class los cambios)
     protected long scanPeriod;
     protected ClassDescriptorSourceFileRegistry sourceRegistry;
     
@@ -30,8 +30,8 @@ public abstract class JProxyEngine
     {
         this.scriptFile = scriptFile;
         this.rootClassLoader = rootClassLoader;
-        this.pathSources = new File(pathSources).getAbsolutePath(); // Para normalizar;
-        this.classFolder = classFolder;
+        this.folderSources = new File(pathSources); // Para normalizar;
+        this.folderClasses = classFolder;
         this.scanPeriod = scanPeriod;
         this.compiler = new JProxyCompilerInMemory(this,compilationOptions,diagnostics);        
         this.customClassLoader = new JProxyClassLoader(this);
@@ -66,9 +66,9 @@ public abstract class JProxyEngine
         return scriptFileDesc;
     }
     
-    public String getPathSources()
+    public File getFolderSources()
     {
-        return pathSources;
+        return folderSources;
     }
     
     public ClassLoader getRootClassLoader()
@@ -83,7 +83,7 @@ public abstract class JProxyEngine
     
     private boolean isSaveClassesMode()
     {
-        return (classFolder != null);
+        return (folderClasses != null);
     }
     
     public synchronized ClassDescriptor getClassDescriptor(String className)
@@ -176,7 +176,7 @@ public abstract class JProxyEngine
     {
         // Salvamos la clase principal
         {
-            String classFilePath = ClassDescriptor.getAbsoluteClassFilePathFromClassNameAndClassPath(sourceFile.getClassName(),classFolder);
+            File classFilePath = ClassDescriptor.getAbsoluteClassFilePathFromClassNameAndClassPath(sourceFile.getClassName(),folderClasses);
             JProxyUtil.saveFile(classFilePath,sourceFile.getClassBytes());
         }
 
@@ -186,7 +186,7 @@ public abstract class JProxyEngine
         {
             for(ClassDescriptorInner innerClassDesc : innerClassDescList)
             {
-                String classFilePath = ClassDescriptor.getAbsoluteClassFilePathFromClassNameAndClassPath(innerClassDesc.getClassName(),classFolder);
+                File classFilePath = ClassDescriptor.getAbsoluteClassFilePathFromClassNameAndClassPath(innerClassDesc.getClassName(),folderClasses);
                 JProxyUtil.saveFile(classFilePath,innerClassDesc.getClassBytes());                
             }
         }                           
@@ -205,18 +205,21 @@ public abstract class JProxyEngine
         // La solución sería en tiempo de carga forzar una carga de todas las clases y de ahí deducir todos los .class que deben existir (excepto las clases locales
         // que no podríamos detectarlas), pero el que haya .class sobrantes antiguos no es gran problema.
         
-        String classFilePath = ClassDescriptor.getAbsoluteClassFilePathFromClassNameAndClassPath(sourceFile.getClassName(),classFolder);        
-        File parentDir = JProxyUtil.getParentDir(classFilePath);
+        File classFilePath = ClassDescriptor.getAbsoluteClassFilePathFromClassNameAndClassPath(sourceFile.getClassName(),folderClasses);        
+        File parentDir = JProxyUtil.getParentDir(classFilePath.getAbsolutePath());
         String[] fileNameList = parentDir.list(); // Es más ligero que listFiles() que crea File por cada resultado
-        for (String fileName : fileNameList) 
+        if (fileNameList != null) // Si es null es que el directorio no está creado
         {
-            int pos = fileName.lastIndexOf(".class");
-            if (pos == -1) continue;
-            String simpleClassName = fileName.substring(0, pos);
-            if (sourceFile.getSimpleClassName().equals(simpleClassName) ||
-                sourceFile.isInnerClass(sourceFile.getPackageName() + simpleClassName))
+            for (String fileName : fileNameList) 
             {
-                new File(parentDir,fileName).delete();
+                int pos = fileName.lastIndexOf(".class");
+                if (pos == -1) continue;
+                String simpleClassName = fileName.substring(0, pos);
+                if (sourceFile.getSimpleClassName().equals(simpleClassName) ||
+                    sourceFile.isInnerClass(sourceFile.getPackageName() + simpleClassName))
+                {
+                    new File(parentDir,fileName).delete();
+                }
             }
         }
     }          

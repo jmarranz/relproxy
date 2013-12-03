@@ -4,19 +4,19 @@ package com.innowhere.relproxy;
  *
  * @author jmarranz
  */
-public class ProxyException extends RuntimeException
+public class RelProxyException extends RuntimeException
 {
-    public ProxyException(String message, Throwable cause) 
+    public RelProxyException(String message, Throwable cause) 
     {
         super(message, cause);
     }
     
-    public ProxyException(String message) 
+    public RelProxyException(String message) 
     {
         super(message);
     }   
     
-    public ProxyException(Throwable cause) 
+    public RelProxyException(Throwable cause) 
     {
         super(cause);
     }    

@@ -1,6 +1,6 @@
 package com.innowhere.relproxy.impl.jproxy;
 
-import com.innowhere.relproxy.ProxyListener;
+import com.innowhere.relproxy.RelProxyListener;
 import com.innowhere.relproxy.impl.jproxy.clsmgr.JProxyEngine;
 import com.innowhere.relproxy.impl.jproxy.clsmgr.JProxyEngineDefault;
 import javax.tools.DiagnosticCollector;
@@ -12,10 +12,11 @@ import javax.tools.JavaFileObject;
  */
 public class JProxyDefaultImpl extends JProxyImpl
 {     
-    public static void initStatic(boolean enabled,ProxyListener relListener,String pathInput,String classFolder,long scanPeriod,Iterable<String> compilationOptions,DiagnosticCollector<JavaFileObject> diagnostics)
+    public static void initStatic(boolean enabled,RelProxyListener relListener,String pathInput,String classFolder,long scanPeriod,Iterable<String> compilationOptions,DiagnosticCollector<JavaFileObject> diagnostics)
     {
         if (!enabled) return;
         
+        checkSingleton(SINGLETON);
         SINGLETON = new JProxyDefaultImpl();
         SINGLETON.init(relListener, pathInput, classFolder, scanPeriod, compilationOptions, diagnostics);
     }    

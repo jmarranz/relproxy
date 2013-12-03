@@ -1,6 +1,6 @@
 package com.innowhere.relproxy.impl.jproxy.clsmgr.comp;
 
-import com.innowhere.relproxy.ProxyException;
+import com.innowhere.relproxy.RelProxyException;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -42,7 +42,7 @@ public abstract class JavaFileObjectInputSourceBase extends SimpleJavaFileObject
         {
             return getSource().getBytes(encoding);
         }
-        catch (UnsupportedEncodingException ex) { throw new ProxyException(ex); }
+        catch (UnsupportedEncodingException ex) { throw new RelProxyException(ex); }
     }    
     
     @Override

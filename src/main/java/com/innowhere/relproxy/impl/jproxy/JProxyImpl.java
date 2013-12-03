@@ -1,6 +1,6 @@
 package com.innowhere.relproxy.impl.jproxy;
 
-import com.innowhere.relproxy.ProxyListener;
+import com.innowhere.relproxy.RelProxyListener;
 import com.innowhere.relproxy.impl.GenericProxyImpl;
 import com.innowhere.relproxy.impl.GenericProxyInvocationHandler;
 import com.innowhere.relproxy.impl.jproxy.clsmgr.ClassDescriptorSourceFileScript;
@@ -17,7 +17,7 @@ public abstract class JProxyImpl extends GenericProxyImpl
     public static JProxyImpl SINGLETON;      
     protected JProxyEngine engine;
     
-    public ClassDescriptorSourceFileScript init(ProxyListener relListener,String pathInput,String classFolder,long scanPeriod,Iterable<String> compilationOptions,DiagnosticCollector<JavaFileObject> diagnostics)
+    public ClassDescriptorSourceFileScript init(RelProxyListener relListener,String pathInput,String classFolder,long scanPeriod,Iterable<String> compilationOptions,DiagnosticCollector<JavaFileObject> diagnostics)
     {
         super.init(relListener);
         

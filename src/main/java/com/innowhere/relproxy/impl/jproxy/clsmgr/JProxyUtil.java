@@ -1,6 +1,6 @@
 package com.innowhere.relproxy.impl.jproxy.clsmgr;
 
-import com.innowhere.relproxy.ProxyException;
+import com.innowhere.relproxy.RelProxyException;
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -31,8 +31,10 @@ public class JProxyUtil
     public static File getParentDir(String absFilePath)
     {
         File file = new File(absFilePath);
-        if (!file.isAbsolute()) return null;
-        absFilePath = file.getAbsolutePath(); // Para normalizar separadores por si acaso, pues tenemos que buscar el último separador
+        if (!file.isAbsolute() && !absFilePath.startsWith("\\") && !absFilePath.startsWith("/"))
+            return null; // Las comprobaciones startsWith son para intentar soportar MSYS (y cygwin) en Windows para paths que empiezan por "/" o por "\" por ejemplo
+
+        absFilePath = file.getAbsolutePath(); // Para normalizar separadores por si acaso, pues tenemos que buscar el último separador, si empieza por "/" (MSYS) lo convierte bien en "C:\..."
         int pos = absFilePath.lastIndexOf(File.separatorChar);
         if (pos == -1)
             return null; // no nos esperamos esto
@@ -47,7 +49,7 @@ public class JProxyUtil
             urlCon = url.openConnection(); 
             return readInputStream(urlCon.getInputStream());           
         } 
-        catch (IOException ex) { throw new ProxyException(ex); }       
+        catch (IOException ex) { throw new RelProxyException(ex); }       
     }
    
     public static byte[] readFile(File file)
@@ -59,7 +61,7 @@ public class JProxyUtil
         }
         catch (FileNotFoundException ex) 
         {
-            throw new ProxyException(ex);
+            throw new RelProxyException(ex);
         }			
 
         return readInputStream(fis);
@@ -85,31 +87,33 @@ public class JProxyUtil
         }   		
         catch (IOException ex) 
         {
-            throw new ProxyException(ex);
+            throw new RelProxyException(ex);
         }	       
         finally
         {
-            try { is.close(); } catch (IOException ex2) { throw new ProxyException(ex2); }			
+            try { is.close(); } catch (IOException ex2) { throw new RelProxyException(ex2); }			
         }
 
         return out.toByteArray();
     }	    
     
-    public static void saveFile(String path,byte[] content)
+    public static void saveFile(File file,byte[] content)
     {	
+        File parent = getParentDir(file.getAbsolutePath());
+        if (parent != null) parent.mkdirs();
         FileOutputStream out = null;		
         try 
         {	
-            out = new FileOutputStream(path);	
+            out = new FileOutputStream(file);	
             out.write(content, 0, content.length);			
         }   		
         catch (IOException ex) 
         {
-            throw new ProxyException(ex);
+            throw new RelProxyException(ex);
         }	       
         finally
         {
-            if (out != null) try { out.close(); } catch (IOException ex2) { throw new ProxyException(ex2); }			
+            if (out != null) try { out.close(); } catch (IOException ex2) { throw new RelProxyException(ex2); }			
         }
     }    
 
@@ -132,11 +136,11 @@ public class JProxyUtil
         }
         catch(IOException ex)
         {
-            throw new ProxyException(ex);
+            throw new RelProxyException(ex);
         }
         finally 
         {
-            if (br != null) try { br.close(); } catch (IOException ex) { throw new ProxyException(ex);  }
+            if (br != null) try { br.close(); } catch (IOException ex) { throw new RelProxyException(ex);  }
         }
     }    
 }

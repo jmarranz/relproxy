@@ -13,9 +13,10 @@ public class ClassDescriptorSourceFileJava extends ClassDescriptorSourceFile
         super(engine,className, sourceFile, timestamp);
     }
     
-    public static String getClassNameFromSourceFileJavaAbsPath(String path,String rootPathOfSources)
+    public static String getClassNameFromSourceFileJavaAbsPath(File sourceFile,File rootPathOfSourcesFile)
     {
-        // path y rootPathOfSources son absolutos, preferentemente obtenidos con File.getAbsolutePath()
+        String path = sourceFile.getAbsolutePath();
+        String rootPathOfSources = rootPathOfSourcesFile.getAbsolutePath();
         int pos = path.indexOf(rootPathOfSources); 
         if (pos != 0) // DEBE SER 0, NO debería ocurrir
             return null;

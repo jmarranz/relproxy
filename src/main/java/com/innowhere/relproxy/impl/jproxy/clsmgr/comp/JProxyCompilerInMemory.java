@@ -1,6 +1,7 @@
 package com.innowhere.relproxy.impl.jproxy.clsmgr.comp;
 
-import com.innowhere.relproxy.ProxyException;
+import com.innowhere.relproxy.RelProxyException;
+import com.innowhere.relproxy.impl.jproxy.clsmgr.ClassDescriptor;
 import com.innowhere.relproxy.impl.jproxy.clsmgr.ClassDescriptorInner;
 import com.innowhere.relproxy.impl.jproxy.clsmgr.ClassDescriptorSourceFile;
 import com.innowhere.relproxy.impl.jproxy.clsmgr.ClassDescriptorSourceFileJava;
@@ -53,7 +54,7 @@ public class JProxyCompilerInMemory
         LinkedList<JavaFileObjectOutputClass> outClassList = compile(sourceFileDesc,customClassLoader,sourceRegistry);
         
         if (outClassList == null) 
-            throw new ProxyException("Cannot reload class: " + sourceFileDesc.getClassName());
+            throw new RelProxyException("Cannot reload class: " + sourceFileDesc.getClassName());
         
         String className = sourceFileDesc.getClassName();        
         
@@ -75,7 +76,8 @@ public class JProxyCompilerInMemory
                 }
                 else
                 {
-                    ClassDescriptorSourceFile dependentClass = sourceRegistry.getClassDescriptorSourceFile(currClassName);
+                    // Lo mismo es un archivo dependiente e incluso una inner class pero de otra clase que está siendo usada en el archivo compilado
+                    ClassDescriptor dependentClass = sourceRegistry.getClassDescriptor(currClassName);
                     if (dependentClass != null)
                     {
                         dependentClass.setClassBytes(classBytes); 
@@ -87,8 +89,8 @@ public class JProxyCompilerInMemory
                         // forma de conseguir que se recarguen de forma determinista y si posteriormente se cargara via ClassLoader al usarse no podemos reconocer que es una clase
                         // "hot reloadable" (quizás a través del package respecto a las demás clases hot pero no es muy determinista pues nada impide la mezcla de hot y no hot en el mismo package)
                         // Es una limitación mínima.
-                        throw new ProxyException("Unexpected class when compiling: " + currClassName + " maybe it is an autonomous private class declared in the same java file of the principal class, this kind of classes are not supported in hot reload");
-                    }                              
+                        throw new RelProxyException("Unexpected class when compiling: " + currClassName + " maybe it is an autonomous private class declared in the same java file of the principal class, this kind of classes are not supported in hot reload");
+                    }
                 }
             }
         }
@@ -132,7 +134,7 @@ public class JProxyCompilerInMemory
             }
             else
             {
-                throw new ProxyException("Internal error");
+                throw new RelProxyException("Internal error");
             }
 
             JavaFileManagerInMemory fileManagerInMemory = new JavaFileManagerInMemory(standardFileManager,classLoader,sourceRegistry);
@@ -145,7 +147,7 @@ public class JProxyCompilerInMemory
         }
         finally
         {
-           if (standardFileManager != null) try { standardFileManager.close(); } catch(IOException ex) { throw new ProxyException(ex); }
+           if (standardFileManager != null) try { standardFileManager.close(); } catch(IOException ex) { throw new RelProxyException(ex); }
         }
     }
 
@@ -159,7 +161,7 @@ public class JProxyCompilerInMemory
         if (compilationOptions != null)        
             for(String option : compilationOptions) finalCompilationOptions.add(option);
         finalCompilationOptions.add("-classpath");
-        finalCompilationOptions.add(engine.getPathSources());        
+        finalCompilationOptions.add(engine.getFolderSources().getAbsolutePath());        
         
         JavaCompiler.CompilationTask task = compiler.getTask(null, fileManager, diagnostics, finalCompilationOptions,null, compilationUnits);
         boolean success = task.call();

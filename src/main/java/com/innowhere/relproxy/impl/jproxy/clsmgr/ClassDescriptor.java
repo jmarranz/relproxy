@@ -92,12 +92,12 @@ public abstract class ClassDescriptor
         return packageName.substring(0,pos);
     }    
     
-    public static String getAbsoluteClassFilePathFromClassNameAndClassPath(String className,String classPath)
+    public static File getAbsoluteClassFilePathFromClassNameAndClassPath(String className,String classPath)
     {
         String relativePath = getRelativeClassFilePathFromClassName(className);
         classPath = classPath.trim();
         if (!classPath.endsWith("/") && !classPath.endsWith("\\")) classPath += File.separatorChar;        
-        return classPath + relativePath; 
+        return new File(classPath + relativePath); 
     }    
     
     public static String getClassNameFromRelativeClassFilePath(String path)

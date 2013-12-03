@@ -1,8 +1,8 @@
 
 package com.innowhere.relproxy.gproxy;
 
-import com.innowhere.relproxy.ProxyListener;
-import com.innowhere.relproxy.impl.gproxy.GProxyImpl;
+import com.innowhere.relproxy.RelProxyListener;
+import com.innowhere.relproxy.impl.gproxy.GProxyDefaultImpl;
 
 /**
  *
@@ -10,13 +10,13 @@ import com.innowhere.relproxy.impl.gproxy.GProxyImpl;
  */
 public class GProxy 
 {
-    public static void init(boolean enabled,ProxyListener relListener,GProxyGroovyScriptEngine engine)
+    public static void init(boolean enabled,RelProxyListener relListener,GProxyGroovyScriptEngine engine)
     {
-        GProxyImpl.initStatic(enabled,relListener, engine);
+        GProxyDefaultImpl.initStatic(enabled,relListener, engine);
     }
     
     public static <T> T create(T obj,Class<T> clasz)
     {
-        return GProxyImpl.createStatic(obj, clasz);
+        return GProxyDefaultImpl.createStatic(obj, clasz);
     }   
 }

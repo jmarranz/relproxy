@@ -17,7 +17,7 @@
                 String pathInput = application.getRealPath("/") + "/WEB-INF/javashellex/code/"; 
                 // String classFolder = application.getRealPath("/") + "/WEB-INF/classes";                        
 
-                String[] args = new String[] { pathInput + "/test_java_shell" };
+                String[] args = new String[] { pathInput + "/test_java_shell", "-DscanPeriod=-1","-DclassFolder=/tmp/java_shell_test_classes", "HELLO WORLD!" };
                 try
                 {
                     JProxyShell.main(args);

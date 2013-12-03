@@ -1,6 +1,6 @@
 package com.innowhere.relproxy.impl.jproxy.clsmgr;
 
-import com.innowhere.relproxy.ProxyException;
+import com.innowhere.relproxy.RelProxyException;
 import java.io.File;
 
 /**
@@ -23,7 +23,7 @@ public class ClassDescriptorSourceFileScript extends ClassDescriptorSourceFile
         String codeBody = JProxyUtil.readTextFile(sourceFile,getEncoding());         
         // Eliminamos la primera línea #!  (debe estar en la primera línea y sin espacios antes)
         if (!codeBody.startsWith("#!"))
-            throw new ProxyException("The first line of the script must start with #!");
+            throw new RelProxyException("The first line of the script must start with #!");
         
         int pos = codeBody.indexOf('\n');
         if (pos != -1) // Rarísimo que sólo esté el hash bang (script vacío)
@@ -53,9 +53,11 @@ public class ClassDescriptorSourceFileScript extends ClassDescriptorSourceFile
         return source;
     }
     
-    public static String getClassNameFromSourceFileScriptAbsPath(String path,String rootPathOfSources)
+    public static String getClassNameFromSourceFileScriptAbsPath(File sourceFile,File rootPathOfSourcesFile)
     {
-        // path y rootPathOfSources son absolutos, preferentemente obtenidos con File.getAbsolutePath()
+        String path = sourceFile.getAbsolutePath();
+        String rootPathOfSources = rootPathOfSourcesFile.getAbsolutePath();
+        // path es absoluto, preferentemente obtenido con File.getAbsolutePath()
         int pos = path.indexOf(rootPathOfSources); 
         if (pos != 0) // DEBE SER 0, NO debería ocurrir
             return null;

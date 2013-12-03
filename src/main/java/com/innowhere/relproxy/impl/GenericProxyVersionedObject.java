@@ -1,6 +1,6 @@
 package com.innowhere.relproxy.impl;
 
-import com.innowhere.relproxy.ProxyException;
+import com.innowhere.relproxy.RelProxyException;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 
@@ -63,14 +63,14 @@ public abstract class GenericProxyVersionedObject<T>
             }
             catch(NoSuchMethodException ex)
             {
-                throw new ProxyException("Cannot reload " + newClass.getName() + " a default empty of params constructor is required",ex);
+                throw new RelProxyException("Cannot reload " + newClass.getName() + " a default empty of params constructor is required",ex);
             }
 
             ArrayList<Field> fieldListNew = new ArrayList<Field>();
 
             getTreeFields(newClass,obj,fieldListNew,null);                
 
-            if (fieldListOld.size() != fieldListNew.size()) throw new ProxyException("Cannot reload " + newClass.getName() + " number of fields have changed, redeploy");
+            if (fieldListOld.size() != fieldListNew.size()) throw new RelProxyException("Cannot reload " + newClass.getName() + " number of fields have changed, redeploy");
 
             for(int i = 0; i < fieldListOld.size(); i++) 
             {
@@ -78,7 +78,7 @@ public abstract class GenericProxyVersionedObject<T>
                 Field fieldNew = fieldListNew.get(i);
                 if ( (!ignoreField(fieldOld) && !fieldOld.getName().equals(fieldNew.getName())) || 
                       !fieldOld.getType().equals(fieldNew.getType()))
-                    throw new ProxyException("Cannot reload " + newClass.getName() + " fields have changed, redeploy");
+                    throw new RelProxyException("Cannot reload " + newClass.getName() + " fields have changed, redeploy");
 
                 Object fieldObj = valueListOld.get(i);
                 fieldNew.setAccessible(true);
