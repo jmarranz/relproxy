@@ -31,18 +31,19 @@ public class JProxyShellImpl extends JProxyImpl
     public void init(String[] args)
     {    
         this.scriptFile = new File(args[0]);
-        File parentDir = JProxyUtil.getParentDir(scriptFile.getAbsolutePath());        
+        File parentDir = JProxyUtil.getParentDir(scriptFile);        
         String pathInput = parentDir.getAbsolutePath();        
         
         String classFolder = null; 
         long scanPeriod = -1;
-        Iterable<String> compilationOptions = Arrays.asList(new String[]{"-source","1.6","-target","1.6"});
+        Iterable<String> compilationOptions =  Arrays.asList(new String[]{"-source","1.6","-target","1.6"});
         DiagnosticCollector<JavaFileObject> diagnostics = null;        
         
         LinkedList<String> argsToScript = new LinkedList<String>();
         for(int i = 1; i < args.length; i++) 
         {
             String arg = args[i];
+
             if (arg.startsWith("-D"))
             {
                 String param = arg.substring(2);
@@ -52,13 +53,17 @@ public class JProxyShellImpl extends JProxyImpl
                 String name = param.substring(0,pos);
                 String value = param.substring(pos + 1);
                 
-                if ("classFolder".equals(name))
+                if ("cacheClassFolder".equals(name))
                 {
                     classFolder = value;
                 }                
                 else if ("scanPeriod".equals(name))
                 {
                     scanPeriod = Long.parseLong(value);                 
+                }
+                else if ("compilationOptions".equals(name))
+                {
+                    compilationOptions = parseCompilationOptions(value);                 
                 }
                 else throw new RelProxyException("Unknown parameter: " + arg);
             }
@@ -68,6 +73,9 @@ public class JProxyShellImpl extends JProxyImpl
             }
         }
         
+        JProxyShellClassLoader classLoader = null;
+        if (classFolder != null)
+            classLoader = new JProxyShellClassLoader(JProxyImpl.getDefaultClassLoader(),new File(classFolder));        
         
         // Esto quizás necesite una opción en plan "verbose" o "log" para mostrar por pantalla o nada
         RelProxyListener proxyListener = new RelProxyListener() {
@@ -76,13 +84,23 @@ public class JProxyShellImpl extends JProxyImpl
             }        
         };        
         
-        ClassDescriptorSourceFileScript scriptFileDesc = super.init(proxyListener,pathInput,classFolder,scanPeriod,compilationOptions,diagnostics);
+        ClassDescriptorSourceFileScript scriptFileDesc = super.init(classLoader,proxyListener,pathInput,classFolder,scanPeriod,compilationOptions,diagnostics);
         Class scriptClass = scriptFileDesc.getLastLoadedClass();
+        if (scriptClass == null)
+        {
+            // Esto es esperable cuando especificamos un classFolder en donde está ya compilado el script lanzador y es más actual que el fuente
+            // no ha habido necesidad de crear un class loader "reloader" ni de recargar todos los archivos fuente con él
+            if (classLoader == null) throw new RelProxyException("INTERNAL ERROR");
+            if (scriptFileDesc.getClassBytes() == null) throw new RelProxyException("INTERNAL ERROR");
+            scriptClass = classLoader.defineClass(scriptFileDesc);
+        }
+        
         try
         {
             Object obj = scriptClass.newInstance();
             Method method = scriptClass.getDeclaredMethod("init",new Class[]{ String[].class });
-            method.invoke(obj, new Object[]{ argsToScript.toArray(new String[argsToScript.size()]) }); 
+            String[] argsToScriptArr = argsToScript.size() > 0 ? argsToScript.toArray(new String[argsToScript.size()]) : new String[0];
+            method.invoke(obj, new Object[]{ argsToScriptArr }); 
         }
         catch (InstantiationException ex) { throw new RelProxyException(ex); }
         catch (IllegalAccessException ex) { throw new RelProxyException(ex); }
@@ -97,4 +115,10 @@ public class JProxyShellImpl extends JProxyImpl
     {
         return new JProxyEngineShell(scriptFile,parentClassLoader,pathSources,classFolder,scanPeriod,compilationOptions,diagnostics);  
     }    
+    
+    private Iterable<String> parseCompilationOptions(String value)
+    {
+        //HACER;
+        return null;
+    }
 }

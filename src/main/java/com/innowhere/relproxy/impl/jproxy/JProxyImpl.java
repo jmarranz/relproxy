@@ -17,11 +17,16 @@ public abstract class JProxyImpl extends GenericProxyImpl
     public static JProxyImpl SINGLETON;      
     protected JProxyEngine engine;
     
-    public ClassDescriptorSourceFileScript init(RelProxyListener relListener,String pathInput,String classFolder,long scanPeriod,Iterable<String> compilationOptions,DiagnosticCollector<JavaFileObject> diagnostics)
+    public static ClassLoader getDefaultClassLoader()
+    {
+        return Thread.currentThread().getContextClassLoader();
+    }
+    
+    public ClassDescriptorSourceFileScript init(ClassLoader classLoader,RelProxyListener relListener,String pathInput,String classFolder,long scanPeriod,Iterable<String> compilationOptions,DiagnosticCollector<JavaFileObject> diagnostics)
     {
         super.init(relListener);
         
-        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();      
+        classLoader = classLoader != null ? classLoader : getDefaultClassLoader();      
         this.engine = createJProxyEngine(classLoader,pathInput,classFolder,scanPeriod,compilationOptions,diagnostics);          
         return engine.init();
     }    

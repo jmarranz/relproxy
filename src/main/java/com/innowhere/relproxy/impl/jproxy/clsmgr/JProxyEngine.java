@@ -23,8 +23,8 @@ public abstract class JProxyEngine
     protected String folderClasses; // Puede ser nulo (es decir NO salvar como .class los cambios)
     protected long scanPeriod;
     protected ClassDescriptorSourceFileRegistry sourceRegistry;
-    
     protected String sourceEncoding = "UTF-8"; // Por ahora, provisional
+    public volatile boolean stop = false;
     
     public JProxyEngine(File scriptFile,ClassLoader rootClassLoader,String pathSources,String classFolder,long scanPeriod,Iterable<String> compilationOptions,DiagnosticCollector<JavaFileObject> diagnostics)
     {
@@ -44,12 +44,18 @@ public abstract class JProxyEngine
         
         if (scanPeriod > 0)  // Si es 0 o negativo sólo se recargan una vez (la inicial ya ejecutada)
         {
-            Timer timer = new Timer();        
+            Timer timer = new Timer();  
             TimerTask task = new TimerTask()
             {
                 @Override
                 public void run() 
                 {
+                    if (stop)
+                    {
+                        cancel();
+                        return;
+                    }
+                    
                     try
                     {
                         detectChangesInSources();
@@ -60,7 +66,7 @@ public abstract class JProxyEngine
                     }
                 }
             };                
-            timer.schedule(task, scanPeriod, scanPeriod);  // Ojo, después de detectChangesInSources() 
+            timer.schedule(task, scanPeriod, scanPeriod);  // Ojo, después de la primera llamada a detectChangesInSources() 
         }        
         
         return scriptFileDesc;
@@ -206,7 +212,7 @@ public abstract class JProxyEngine
         // que no podríamos detectarlas), pero el que haya .class sobrantes antiguos no es gran problema.
         
         File classFilePath = ClassDescriptor.getAbsoluteClassFilePathFromClassNameAndClassPath(sourceFile.getClassName(),folderClasses);        
-        File parentDir = JProxyUtil.getParentDir(classFilePath.getAbsolutePath());
+        File parentDir = JProxyUtil.getParentDir(classFilePath);
         String[] fileNameList = parentDir.list(); // Es más ligero que listFiles() que crea File por cada resultado
         if (fileNameList != null) // Si es null es que el directorio no está creado
         {

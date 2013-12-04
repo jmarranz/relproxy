@@ -18,7 +18,7 @@ public class JProxyDefaultImpl extends JProxyImpl
         
         checkSingleton(SINGLETON);
         SINGLETON = new JProxyDefaultImpl();
-        SINGLETON.init(relListener, pathInput, classFolder, scanPeriod, compilationOptions, diagnostics);
+        SINGLETON.init(null,relListener, pathInput, classFolder, scanPeriod, compilationOptions, diagnostics);
     }    
     
     public static <T> T createStatic(T obj,Class<T> clasz)

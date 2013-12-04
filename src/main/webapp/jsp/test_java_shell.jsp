@@ -8,27 +8,32 @@
         <title>Test Java Shell</title>
     </head>
     <body>
-        <h1>Test Java Shell into the web app (for lazy people)</h1>
+        <h1>Test Java Shell into the web app (for lazy people)</h1>        
 
-        <% if (JProxyImpl.SINGLETON != null) { %>
-            <p>Execute this test <b>before</b> the JProxy example (reload the server)<p>
-        <% } else { %>
-            <%
-                String pathInput = application.getRealPath("/") + "/WEB-INF/javashellex/code/"; 
-                // String classFolder = application.getRealPath("/") + "/WEB-INF/classes";                        
+        <%
+            // This code is internal stuff just to make this test workable
+            if (JProxyImpl.SINGLETON != null)
+            {
+                JProxyImpl.SINGLETON.getJProxyEngine().stop = true;
+            }
 
-                String[] args = new String[] { pathInput + "/test_java_shell", "-DscanPeriod=-1","-DclassFolder=/tmp/java_shell_test_classes", "HELLO WORLD!" };
-                try
-                {
-                    JProxyShell.main(args);
-                }
-                finally
-                {
-                    JProxyImpl.SINGLETON = null; // This is not public API, just needed to mix two examples never going to be in the same context
-                }
-            %>
-            <p>See your console!!<p>                
-        <% } %>            
+            String pathInput = application.getRealPath("/") + "/WEB-INF/javashellex/code/";                       
+            String cacheClassFolder = "/c/tmp/java_shell_test_classes";
+            
+            String[] args = new String[] { pathInput + "/test_java_shell", "-DscanPeriod=-1","-DcacheClassFolder=" + cacheClassFolder, "HELLO WORLD!" };
+            try
+            {
+                JProxyShell.main(args);
+            }
+            finally
+            {
+                JProxyImpl.SINGLETON = null; // This is not public API, just needed to mix two examples never going to be in the same context
+            }
+        %>
 
+        <p>See your console!!<p>                          
+
+        <br />
+        <p>This test interrupts the automatic detection of changed of "JProxy example"</p>
     </body>
 </html>

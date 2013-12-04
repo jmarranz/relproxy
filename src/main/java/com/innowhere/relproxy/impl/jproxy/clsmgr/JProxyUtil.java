@@ -28,17 +28,21 @@ public class JProxyUtil
         return "";
     }    
     
-    public static File getParentDir(String absFilePath)
+    public static File getParentDir(File file)
     {
+        return file.getParentFile();
+        /*
         File file = new File(absFilePath);
         if (!file.isAbsolute() && !absFilePath.startsWith("\\") && !absFilePath.startsWith("/"))
             return null; // Las comprobaciones startsWith son para intentar soportar MSYS (y cygwin) en Windows para paths que empiezan por "/" o por "\" por ejemplo
-
-        absFilePath = file.getAbsolutePath(); // Para normalizar separadores por si acaso, pues tenemos que buscar el último separador, si empieza por "/" (MSYS) lo convierte bien en "C:\..."
+        
+        
+        String absFilePath = file.getAbsolutePath(); // Nos devuelve el path normalizado, ej si empieza por "/" (MSYS) lo convierte bien en "C:\..."
         int pos = absFilePath.lastIndexOf(File.separatorChar);
         if (pos == -1)
             return null; // no nos esperamos esto
         return new File(absFilePath.substring(0,pos)); // Sin el terminador
+        */        
     }
     
     public static byte[] readURL(URL url)
@@ -99,7 +103,7 @@ public class JProxyUtil
     
     public static void saveFile(File file,byte[] content)
     {	
-        File parent = getParentDir(file.getAbsolutePath());
+        File parent = getParentDir(file);
         if (parent != null) parent.mkdirs();
         FileOutputStream out = null;		
         try 
