@@ -1,4 +1,4 @@
 #!/bin/sh
 
-"$JAVA_HOME/bin/java" $JAVA_CMDPARAMS -classpath "$CLASS_PATH" com.innowhere.relproxy.jproxy.JProxyShell "$@"
+"$JAVA_HOME/bin/java" $JAVA_OPTS com.innowhere.relproxy.jproxy.JProxyShell "$@"
 

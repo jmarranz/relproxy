@@ -36,8 +36,8 @@ public class JProxyShellImpl extends JProxyImpl
         
         String classFolder = null; 
         long scanPeriod = -1;
-        Iterable<String> compilationOptions =  Arrays.asList(new String[]{"-source","1.6","-target","1.6"});
-        DiagnosticCollector<JavaFileObject> diagnostics = null;        
+        Iterable<String> compilationOptions = null; // Arrays.asList(new String[]{"-source","1.6","-target","1.6"});
+        DiagnosticCollector<JavaFileObject> diagnostics = null;   // No puede pasarse como parámetro
         
         LinkedList<String> argsToScript = new LinkedList<String>();
         for(int i = 1; i < args.length; i++) 
@@ -118,7 +118,15 @@ public class JProxyShellImpl extends JProxyImpl
     
     private Iterable<String> parseCompilationOptions(String value)
     {
-        //HACER;
-        return null;
+        // Ej -source 1.6 -target 1.6  se convertiría en Arrays.asList(new String[]{"-source","1.6","-target","1.6"});
+        String[] options = value.split(" ");
+        LinkedList<String> opCol = new LinkedList<String>();        
+        for (String option : options)
+        {
+            String op = option.trim(); // Por si hubiera dos espacios
+            if (op.isEmpty()) continue;
+            opCol.add(op);
+        }
+        return opCol;
     }
 }

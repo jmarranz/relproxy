@@ -18,9 +18,17 @@
             }
 
             String pathInput = application.getRealPath("/") + "/WEB-INF/javashellex/code/";                       
-            String cacheClassFolder = "/c/tmp/java_shell_test_classes";
-            
-            String[] args = new String[] { pathInput + "/test_java_shell", "-DscanPeriod=-1","-DcacheClassFolder=" + cacheClassFolder, "HELLO WORLD!" };
+            String cacheClassFolder = application.getRealPath("/") + "/WEB-INF/classes/";
+            String compilationOptions = "-source 1.6  -target 1.6";
+                    
+            String[] args = new String[] 
+            { 
+                pathInput + "/test_java_shell",
+                "-DscanPeriod=-1",
+                "-DcacheClassFolder=" + cacheClassFolder,
+                "-DcompilationOptions=" + compilationOptions,
+                "HELLO WORLD!"
+            };
             try
             {
                 JProxyShell.main(args);
@@ -34,6 +42,6 @@
         <p>See your console!!<p>                          
 
         <br />
-        <p>This test interrupts the automatic detection of changed of "JProxy example"</p>
+        <p>This test interrupts the automatic detection of changed classes of "JProxy example"</p>
     </body>
 </html>
