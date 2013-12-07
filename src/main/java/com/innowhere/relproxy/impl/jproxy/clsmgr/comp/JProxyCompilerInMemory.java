@@ -48,10 +48,16 @@ public class JProxyCompilerInMemory
         }        
     }
     
-    public void compileSourceFile(ClassDescriptorSourceFile sourceFileDesc,JProxyClassLoader customClassLoader,ClassDescriptorSourceFileRegistry sourceRegistry)
+    public JProxyCompilerContext createJProxyCompilerContext() 
+    {
+        StandardJavaFileManager standardFileManager = compiler.getStandardFileManager(diagnostics, null, null);   
+        return new JProxyCompilerContext(standardFileManager);
+    }
+    
+    public void compileSourceFile(ClassDescriptorSourceFile sourceFileDesc,JProxyCompilerContext context,JProxyClassLoader customClassLoader,ClassDescriptorSourceFileRegistry sourceRegistry)
     {
         //File sourceFile = sourceFileDesc.getSourceFile();
-        LinkedList<JavaFileObjectOutputClass> outClassList = compile(sourceFileDesc,customClassLoader,sourceRegistry);
+        LinkedList<JavaFileObjectOutputClass> outClassList = compile(sourceFileDesc,context,customClassLoader,sourceRegistry);
         
         if (outClassList == null) 
             throw new RelProxyException("Cannot reload class: " + sourceFileDesc.getClassName());
@@ -96,7 +102,7 @@ public class JProxyCompilerInMemory
         }
     }        
     
-    private LinkedList<JavaFileObjectOutputClass> compile(ClassDescriptorSourceFile sourceFileDesc,ClassLoader classLoader,ClassDescriptorSourceFileRegistry sourceRegistry)
+    private LinkedList<JavaFileObjectOutputClass> compile(ClassDescriptorSourceFile sourceFileDesc,JProxyCompilerContext context,ClassLoader classLoader,ClassDescriptorSourceFileRegistry sourceRegistry)
     {
         // http://stackoverflow.com/questions/12173294/compiling-fully-in-memory-with-javax-tools-javacompiler
         // http://www.accordess.com/wpblog/an-overview-of-java-compilation-api-jsr-199/
@@ -111,44 +117,37 @@ public class JProxyCompilerInMemory
         // http://stackoverflow.com/questions/10767048/javacompiler-with-custom-classloader-and-filemanager
 
 
-        StandardJavaFileManager standardFileManager = null;
-        try
+        StandardJavaFileManager standardFileManager = context.getStandardFileManager(); // recuerda que el StandardJavaFileManager puede reutilizarse entre varias compilaciones consecutivas mientras se cierre al final
+     
+        Iterable<? extends JavaFileObject> compilationUnits;
+
+        if (sourceFileDesc instanceof ClassDescriptorSourceFileJava)
         {
-            standardFileManager = compiler.getStandardFileManager(diagnostics, null, null);
-            
-            Iterable<? extends JavaFileObject> compilationUnits;
-            
-            if (sourceFileDesc instanceof ClassDescriptorSourceFileJava)
-            {
-                List<File> sourceFileList = new ArrayList<File>();
-                sourceFileList.add(sourceFileDesc.getSourceFile());            
-                compilationUnits = standardFileManager.getJavaFileObjectsFromFiles(sourceFileList);
-            }
-            else if (sourceFileDesc instanceof ClassDescriptorSourceFileScript)
-            {
-                ClassDescriptorSourceFileScript sourceFileDescScript = (ClassDescriptorSourceFileScript)sourceFileDesc;
-                LinkedList<JavaFileObject> compilationUnitsList = new LinkedList<JavaFileObject>();            
-                String code = sourceFileDescScript.getSourceCode();
-                compilationUnitsList.add(new JavaFileObjectInputSourceInMemory(sourceFileDescScript.getClassName(),code,sourceFileDescScript.getEncoding(),sourceFileDescScript.getTimestamp()));            
-                compilationUnits = compilationUnitsList;                
-            }
-            else
-            {
-                throw new RelProxyException("Internal error");
-            }
-
-            JavaFileManagerInMemory fileManagerInMemory = new JavaFileManagerInMemory(standardFileManager,classLoader,sourceRegistry);
-
-            boolean success = compile(compilationUnits,fileManagerInMemory);
-            if (!success) return null;
-
-            LinkedList<JavaFileObjectOutputClass> classObj = fileManagerInMemory.getJavaFileObjectOutputClassList();
-            return classObj;
+            List<File> sourceFileList = new ArrayList<File>();
+            sourceFileList.add(sourceFileDesc.getSourceFile());            
+            compilationUnits = standardFileManager.getJavaFileObjectsFromFiles(sourceFileList);
         }
-        finally
+        else if (sourceFileDesc instanceof ClassDescriptorSourceFileScript)
         {
-           if (standardFileManager != null) try { standardFileManager.close(); } catch(IOException ex) { throw new RelProxyException(ex); }
+            ClassDescriptorSourceFileScript sourceFileDescScript = (ClassDescriptorSourceFileScript)sourceFileDesc;
+            LinkedList<JavaFileObject> compilationUnitsList = new LinkedList<JavaFileObject>();            
+            String code = sourceFileDescScript.getSourceCode();
+            compilationUnitsList.add(new JavaFileObjectInputSourceInMemory(sourceFileDescScript.getClassName(),code,sourceFileDescScript.getEncoding(),sourceFileDescScript.getTimestamp()));            
+            compilationUnits = compilationUnitsList;                
         }
+        else
+        {
+            throw new RelProxyException("Internal error");
+        }
+
+        JavaFileManagerInMemory fileManagerInMemory = new JavaFileManagerInMemory(standardFileManager,classLoader,sourceRegistry);
+
+        boolean success = compile(compilationUnits,fileManagerInMemory);
+        if (!success) return null;
+
+        LinkedList<JavaFileObjectOutputClass> classObj = fileManagerInMemory.getJavaFileObjectOutputClassList();
+        return classObj;
+
     }
 
     private boolean compile(Iterable<? extends JavaFileObject> compilationUnits,JavaFileManager fileManager)

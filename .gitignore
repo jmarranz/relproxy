@@ -1,6 +1,7 @@
 /target/
 /build
 /bin
+/docs_internal
 .classpath
 .project
 .settings/

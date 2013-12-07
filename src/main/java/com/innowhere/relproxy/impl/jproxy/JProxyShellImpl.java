@@ -9,13 +9,13 @@ import com.innowhere.relproxy.impl.jproxy.clsmgr.JProxyUtil;
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.Arrays;
 import java.util.LinkedList;
 import javax.tools.DiagnosticCollector;
 import javax.tools.JavaFileObject;
 
 /**
- *
+ * Inspiraciones: http://groovy.codehaus.org/Running
+ * 
  * @author jmarranz
  */
 public class JProxyShellImpl extends JProxyImpl
@@ -63,7 +63,7 @@ public class JProxyShellImpl extends JProxyImpl
                 }
                 else if ("compilationOptions".equals(name))
                 {
-                    compilationOptions = parseCompilationOptions(value);                 
+                    compilationOptions = parseCompilationOptions(value);                    
                 }
                 else throw new RelProxyException("Unknown parameter: " + arg);
             }

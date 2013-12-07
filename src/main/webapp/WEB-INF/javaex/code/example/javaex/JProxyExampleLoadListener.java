@@ -24,8 +24,8 @@ public class JProxyExampleLoadListener implements ItsNatServletRequestListener
 
     public void processRequest(ItsNatServletRequest request, ItsNatServletResponse response)
     { 
-        System.out.println("JProxyExampleLoadListener 5 " + this.getClass().getClassLoader().hashCode());
-        
+        System.out.println("JProxyExampleLoadListener 3 " + this.getClass().getClassLoader().hashCode());
+
         new example.javaex.JProxyExampleDocument(request,(ItsNatHTMLDocument)request.getItsNatDocument(),db);
     }
 }

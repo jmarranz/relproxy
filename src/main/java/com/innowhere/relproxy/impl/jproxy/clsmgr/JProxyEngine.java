@@ -1,5 +1,6 @@
 package com.innowhere.relproxy.impl.jproxy.clsmgr;
 
+import com.innowhere.relproxy.impl.jproxy.clsmgr.comp.JProxyCompilerContext;
 import com.innowhere.relproxy.impl.jproxy.clsmgr.comp.JProxyCompilerInMemory;
 import java.io.File;
 import java.util.LinkedList;
@@ -128,12 +129,12 @@ public abstract class JProxyEngine
         sourceFile.cleanOnSourceCodeChanged(); // El código fuente nuevo puede haber cambiado totalmente las innerclasses antiguas (añadido, eliminado) y por supuesto el bytecode necesita olvidarse   
     }
     
-    private void compile(ClassDescriptorSourceFile sourceFile)
+    private void compile(ClassDescriptorSourceFile sourceFile,JProxyCompilerContext context)
     {       
         if (sourceFile.getClassBytes() != null)
             return; // Ya ha sido compilado seguramente por dependencia de un archivo compilado inmediatamente antes, recuerda que el atributo classBytes se pone a null antes de compilar los archivos cambiados/nuevos
         
-        compiler.compileSourceFile(sourceFile,customClassLoader,sourceRegistry);      
+        compiler.compileSourceFile(sourceFile,context,customClassLoader,sourceRegistry);      
     }        
     
     private void reloadAndSaveSource(ClassDescriptorSourceFile sourceFile)
@@ -263,8 +264,16 @@ public abstract class JProxyEngine
                 for(ClassDescriptorSourceFile sourceFile : sourceFilesToRecompile)            
                     cleanBeforeCompile(sourceFile);   
                 
-                for(ClassDescriptorSourceFile sourceFile : sourceFilesToRecompile)            
-                    compile(sourceFile);        
+                JProxyCompilerContext context = compiler.createJProxyCompilerContext();
+                try
+                {
+                    for(ClassDescriptorSourceFile sourceFile : sourceFilesToRecompile)            
+                        compile(sourceFile,context);        
+                }
+                finally
+                {
+                    context.close();
+                }
                 
                 for(ClassDescriptorSourceFile sourceFile : sourceFilesToRecompile)            
                     reloadAndSaveSource(sourceFile);                
