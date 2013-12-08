@@ -24,10 +24,10 @@
             String[] args = new String[] 
             { 
                 pathInput + "/test_java_shell",
+                "HELLO WORLD!",
                 "-DscanPeriod=-1",
                 "-DcacheClassFolder=" + cacheClassFolder,
-                "-DcompilationOptions=" + compilationOptions,
-                "HELLO WORLD!"
+                "-DcompilationOptions=" + compilationOptions                
             };
             try
             {

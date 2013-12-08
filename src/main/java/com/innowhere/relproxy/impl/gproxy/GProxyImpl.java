@@ -1,7 +1,7 @@
 package com.innowhere.relproxy.impl.gproxy;
 
 import com.innowhere.relproxy.gproxy.GProxyGroovyScriptEngine;
-import com.innowhere.relproxy.RelProxyListener;
+import com.innowhere.relproxy.RelProxyOnReloadListener;
 import com.innowhere.relproxy.impl.GenericProxyImpl;
 import com.innowhere.relproxy.impl.GenericProxyInvocationHandler;
 
@@ -15,7 +15,7 @@ public abstract class GProxyImpl extends GenericProxyImpl
     public static GProxyImpl SINGLETON;    
     protected GProxyGroovyScriptEngine engine;
     
-    public void init(RelProxyListener relListener,GProxyGroovyScriptEngine engine)
+    public void init(RelProxyOnReloadListener relListener,GProxyGroovyScriptEngine engine)
     {
         super.init(relListener);
         this.engine = engine;

@@ -1,7 +1,6 @@
 package com.innowhere.relproxy.impl.jproxy.clsmgr;
 
-import javax.tools.DiagnosticCollector;
-import javax.tools.JavaFileObject;
+import com.innowhere.relproxy.jproxy.JProxyDiagnosticsListener;
 
 /**
  *
@@ -9,8 +8,8 @@ import javax.tools.JavaFileObject;
  */
 public class JProxyEngineDefault extends JProxyEngine
 {
-    public JProxyEngineDefault(ClassLoader parentClassLoader,String pathSources,String classFolder,long scanPeriod,Iterable<String> compilationOptions,DiagnosticCollector<JavaFileObject> diagnostics)
+    public JProxyEngineDefault(ClassLoader parentClassLoader,String pathSources,String classFolder,long scanPeriod,Iterable<String> compilationOptions,JProxyDiagnosticsListener diagnosticsListener)
     {
-        super(null,parentClassLoader, pathSources, classFolder, scanPeriod, compilationOptions, diagnostics);
+        super(null,parentClassLoader, pathSources, classFolder, scanPeriod, compilationOptions, diagnosticsListener);
     }    
 }

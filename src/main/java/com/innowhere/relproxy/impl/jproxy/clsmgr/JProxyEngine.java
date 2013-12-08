@@ -2,12 +2,11 @@ package com.innowhere.relproxy.impl.jproxy.clsmgr;
 
 import com.innowhere.relproxy.impl.jproxy.clsmgr.comp.JProxyCompilerContext;
 import com.innowhere.relproxy.impl.jproxy.clsmgr.comp.JProxyCompilerInMemory;
+import com.innowhere.relproxy.jproxy.JProxyDiagnosticsListener;
 import java.io.File;
 import java.util.LinkedList;
 import java.util.Timer;
 import java.util.TimerTask;
-import javax.tools.DiagnosticCollector;
-import javax.tools.JavaFileObject;
 
 /**
  *
@@ -27,14 +26,14 @@ public abstract class JProxyEngine
     protected String sourceEncoding = "UTF-8"; // Por ahora, provisional
     public volatile boolean stop = false;
     
-    public JProxyEngine(File scriptFile,ClassLoader rootClassLoader,String pathSources,String classFolder,long scanPeriod,Iterable<String> compilationOptions,DiagnosticCollector<JavaFileObject> diagnostics)
+    public JProxyEngine(File scriptFile,ClassLoader rootClassLoader,String pathSources,String classFolder,long scanPeriod,Iterable<String> compilationOptions,JProxyDiagnosticsListener diagnosticsListener)
     {
         this.scriptFile = scriptFile;
         this.rootClassLoader = rootClassLoader;
         this.folderSources = new File(pathSources); // Para normalizar;
         this.folderClasses = classFolder;
         this.scanPeriod = scanPeriod;
-        this.compiler = new JProxyCompilerInMemory(this,compilationOptions,diagnostics);        
+        this.compiler = new JProxyCompilerInMemory(this,compilationOptions,diagnosticsListener);        
         this.customClassLoader = new JProxyClassLoader(this);
         this.sourcesSearch = new JavaSourcesSearch(this);       
     }

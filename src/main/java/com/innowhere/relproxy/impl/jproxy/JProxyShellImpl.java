@@ -1,11 +1,12 @@
 package com.innowhere.relproxy.impl.jproxy;
 
 import com.innowhere.relproxy.RelProxyException;
-import com.innowhere.relproxy.RelProxyListener;
+import com.innowhere.relproxy.RelProxyOnReloadListener;
 import com.innowhere.relproxy.impl.jproxy.clsmgr.ClassDescriptorSourceFileScript;
 import com.innowhere.relproxy.impl.jproxy.clsmgr.JProxyEngine;
 import com.innowhere.relproxy.impl.jproxy.clsmgr.JProxyEngineShell;
 import com.innowhere.relproxy.impl.jproxy.clsmgr.JProxyUtil;
+import com.innowhere.relproxy.jproxy.JProxyDiagnosticsListener;
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -37,7 +38,6 @@ public class JProxyShellImpl extends JProxyImpl
         String classFolder = null; 
         long scanPeriod = -1;
         Iterable<String> compilationOptions = null; // Arrays.asList(new String[]{"-source","1.6","-target","1.6"});
-        DiagnosticCollector<JavaFileObject> diagnostics = null;   // No puede pasarse como parámetro
         
         LinkedList<String> argsToScript = new LinkedList<String>();
         for(int i = 1; i < args.length; i++) 
@@ -78,13 +78,18 @@ public class JProxyShellImpl extends JProxyImpl
             classLoader = new JProxyShellClassLoader(JProxyImpl.getDefaultClassLoader(),new File(classFolder));        
         
         // Esto quizás necesite una opción en plan "verbose" o "log" para mostrar por pantalla o nada
-        RelProxyListener proxyListener = new RelProxyListener() {
+        RelProxyOnReloadListener proxyListener = new RelProxyOnReloadListener() {
             public void onReload(Object objOld, Object objNew, Object proxy, Method method, Object[] args) {
                 System.out.println("Reloaded " + objNew + " Calling method: " + method);
             }        
         };        
         
+        JProxyDiagnosticsListener diagnostics = null; // Nos vale el log por defecto
+        
         ClassDescriptorSourceFileScript scriptFileDesc = super.init(classLoader,proxyListener,pathInput,classFolder,scanPeriod,compilationOptions,diagnostics);
+        
+        
+        
         Class scriptClass = scriptFileDesc.getLastLoadedClass();
         if (scriptClass == null)
         {
@@ -111,9 +116,9 @@ public class JProxyShellImpl extends JProxyImpl
     }
     
     @Override
-    public JProxyEngine createJProxyEngine(ClassLoader parentClassLoader, String pathSources, String classFolder, long scanPeriod, Iterable<String> compilationOptions, DiagnosticCollector<JavaFileObject> diagnostics)
+    public JProxyEngine createJProxyEngine(ClassLoader parentClassLoader, String pathSources, String classFolder, long scanPeriod, Iterable<String> compilationOptions, JProxyDiagnosticsListener diagnosticsListener)
     {
-        return new JProxyEngineShell(scriptFile,parentClassLoader,pathSources,classFolder,scanPeriod,compilationOptions,diagnostics);  
+        return new JProxyEngineShell(scriptFile,parentClassLoader,pathSources,classFolder,scanPeriod,compilationOptions,diagnosticsListener);  
     }    
     
     private Iterable<String> parseCompilationOptions(String value)

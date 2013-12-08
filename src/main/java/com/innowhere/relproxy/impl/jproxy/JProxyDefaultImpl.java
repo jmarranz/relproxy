@@ -1,10 +1,9 @@
 package com.innowhere.relproxy.impl.jproxy;
 
-import com.innowhere.relproxy.RelProxyListener;
+import com.innowhere.relproxy.RelProxyOnReloadListener;
 import com.innowhere.relproxy.impl.jproxy.clsmgr.JProxyEngine;
 import com.innowhere.relproxy.impl.jproxy.clsmgr.JProxyEngineDefault;
-import javax.tools.DiagnosticCollector;
-import javax.tools.JavaFileObject;
+import com.innowhere.relproxy.jproxy.JProxyDiagnosticsListener;
 
 /**
  *
@@ -12,13 +11,13 @@ import javax.tools.JavaFileObject;
  */
 public class JProxyDefaultImpl extends JProxyImpl
 {     
-    public static void initStatic(boolean enabled,RelProxyListener relListener,String pathInput,String classFolder,long scanPeriod,Iterable<String> compilationOptions,DiagnosticCollector<JavaFileObject> diagnostics)
+    public static void initStatic(boolean enabled,RelProxyOnReloadListener relListener,String pathInput,String classFolder,long scanPeriod,Iterable<String> compilationOptions,JProxyDiagnosticsListener diagnosticsListener)
     {
         if (!enabled) return;
         
-        checkSingleton(SINGLETON);
+        checkSingletonNull(SINGLETON);
         SINGLETON = new JProxyDefaultImpl();
-        SINGLETON.init(null,relListener, pathInput, classFolder, scanPeriod, compilationOptions, diagnostics);
+        SINGLETON.init(null,relListener, pathInput, classFolder, scanPeriod, compilationOptions,diagnosticsListener);
     }    
     
     public static <T> T createStatic(T obj,Class<T> clasz)
@@ -30,8 +29,8 @@ public class JProxyDefaultImpl extends JProxyImpl
     }    
 
     @Override
-    public JProxyEngine createJProxyEngine(ClassLoader parentClassLoader, String pathSources, String classFolder, long scanPeriod, Iterable<String> compilationOptions, DiagnosticCollector<JavaFileObject> diagnostics)
+    public JProxyEngine createJProxyEngine(ClassLoader parentClassLoader, String pathSources, String classFolder, long scanPeriod, Iterable<String> compilationOptions, JProxyDiagnosticsListener diagnosticsListener)
     {
-        return new JProxyEngineDefault(parentClassLoader,pathSources,classFolder,scanPeriod,compilationOptions,diagnostics);  
+        return new JProxyEngineDefault(parentClassLoader,pathSources,classFolder,scanPeriod,compilationOptions,diagnosticsListener);  
     }
 }

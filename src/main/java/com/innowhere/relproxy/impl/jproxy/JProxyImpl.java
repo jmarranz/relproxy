@@ -1,12 +1,11 @@
 package com.innowhere.relproxy.impl.jproxy;
 
-import com.innowhere.relproxy.RelProxyListener;
+import com.innowhere.relproxy.RelProxyOnReloadListener;
 import com.innowhere.relproxy.impl.GenericProxyImpl;
 import com.innowhere.relproxy.impl.GenericProxyInvocationHandler;
 import com.innowhere.relproxy.impl.jproxy.clsmgr.ClassDescriptorSourceFileScript;
 import com.innowhere.relproxy.impl.jproxy.clsmgr.JProxyEngine;
-import javax.tools.DiagnosticCollector;
-import javax.tools.JavaFileObject;
+import com.innowhere.relproxy.jproxy.JProxyDiagnosticsListener;
 
 /**
  *
@@ -22,12 +21,12 @@ public abstract class JProxyImpl extends GenericProxyImpl
         return Thread.currentThread().getContextClassLoader();
     }
     
-    public ClassDescriptorSourceFileScript init(ClassLoader classLoader,RelProxyListener relListener,String pathInput,String classFolder,long scanPeriod,Iterable<String> compilationOptions,DiagnosticCollector<JavaFileObject> diagnostics)
+    public ClassDescriptorSourceFileScript init(ClassLoader classLoader,RelProxyOnReloadListener relListener,String pathInput,String classFolder,long scanPeriod,Iterable<String> compilationOptions,JProxyDiagnosticsListener diagnosticsListener)
     {
         super.init(relListener);
         
         classLoader = classLoader != null ? classLoader : getDefaultClassLoader();      
-        this.engine = createJProxyEngine(classLoader,pathInput,classFolder,scanPeriod,compilationOptions,diagnostics);          
+        this.engine = createJProxyEngine(classLoader,pathInput,classFolder,scanPeriod,compilationOptions,diagnosticsListener);          
         return engine.init();
     }    
     
@@ -42,5 +41,5 @@ public abstract class JProxyImpl extends GenericProxyImpl
         return new JProxyInvocationHandler<T>(obj,this);
     }
     
-    public abstract JProxyEngine createJProxyEngine(ClassLoader parentClassLoader,String pathSources,String classFolder,long scanPeriod,Iterable<String> compilationOptions,DiagnosticCollector<JavaFileObject> diagnostics);
+    public abstract JProxyEngine createJProxyEngine(ClassLoader parentClassLoader,String pathSources,String classFolder,long scanPeriod,Iterable<String> compilationOptions,JProxyDiagnosticsListener diagnosticsListener);
 }

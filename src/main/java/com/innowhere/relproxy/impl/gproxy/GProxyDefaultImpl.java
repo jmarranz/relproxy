@@ -1,9 +1,7 @@
 package com.innowhere.relproxy.impl.gproxy;
 
 import com.innowhere.relproxy.gproxy.GProxyGroovyScriptEngine;
-import com.innowhere.relproxy.RelProxyListener;
-import com.innowhere.relproxy.impl.GenericProxyImpl;
-import com.innowhere.relproxy.impl.GenericProxyInvocationHandler;
+import com.innowhere.relproxy.RelProxyOnReloadListener;
 
 /**
  *
@@ -11,11 +9,11 @@ import com.innowhere.relproxy.impl.GenericProxyInvocationHandler;
  */
 public class GProxyDefaultImpl extends GProxyImpl
 {
-    public static void initStatic(boolean enabled,RelProxyListener relListener,GProxyGroovyScriptEngine engine)
+    public static void initStatic(boolean enabled,RelProxyOnReloadListener relListener,GProxyGroovyScriptEngine engine)
     {
         if (!enabled) return;
         
-        checkSingleton(SINGLETON);        
+        checkSingletonNull(SINGLETON);        
         SINGLETON = new GProxyDefaultImpl();
         SINGLETON.init(relListener,engine);
     }    

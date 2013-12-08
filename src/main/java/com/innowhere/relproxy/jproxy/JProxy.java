@@ -1,10 +1,8 @@
 
 package com.innowhere.relproxy.jproxy;
 
-import com.innowhere.relproxy.RelProxyListener;
+import com.innowhere.relproxy.RelProxyOnReloadListener;
 import com.innowhere.relproxy.impl.jproxy.JProxyDefaultImpl;
-import javax.tools.DiagnosticCollector;
-import javax.tools.JavaFileObject;
 
 /**
  *
@@ -12,9 +10,9 @@ import javax.tools.JavaFileObject;
  */
 public class JProxy 
 {
-    public static void init(boolean enabled,RelProxyListener relListener,String pathInput,String classFolder,long scanPeriod,Iterable<String> compilationOptions,DiagnosticCollector<JavaFileObject> diagnostics)
+    public static void init(boolean enabled,RelProxyOnReloadListener relListener,String pathInput,String classFolder,long scanPeriod,Iterable<String> compilationOptions,JProxyDiagnosticsListener diagnosticsListener)
     {
-        JProxyDefaultImpl.initStatic(enabled,relListener, pathInput, classFolder, scanPeriod, compilationOptions, diagnostics);
+        JProxyDefaultImpl.initStatic(enabled,relListener, pathInput, classFolder, scanPeriod, compilationOptions,diagnosticsListener);
     }
      
     public static <T> T create(T obj,Class<T> clasz)

@@ -9,6 +9,7 @@ import com.innowhere.relproxy.impl.jproxy.clsmgr.ClassDescriptorSourceFileRegist
 import com.innowhere.relproxy.impl.jproxy.clsmgr.ClassDescriptorSourceFileScript;
 import com.innowhere.relproxy.impl.jproxy.clsmgr.JProxyClassLoader;
 import com.innowhere.relproxy.impl.jproxy.clsmgr.JProxyEngine;
+import com.innowhere.relproxy.jproxy.JProxyDiagnosticsListener;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -31,27 +32,22 @@ public class JProxyCompilerInMemory
     protected JProxyEngine engine;
     protected JavaCompiler compiler;
     protected Iterable<String> compilationOptions; // puede ser null
-    protected DiagnosticCollector<JavaFileObject> diagnostics; // puede ser null
-    protected boolean outDefaultDiagnostics = false;
+    protected JProxyDiagnosticsListener diagnosticsListener; // puede ser null
+
             
-    public JProxyCompilerInMemory(JProxyEngine engine,Iterable<String> compilationOptions,DiagnosticCollector<JavaFileObject> diagnostics)
+    public JProxyCompilerInMemory(JProxyEngine engine,Iterable<String> compilationOptions,JProxyDiagnosticsListener diagnosticsListener)
     {
         this.engine = engine;
         this.compilationOptions = compilationOptions;
-        this.diagnostics = diagnostics;
-        this.compiler = ToolProvider.getSystemJavaCompiler();
-        
-        if (diagnostics == null)
-        {
-            this.diagnostics = new DiagnosticCollector<JavaFileObject>();
-            this.outDefaultDiagnostics = true;
-        }        
+        this.diagnosticsListener = diagnosticsListener;
+        this.compiler = ToolProvider.getSystemJavaCompiler();       
     }
     
     public JProxyCompilerContext createJProxyCompilerContext() 
     {
+        DiagnosticCollector<JavaFileObject> diagnostics = new DiagnosticCollector<JavaFileObject>();
         StandardJavaFileManager standardFileManager = compiler.getStandardFileManager(diagnostics, null, null);   
-        return new JProxyCompilerContext(standardFileManager);
+        return new JProxyCompilerContext(standardFileManager,diagnostics,diagnosticsListener);
     }
     
     public void compileSourceFile(ClassDescriptorSourceFile sourceFileDesc,JProxyCompilerContext context,JProxyClassLoader customClassLoader,ClassDescriptorSourceFileRegistry sourceRegistry)
@@ -142,7 +138,7 @@ public class JProxyCompilerInMemory
 
         JavaFileManagerInMemory fileManagerInMemory = new JavaFileManagerInMemory(standardFileManager,classLoader,sourceRegistry);
 
-        boolean success = compile(compilationUnits,fileManagerInMemory);
+        boolean success = compile(compilationUnits,fileManagerInMemory,context);
         if (!success) return null;
 
         LinkedList<JavaFileObjectOutputClass> classObj = fileManagerInMemory.getJavaFileObjectOutputClassList();
@@ -150,7 +146,7 @@ public class JProxyCompilerInMemory
 
     }
 
-    private boolean compile(Iterable<? extends JavaFileObject> compilationUnits,JavaFileManager fileManager)
+    private boolean compile(Iterable<? extends JavaFileObject> compilationUnits,JavaFileManager fileManager,JProxyCompilerContext context)
     {
         /*
         String systemClassPath = System.getProperty("java.class.path");
@@ -162,31 +158,10 @@ public class JProxyCompilerInMemory
         finalCompilationOptions.add("-classpath");
         finalCompilationOptions.add(engine.getFolderSources().getAbsolutePath());        
         
+        DiagnosticCollector<JavaFileObject> diagnostics = context.getDiagnosticCollector();
         JavaCompiler.CompilationTask task = compiler.getTask(null, fileManager, diagnostics, finalCompilationOptions,null, compilationUnits);
         boolean success = task.call();
-
-        if (outDefaultDiagnostics)
-        {
-            List<Diagnostic<? extends JavaFileObject>> diagList = diagnostics.getDiagnostics();
-            if (!diagList.isEmpty())
-            {
-                System.err.println("Problems compiling: " + compilationUnits);
-                int i = 1;
-                for (Diagnostic diagnostic : diagList)
-                {
-                   System.err.println(" Diagnostic " + i);
-                   System.err.println("  code: " + diagnostic.getCode());
-                   System.err.println("  kind: " + diagnostic.getKind());
-                   System.err.println("  position: " + diagnostic.getPosition());
-                   System.err.println("  start position: " + diagnostic.getStartPosition());
-                   System.err.println("  end position: " + diagnostic.getEndPosition());
-                   System.err.println("  source: " + diagnostic.getSource());
-                   System.err.println("  message: " + diagnostic.getMessage(null));
-                   i++;
-                }
-            }
-        }
-
+        
         return success;
     }
 

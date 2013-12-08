@@ -1,7 +1,6 @@
 package com.innowhere.relproxy.impl;
 
-import com.innowhere.relproxy.RelProxyListener;
-import com.innowhere.relproxy.impl.gproxy.GProxyVersionedObject;
+import com.innowhere.relproxy.RelProxyOnReloadListener;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 
@@ -24,7 +23,7 @@ public abstract class GenericProxyInvocationHandler<T> implements InvocationHand
         T oldObj = verObj.getCurrent();
         T obj = verObj.getNewVersion();
 
-        RelProxyListener reloadListener = root.getProxyListener();
+        RelProxyOnReloadListener reloadListener = root.getRelProxyOnReloadListener();
         if (oldObj != obj && reloadListener != null)
             reloadListener.onReload(oldObj,obj,proxy, method,args);  
 
