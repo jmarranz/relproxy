@@ -4,7 +4,6 @@ import com.innowhere.relproxy.impl.GenericProxyImpl;
 import com.innowhere.relproxy.impl.GenericProxyInvocationHandler;
 import com.innowhere.relproxy.impl.jproxy.clsmgr.ClassDescriptorSourceFileScript;
 import com.innowhere.relproxy.impl.jproxy.clsmgr.JProxyEngine;
-import com.innowhere.relproxy.jproxy.JProxyConfig;
 import com.innowhere.relproxy.jproxy.JProxyDiagnosticsListener;
 
 /**
@@ -25,14 +24,14 @@ public abstract class JProxyImpl extends GenericProxyImpl
     {
         super.init(config);
         
-        String pathInput = config.getInputPath();
+        String inputPath = config.getInputPath();
         String classFolder = config.getClassFolder();
         long scanPeriod = config.getScanPeriod();
         Iterable<String> compilationOptions = config.getCompilationOptions();
         JProxyDiagnosticsListener diagnosticsListener = config.getJProxyDiagnosticsListener();
         
         classLoader = classLoader != null ? classLoader : getDefaultClassLoader();      
-        this.engine = createJProxyEngine(classLoader,pathInput,classFolder,scanPeriod,compilationOptions,diagnosticsListener);          
+        this.engine = createJProxyEngine(classLoader,inputPath,classFolder,scanPeriod,compilationOptions,diagnosticsListener);          
         return engine.init();
     }    
    

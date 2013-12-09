@@ -13,6 +13,7 @@ export JPROXYSH_SCAN_PERIOD=-1
 export JPROXYSH_CACHE_CLASS_FOLDER="/c/tmp/java_shell_test_classes"
 export JPROXYSH_COMPILATION_OPTIONS="-source 1.6 -target 1.6"
 
-../src/main/webapp/WEB-INF/javashellex/code/test_java_shell "HELLO WORLD!"
+jproxysh
+
 
     

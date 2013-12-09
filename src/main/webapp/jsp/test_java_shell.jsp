@@ -17,13 +17,13 @@
                 JProxyImpl.SINGLETON.getJProxyEngine().stop = true;
             }
 
-            String pathInput = application.getRealPath("/") + "/WEB-INF/javashellex/code/";                       
+            String inputPath = application.getRealPath("/") + "/WEB-INF/javashellex/code/";                       
             String cacheClassFolder = application.getRealPath("/") + "/WEB-INF/classes/";
             String compilationOptions = "-source 1.6  -target 1.6";
                     
             String[] args = new String[] 
             { 
-                pathInput + "/test_java_shell",
+                inputPath + "/test_java_shell",
                 "HELLO WORLD!",
                 "-DscanPeriod=-1",
                 "-DcacheClassFolder=" + cacheClassFolder,

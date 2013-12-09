@@ -15,7 +15,7 @@ import java.util.TimerTask;
 public abstract class JProxyEngine 
 {
     protected JProxyCompilerInMemory compiler;    
-    protected File scriptFile;
+    protected File scriptFile; // Puede ser nulo
     protected ClassLoader rootClassLoader;
     protected File folderSources;
     protected JProxyClassLoader customClassLoader;

@@ -30,9 +30,10 @@ public class JProxyShellImpl extends JProxyImpl
     
     public void init(String[] args)
     {    
+System.out.println("ARG 0: " + args[0]);
         this.scriptFile = new File(args[0]);
         File parentDir = JProxyUtil.getParentDir(scriptFile);        
-        String pathInput = parentDir.getAbsolutePath();        
+        String inputPath = parentDir.getAbsolutePath();        
         
         String classFolder = null; 
         long scanPeriod = -1;
@@ -88,17 +89,13 @@ public class JProxyShellImpl extends JProxyImpl
         JProxyConfigImpl config = new JProxyConfigImpl();
         config.setEnabled(true);
         config.setRelProxyOnReloadListener(proxyListener);
-        config.setInputPath(pathInput);
+        config.setInputPath(inputPath);
         config.setClassFolder(classFolder);
         config.setScanPeriod(scanPeriod);
         config.setCompilationOptions(compilationOptions);
-        config.setJProxyDiagnosticsListener(diagnostics);
-        
-
+        config.setJProxyDiagnosticsListener(diagnostics);      
         
         ClassDescriptorSourceFileScript scriptFileDesc = super.init(classLoader,config);
-        
-        
         
         Class scriptClass = scriptFileDesc.getLastLoadedClass();
         if (scriptClass == null)

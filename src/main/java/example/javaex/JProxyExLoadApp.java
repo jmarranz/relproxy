@@ -25,7 +25,7 @@ public class JProxyExLoadApp
     public static void init(ItsNatHttpServlet itsNatServlet,ServletConfig config)
     {    
         ServletContext context = itsNatServlet.getItsNatServletContext().getServletContext();
-        String pathInput = context.getRealPath("/") + "/WEB-INF/javaex/code/";           
+        String inputPath = context.getRealPath("/") + "/WEB-INF/javaex/code/";           
         String classFolder = null; // context.getRealPath("/") + "/WEB-INF/classes";
         Iterable<String> compilationOptions = Arrays.asList(new String[]{"-source","1.6","-target","1.6"});
         long scanPeriod = 200;
@@ -60,7 +60,7 @@ public class JProxyExLoadApp
         JProxyConfig jpConfig = JProxy.createJProxyConfig();
         jpConfig.setEnabled(true)
                 .setRelProxyOnReloadListener(proxyListener)
-                .setInputPath(pathInput)
+                .setInputPath(inputPath)
                 .setScanPeriod(scanPeriod)
                 .setClassFolder(classFolder)
                 .setCompilationOptions(compilationOptions)
