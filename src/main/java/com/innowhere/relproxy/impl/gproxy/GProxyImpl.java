@@ -15,10 +15,10 @@ public abstract class GProxyImpl extends GenericProxyImpl
     public static GProxyImpl SINGLETON;    
     protected GProxyGroovyScriptEngine engine;
     
-    public void init(RelProxyOnReloadListener relListener,GProxyGroovyScriptEngine engine)
+    public void init(GProxyConfigImpl config)
     {
-        super.init(relListener);
-        this.engine = engine;
+        super.init(config);
+        this.engine = config.getGProxyGroovyScriptEngine();
     }
     
     public GProxyGroovyScriptEngine getGProxyGroovyScriptEngine()

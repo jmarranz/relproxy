@@ -2,6 +2,7 @@ package example.javaex;
 
 import com.innowhere.relproxy.RelProxyOnReloadListener;
 import com.innowhere.relproxy.jproxy.JProxy;
+import com.innowhere.relproxy.jproxy.JProxyConfig;
 import com.innowhere.relproxy.jproxy.JProxyDiagnosticsListener;
 import java.lang.reflect.Method;
 import java.util.Arrays;
@@ -56,7 +57,16 @@ public class JProxyExLoadApp
             }
         };
         
-        JProxy.init(true, proxyListener, pathInput,classFolder, scanPeriod,compilationOptions,diagnosticsListener);
+        JProxyConfig jpConfig = JProxy.createJProxyConfig();
+        jpConfig.setEnabled(true)
+                .setRelProxyOnReloadListener(proxyListener)
+                .setInputPath(pathInput)
+                .setScanPeriod(scanPeriod)
+                .setClassFolder(classFolder)
+                .setCompilationOptions(compilationOptions)
+                .setJProxyDiagnosticsListener(diagnosticsListener);
+        
+        JProxy.init(jpConfig);
 
         
         FalseDB db = new FalseDB();

@@ -31,6 +31,6 @@ class GroovyExampleDocument
         
         this.resultsElem = doc.getElementById("resultsId")
         
-        println("GroovyExampleDocument 1 ")        
+        println("GroovyExampleDocument 2 ")        
     }
 }

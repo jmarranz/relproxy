@@ -6,13 +6,12 @@ import com.innowhere.relproxy.impl.jproxy.clsmgr.ClassDescriptorSourceFileScript
 import com.innowhere.relproxy.impl.jproxy.clsmgr.JProxyEngine;
 import com.innowhere.relproxy.impl.jproxy.clsmgr.JProxyEngineShell;
 import com.innowhere.relproxy.impl.jproxy.clsmgr.JProxyUtil;
+import com.innowhere.relproxy.jproxy.JProxyConfig;
 import com.innowhere.relproxy.jproxy.JProxyDiagnosticsListener;
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.LinkedList;
-import javax.tools.DiagnosticCollector;
-import javax.tools.JavaFileObject;
 
 /**
  * Inspiraciones: http://groovy.codehaus.org/Running
@@ -84,9 +83,20 @@ public class JProxyShellImpl extends JProxyImpl
             }        
         };        
         
-        JProxyDiagnosticsListener diagnostics = null; // Nos vale el log por defecto
+        JProxyDiagnosticsListener diagnostics = null; // Nos vale el log por defecto        
         
-        ClassDescriptorSourceFileScript scriptFileDesc = super.init(classLoader,proxyListener,pathInput,classFolder,scanPeriod,compilationOptions,diagnostics);
+        JProxyConfigImpl config = new JProxyConfigImpl();
+        config.setEnabled(true);
+        config.setRelProxyOnReloadListener(proxyListener);
+        config.setInputPath(pathInput);
+        config.setClassFolder(classFolder);
+        config.setScanPeriod(scanPeriod);
+        config.setCompilationOptions(compilationOptions);
+        config.setJProxyDiagnosticsListener(diagnostics);
+        
+
+        
+        ClassDescriptorSourceFileScript scriptFileDesc = super.init(classLoader,config);
         
         
         

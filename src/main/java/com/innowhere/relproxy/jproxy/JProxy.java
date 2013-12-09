@@ -1,7 +1,6 @@
 
 package com.innowhere.relproxy.jproxy;
 
-import com.innowhere.relproxy.RelProxyOnReloadListener;
 import com.innowhere.relproxy.impl.jproxy.JProxyDefaultImpl;
 
 /**
@@ -10,9 +9,14 @@ import com.innowhere.relproxy.impl.jproxy.JProxyDefaultImpl;
  */
 public class JProxy 
 {
-    public static void init(boolean enabled,RelProxyOnReloadListener relListener,String pathInput,String classFolder,long scanPeriod,Iterable<String> compilationOptions,JProxyDiagnosticsListener diagnosticsListener)
+    public static JProxyConfig createJProxyConfig()
     {
-        JProxyDefaultImpl.initStatic(enabled,relListener, pathInput, classFolder, scanPeriod, compilationOptions,diagnosticsListener);
+        return JProxyDefaultImpl.createJProxyConfig();
+    }    
+    
+    public static void init(JProxyConfig config)
+    {
+        JProxyDefaultImpl.initStatic(config.configImpl);
     }
      
     public static <T> T create(T obj,Class<T> clasz)

@@ -29,9 +29,9 @@ public abstract class GenericProxyImpl
             throw new RelProxyException("Execute first the init method");
     }    
     
-    protected void init(RelProxyOnReloadListener relListener)
+    protected void init(GenericProxyConfigBaseImpl config)
     {
-        this.reloadListener = relListener; 
+        this.reloadListener = config.getRelProxyOnReloadListener(); 
     }    
     
     public RelProxyOnReloadListener getRelProxyOnReloadListener()

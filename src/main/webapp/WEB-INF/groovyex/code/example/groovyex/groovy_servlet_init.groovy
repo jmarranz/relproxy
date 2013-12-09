@@ -8,9 +8,9 @@ import java.lang.reflect.Method;
 import com.innowhere.relproxy.RelProxyOnReloadListener;
 import com.innowhere.relproxy.gproxy.GProxy;
 import com.innowhere.relproxy.gproxy.GProxyGroovyScriptEngine;
+import com.innowhere.relproxy.gproxy.GProxyConfig;
 
-GProxyGroovyScriptEngine groovyEngine = 
-        {
+def groovyEngine = {
              String scriptName -> return (java.lang.Class)servlet.getGroovyScriptEngine().loadScriptByName(scriptName) 
         } as GProxyGroovyScriptEngine;
 
@@ -21,12 +21,15 @@ GProxyGroovyScriptEngine groovyEngine =
         } as GProxyGroovyScriptEngine;
 */
 
-GProxy.init(true,{ 
+def reloadListener = { 
         Object objOld,Object objNew,Object proxy, Method method, Object[] args -> 
            println("Reloaded " + objNew + " Calling method: " + method)
-      } as RelProxyOnReloadListener,
-      groovyEngine
-    );
+      } as RelProxyOnReloadListener;
+
+def gpConfig = GProxy.createGProxyConfig();
+gpConfig.setEnabled(true).setRelProxyOnReloadListener(reloadListener).setGProxyGroovyScriptEngine(groovyEngine);
+
+GProxy.init(gpConfig);
 
 
 def db = new FalseDB();

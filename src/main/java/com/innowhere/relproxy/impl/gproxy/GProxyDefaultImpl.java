@@ -1,7 +1,6 @@
 package com.innowhere.relproxy.impl.gproxy;
 
-import com.innowhere.relproxy.gproxy.GProxyGroovyScriptEngine;
-import com.innowhere.relproxy.RelProxyOnReloadListener;
+import com.innowhere.relproxy.gproxy.GProxyConfig;
 
 /**
  *
@@ -9,13 +8,18 @@ import com.innowhere.relproxy.RelProxyOnReloadListener;
  */
 public class GProxyDefaultImpl extends GProxyImpl
 {
-    public static void initStatic(boolean enabled,RelProxyOnReloadListener relListener,GProxyGroovyScriptEngine engine)
+    public static GProxyConfig createGProxyConfig()
     {
-        if (!enabled) return;
+        return new GProxyConfig();
+    }      
+    
+    public static void initStatic(GProxyConfigImpl config)
+    {
+        if (!config.isEnabled()) return;
         
         checkSingletonNull(SINGLETON);        
         SINGLETON = new GProxyDefaultImpl();
-        SINGLETON.init(relListener,engine);
+        SINGLETON.init(config);
     }    
     
     public static <T> T createStatic(T obj,Class<T> clasz)
