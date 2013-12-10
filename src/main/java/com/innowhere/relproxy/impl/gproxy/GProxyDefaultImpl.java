@@ -10,7 +10,7 @@ public class GProxyDefaultImpl extends GProxyImpl
 {
     public static GProxyConfig createGProxyConfig()
     {
-        return new GProxyConfig();
+        return new GProxyConfigImpl();
     }      
     
     public static void initStatic(GProxyConfigImpl config)

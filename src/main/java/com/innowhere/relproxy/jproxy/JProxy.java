@@ -1,6 +1,7 @@
 
 package com.innowhere.relproxy.jproxy;
 
+import com.innowhere.relproxy.impl.jproxy.JProxyConfigImpl;
 import com.innowhere.relproxy.impl.jproxy.JProxyDefaultImpl;
 
 /**
@@ -16,7 +17,7 @@ public class JProxy
     
     public static void init(JProxyConfig config)
     {
-        JProxyDefaultImpl.initStatic(config.configImpl);
+        JProxyDefaultImpl.initStatic((JProxyConfigImpl)config);
     }
      
     public static <T> T create(T obj,Class<T> clasz)

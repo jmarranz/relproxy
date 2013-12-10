@@ -8,51 +8,19 @@ import com.innowhere.relproxy.impl.jproxy.JProxyConfigImpl;
  *
  * @author jmarranz
  */
-public class JProxyConfig
+public interface JProxyConfig
 {
-    protected JProxyConfigImpl configImpl = new JProxyConfigImpl();
+    public JProxyConfig setEnabled(boolean enabled);
 
-    public JProxyConfig setEnabled(boolean enabled)
-    {
-        configImpl.setEnabled(enabled);
-        return this;
-    }
+    public JProxyConfig setRelProxyOnReloadListener(RelProxyOnReloadListener relListener);
 
-    public JProxyConfig setRelProxyOnReloadListener(RelProxyOnReloadListener relListener)
-    {
-        configImpl.setRelProxyOnReloadListener(relListener);
-        return this;        
-    }
+    public JProxyConfig setInputPath(String inputPath);
 
-    public JProxyConfig setInputPath(String inputPath)
-    {
-        configImpl.setInputPath(inputPath);
-        return this;        
-    }
+    public JProxyConfig setClassFolder(String classFolder);
 
-    public JProxyConfig setClassFolder(String classFolder)
-    {
-        configImpl.setClassFolder(classFolder);
-        return this;        
-    }
-
-    public JProxyConfig setScanPeriod(long scanPeriod)
-    {
-        configImpl.setScanPeriod(scanPeriod);
-        return this;        
-    }
-
-    public JProxyConfig setCompilationOptions(Iterable<String> compilationOptions)
-    {
-        configImpl.setCompilationOptions(compilationOptions);
-        return this;        
-    }
-
-    public JProxyConfig setJProxyDiagnosticsListener(JProxyDiagnosticsListener diagnosticsListener)
-    {
-        configImpl.setJProxyDiagnosticsListener(diagnosticsListener);
-        return this;        
-    }
+    public JProxyConfig setScanPeriod(long scanPeriod);
     
-    
+    public JProxyConfig setCompilationOptions(Iterable<String> compilationOptions);
+
+    public JProxyConfig setJProxyDiagnosticsListener(JProxyDiagnosticsListener diagnosticsListener);
 }

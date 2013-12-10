@@ -10,7 +10,7 @@ public class JProxyDefaultImpl extends JProxyImpl
 {         
     public static JProxyConfig createJProxyConfig()
     {
-        return new JProxyConfig();
+        return new JProxyConfigImpl();
     }         
     
     public static void initStatic(JProxyConfigImpl config)

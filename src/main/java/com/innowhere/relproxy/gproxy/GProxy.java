@@ -1,6 +1,7 @@
 
 package com.innowhere.relproxy.gproxy;
 
+import com.innowhere.relproxy.impl.gproxy.GProxyConfigImpl;
 import com.innowhere.relproxy.impl.gproxy.GProxyDefaultImpl;
 
 /**
@@ -16,7 +17,7 @@ public class GProxy
     
     public static void init(GProxyConfig config)
     {
-        GProxyDefaultImpl.initStatic(config.configImpl);
+        GProxyDefaultImpl.initStatic((GProxyConfigImpl)config);
     }   
     
     public static <T> T create(T obj,Class<T> clasz)
