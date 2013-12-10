@@ -1,9 +1,6 @@
 package com.innowhere.relproxy.impl.jproxy;
 
-import com.innowhere.relproxy.impl.jproxy.clsmgr.JProxyEngine;
-import com.innowhere.relproxy.impl.jproxy.clsmgr.JProxyEngineDefault;
 import com.innowhere.relproxy.jproxy.JProxyConfig;
-import com.innowhere.relproxy.jproxy.JProxyDiagnosticsListener;
 
 /**
  *
@@ -22,7 +19,7 @@ public class JProxyDefaultImpl extends JProxyImpl
         
         checkSingletonNull(SINGLETON);
         SINGLETON = new JProxyDefaultImpl();
-        SINGLETON.init(null,config);
+        SINGLETON.init(config,null,null);
     }    
     
     public static <T> T createStatic(T obj,Class<T> clasz)
@@ -33,9 +30,4 @@ public class JProxyDefaultImpl extends JProxyImpl
         return SINGLETON.create(obj, clasz);
     }    
 
-    @Override
-    public JProxyEngine createJProxyEngine(ClassLoader parentClassLoader, String pathSources, String classFolder, long scanPeriod, Iterable<String> compilationOptions, JProxyDiagnosticsListener diagnosticsListener)
-    {
-        return new JProxyEngineDefault(parentClassLoader,pathSources,classFolder,scanPeriod,compilationOptions,diagnosticsListener);  
-    }
 }

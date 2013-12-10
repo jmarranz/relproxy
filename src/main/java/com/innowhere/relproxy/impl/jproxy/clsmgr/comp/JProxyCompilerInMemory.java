@@ -11,11 +11,9 @@ import com.innowhere.relproxy.impl.jproxy.clsmgr.JProxyClassLoader;
 import com.innowhere.relproxy.impl.jproxy.clsmgr.JProxyEngine;
 import com.innowhere.relproxy.jproxy.JProxyDiagnosticsListener;
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-import javax.tools.Diagnostic;
 import javax.tools.DiagnosticCollector;
 import javax.tools.JavaCompiler;
 import javax.tools.JavaFileManager;
@@ -34,7 +32,6 @@ public class JProxyCompilerInMemory
     protected Iterable<String> compilationOptions; // puede ser null
     protected JProxyDiagnosticsListener diagnosticsListener; // puede ser null
 
-            
     public JProxyCompilerInMemory(JProxyEngine engine,Iterable<String> compilationOptions,JProxyDiagnosticsListener diagnosticsListener)
     {
         this.engine = engine;
@@ -120,7 +117,7 @@ public class JProxyCompilerInMemory
         if (sourceFileDesc instanceof ClassDescriptorSourceFileJava)
         {
             List<File> sourceFileList = new ArrayList<File>();
-            sourceFileList.add(sourceFileDesc.getSourceFile());            
+            sourceFileList.add(((ClassDescriptorSourceFileJava)sourceFileDesc).getSourceFile());            
             compilationUnits = standardFileManager.getJavaFileObjectsFromFiles(sourceFileList);
         }
         else if (sourceFileDesc instanceof ClassDescriptorSourceFileScript)

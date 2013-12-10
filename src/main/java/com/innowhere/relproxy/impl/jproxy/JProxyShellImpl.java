@@ -3,10 +3,8 @@ package com.innowhere.relproxy.impl.jproxy;
 import com.innowhere.relproxy.RelProxyException;
 import com.innowhere.relproxy.RelProxyOnReloadListener;
 import com.innowhere.relproxy.impl.jproxy.clsmgr.ClassDescriptorSourceFileScript;
-import com.innowhere.relproxy.impl.jproxy.clsmgr.JProxyEngine;
-import com.innowhere.relproxy.impl.jproxy.clsmgr.JProxyEngineShell;
 import com.innowhere.relproxy.impl.jproxy.clsmgr.JProxyUtil;
-import com.innowhere.relproxy.jproxy.JProxyConfig;
+import com.innowhere.relproxy.impl.jproxy.clsmgr.SourceFileScriptNormal;
 import com.innowhere.relproxy.jproxy.JProxyDiagnosticsListener;
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
@@ -20,8 +18,6 @@ import java.util.LinkedList;
  */
 public class JProxyShellImpl extends JProxyImpl
 {     
-    protected File scriptFile;
-    
     public static void main(String[] args)
     {       
         SINGLETON = new JProxyShellImpl();
@@ -30,9 +26,9 @@ public class JProxyShellImpl extends JProxyImpl
     
     public void init(String[] args)
     {    
-System.out.println("ARG 0: " + args[0]);
-        this.scriptFile = new File(args[0]);
-        File parentDir = JProxyUtil.getParentDir(scriptFile);        
+//System.out.println("ARG 0: " + args[0]);
+        SourceFileScriptNormal scriptFile = new SourceFileScriptNormal(new File(args[0]));
+        File parentDir = JProxyUtil.getParentDir(scriptFile.getFile());        
         String inputPath = parentDir.getAbsolutePath();        
         
         String classFolder = null; 
@@ -95,7 +91,7 @@ System.out.println("ARG 0: " + args[0]);
         config.setCompilationOptions(compilationOptions);
         config.setJProxyDiagnosticsListener(diagnostics);      
         
-        ClassDescriptorSourceFileScript scriptFileDesc = super.init(classLoader,config);
+        ClassDescriptorSourceFileScript scriptFileDesc = super.init(config,scriptFile,classLoader);
         
         Class scriptClass = scriptFileDesc.getLastLoadedClass();
         if (scriptClass == null)
@@ -121,12 +117,6 @@ System.out.println("ARG 0: " + args[0]);
         catch (IllegalArgumentException ex) { throw new RelProxyException(ex); }
         catch (InvocationTargetException ex) { throw new RelProxyException(ex); }
     }
-    
-    @Override
-    public JProxyEngine createJProxyEngine(ClassLoader parentClassLoader, String pathSources, String classFolder, long scanPeriod, Iterable<String> compilationOptions, JProxyDiagnosticsListener diagnosticsListener)
-    {
-        return new JProxyEngineShell(scriptFile,parentClassLoader,pathSources,classFolder,scanPeriod,compilationOptions,diagnosticsListener);  
-    }    
     
     private Iterable<String> parseCompilationOptions(String value)
     {

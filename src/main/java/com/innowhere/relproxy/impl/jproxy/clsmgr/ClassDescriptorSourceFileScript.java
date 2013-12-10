@@ -1,8 +1,5 @@
 package com.innowhere.relproxy.impl.jproxy.clsmgr;
 
-import com.innowhere.relproxy.RelProxyException;
-import java.io.File;
-
 /**
  *
  * @author jmarranz
@@ -11,25 +8,21 @@ public class ClassDescriptorSourceFileScript extends ClassDescriptorSourceFile
 {
     protected String source;
     
-    public ClassDescriptorSourceFileScript(JProxyEngine engine,String className,File sourceFile,long timestamp)
+    public ClassDescriptorSourceFileScript(JProxyEngine engine,String className,SourceFileScript sourceFile,long timestamp)
     {
         super(engine,className, sourceFile, timestamp);
                 
         generateSourceCode();
     }
     
+    public SourceFileScript getSourceFileScript()
+    {
+        return (SourceFileScript)sourceFile;
+    }
+    
     private void generateSourceCode()
     {
-        String codeBody = JProxyUtil.readTextFile(sourceFile,getEncoding());         
-        // Eliminamos la primera línea #!  (debe estar en la primera línea y sin espacios antes)
-        if (!codeBody.startsWith("#!"))
-            throw new RelProxyException("The first line of the script must start with #!");
-        
-        int pos = codeBody.indexOf('\n');
-        if (pos != -1) // Rarísimo que sólo esté el hash bang (script vacío)
-        {
-            codeBody = codeBody.substring(pos + 1);
-        }
+        String codeBody = getSourceFileScript().getCodeBody(getEncoding());         
         
         StringBuilder code = new StringBuilder();
         code.append("public class " + className + " { public void init(String[] args) {\n"); // Lo ponemos todo en una línea para que en caso de error la línea de error coincida con el script original pues hemos quitado la primera línea #!
@@ -53,21 +46,5 @@ public class ClassDescriptorSourceFileScript extends ClassDescriptorSourceFile
         return source;
     }
     
-    public static String getClassNameFromSourceFileScriptAbsPath(File sourceFile,File rootPathOfSourcesFile)
-    {
-        String path = sourceFile.getAbsolutePath();
-        String rootPathOfSources = rootPathOfSourcesFile.getAbsolutePath();
-        // path es absoluto, preferentemente obtenido con File.getAbsolutePath()
-        int pos = path.indexOf(rootPathOfSources); 
-        if (pos != 0) // DEBE SER 0, NO debería ocurrir
-            return null;
-        path = path.substring(rootPathOfSources.length() + 1); // Sumamos +1 para quitar también el / separador del pathInput y el path relativo de la clase
-        // En teoría NO tiene extensión pero es posible que se le haya dado (ej .jsh), la quitamos si existe
-        pos = path.lastIndexOf('.');        
-        if (pos != -1) 
-            path = path.substring(0, pos);        
-        
-        path = path.replace(File.separatorChar, '.');  // getAbsolutePath() normaliza con el caracter de la plataforma
-        return path;
-    }              
+             
 }

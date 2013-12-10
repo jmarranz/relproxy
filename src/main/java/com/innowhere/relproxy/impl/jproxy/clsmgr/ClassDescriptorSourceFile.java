@@ -1,6 +1,5 @@
 package com.innowhere.relproxy.impl.jproxy.clsmgr;
 
-import java.io.File;
 import java.util.LinkedList;
 
 /**
@@ -11,10 +10,10 @@ public abstract class ClassDescriptorSourceFile extends ClassDescriptor
 {
     protected JProxyEngine engine;
     protected long timestamp;
-    protected File sourceFile; 
+    protected SourceFile sourceFile; 
     protected LinkedList<ClassDescriptorInner> innerClasses;
     
-    public ClassDescriptorSourceFile(JProxyEngine engine,String className,File sourceFile, long timestamp) 
+    public ClassDescriptorSourceFile(JProxyEngine engine,String className,SourceFile sourceFile, long timestamp) 
     {
         super(className);
         this.engine = engine;
@@ -22,12 +21,14 @@ public abstract class ClassDescriptorSourceFile extends ClassDescriptor
         this.timestamp = timestamp;
     }
 
-    public static ClassDescriptorSourceFile create(boolean script,JProxyEngine engine,String className,File sourceFile, long timestamp)
+    public static ClassDescriptorSourceFile create(boolean script,JProxyEngine engine,String className,SourceFile sourceFile, long timestamp)
     {
-        if (script)
-            return new ClassDescriptorSourceFileScript(engine,className,sourceFile,timestamp);  
+        if (sourceFile instanceof SourceFileScript)
+            return new ClassDescriptorSourceFileScript(engine,className,(SourceFileScript)sourceFile,timestamp);  
+        else if (sourceFile instanceof SourceFileJavaNormal)
+            return new ClassDescriptorSourceFileJava(engine,className,(SourceFileJavaNormal)sourceFile,timestamp);
         else
-            return new ClassDescriptorSourceFileJava(engine,className,sourceFile,timestamp);
+            return null; // WTF!!
     }
     
     public String getEncoding()
@@ -39,11 +40,6 @@ public abstract class ClassDescriptorSourceFile extends ClassDescriptor
     {
         return false;
     }    
-    
-    public File getSourceFile()
-    {
-        return sourceFile;
-    }
     
     public long getTimestamp() 
     {

@@ -12,10 +12,10 @@ import java.util.TimerTask;
  *
  * @author jmarranz
  */
-public abstract class JProxyEngine 
+public class JProxyEngine 
 {
     protected JProxyCompilerInMemory compiler;    
-    protected File scriptFile; // Puede ser nulo
+    protected SourceFileScript scriptFile; // Puede ser nulo
     protected ClassLoader rootClassLoader;
     protected File folderSources;
     protected JProxyClassLoader customClassLoader;
@@ -26,7 +26,7 @@ public abstract class JProxyEngine
     protected String sourceEncoding = "UTF-8"; // Por ahora, provisional
     public volatile boolean stop = false;
     
-    public JProxyEngine(File scriptFile,ClassLoader rootClassLoader,String pathSources,String classFolder,long scanPeriod,Iterable<String> compilationOptions,JProxyDiagnosticsListener diagnosticsListener)
+    public JProxyEngine(SourceFileScript scriptFile,ClassLoader rootClassLoader,String pathSources,String classFolder,long scanPeriod,Iterable<String> compilationOptions,JProxyDiagnosticsListener diagnosticsListener)
     {
         this.scriptFile = scriptFile;
         this.rootClassLoader = rootClassLoader;
