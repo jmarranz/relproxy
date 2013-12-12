@@ -39,11 +39,6 @@ public class JProxyShellImpl extends JProxyImpl
             File parentDir = JProxyUtil.getParentDir(((SourceScriptFile)sourceFileScript).getFile());        
             inputPath = parentDir.getAbsolutePath();        
         }
-        else
-        {
-            String code = args[0];
-            sourceFileScript = new SourceScriptInMemory("_jproxyshellinmemoryclass_",code);
-        }
         
         String classFolder = null; 
         long scanPeriod = -1;
@@ -81,6 +76,15 @@ public class JProxyShellImpl extends JProxyImpl
             {
                 argsToScript.add(arg);
             }
+        }
+        
+        if (!isScriptFile)
+        {
+            StringBuilder code = new StringBuilder();
+            code.append(args[0]);  // En argsToScript no está el args[0]
+            for(String chunk : argsToScript)
+                code.append(chunk);
+            sourceFileScript = new SourceScriptInMemory("_jproxyshellinmemoryclass_",code.toString());        
         }
         
         JProxyShellClassLoader classLoader = null;
