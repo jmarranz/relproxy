@@ -7,11 +7,11 @@ import java.io.File;
  *
  * @author jmarranz
  */
-public class SourceFileScriptNormal extends SourceFileScript
+public class SourceScriptFile extends SourceScript
 {
     protected File sourceFile;
     
-    public SourceFileScriptNormal(File sourceFile)
+    public SourceScriptFile(File sourceFile)
     {
         this.sourceFile = sourceFile;
     }

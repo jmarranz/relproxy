@@ -152,8 +152,13 @@ public class JProxyCompilerInMemory
         LinkedList<String> finalCompilationOptions = new LinkedList<String>();
         if (compilationOptions != null)        
             for(String option : compilationOptions) finalCompilationOptions.add(option);
-        finalCompilationOptions.add("-classpath");
-        finalCompilationOptions.add(engine.getFolderSources().getAbsolutePath());        
+        
+        File folderSources = engine.getFolderSources();
+        if (folderSources != null)
+        {
+            finalCompilationOptions.add("-classpath");
+            finalCompilationOptions.add(engine.getFolderSources().getAbsolutePath());        
+        }
         
         DiagnosticCollector<JavaFileObject> diagnostics = context.getDiagnosticCollector();
         JavaCompiler.CompilationTask task = compiler.getTask(null, fileManager, diagnostics, finalCompilationOptions,null, compilationUnits);

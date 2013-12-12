@@ -6,7 +6,7 @@ import java.io.File;
  *
  * @author jmarranz
  */
-public class SourceFileJavaNormal extends SourceFile
+public class SourceFileJavaNormal extends SourceUnit
 {
     protected File sourceFile;
     

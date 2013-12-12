@@ -8,16 +8,16 @@ public class ClassDescriptorSourceFileScript extends ClassDescriptorSourceFile
 {
     protected String source;
     
-    public ClassDescriptorSourceFileScript(JProxyEngine engine,String className,SourceFileScript sourceFile,long timestamp)
+    public ClassDescriptorSourceFileScript(JProxyEngine engine,String className,SourceScript sourceFile,long timestamp)
     {
         super(engine,className, sourceFile, timestamp);
                 
         generateSourceCode();
     }
     
-    public SourceFileScript getSourceFileScript()
+    public SourceScript getSourceFileScript()
     {
-        return (SourceFileScript)sourceFile;
+        return (SourceScript)sourceFile;
     }
     
     private void generateSourceCode()

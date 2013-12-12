@@ -6,12 +6,12 @@ import java.io.File;
  *
  * @author jmarranz
  */
-public class SourceFileScriptInMemory extends SourceFileScript
+public class SourceScriptInMemory extends SourceScript
 {
     protected String className;
     protected String codeBody;
     
-    public SourceFileScriptInMemory(String className,String codeBody)
+    public SourceScriptInMemory(String className,String codeBody)
     {
         this.className = className;
         this.codeBody = codeBody;

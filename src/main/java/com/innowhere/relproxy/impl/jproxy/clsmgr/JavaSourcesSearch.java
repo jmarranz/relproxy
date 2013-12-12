@@ -17,15 +17,17 @@ public class JavaSourcesSearch
         this.engine = engine;
     }
 
-    public ClassDescriptorSourceFileScript sourceFileSearch(SourceFileScript scriptFile,ClassDescriptorSourceFileRegistry oldSourceFileMap,ClassDescriptorSourceFileRegistry newSourceFileMap,LinkedList<ClassDescriptorSourceFile> updatedSourceFiles,LinkedList<ClassDescriptorSourceFile> newSourceFiles,LinkedList<ClassDescriptorSourceFile> deletedSourceFiles)
+    public ClassDescriptorSourceFileScript sourceFileSearch(SourceScript scriptFile,ClassDescriptorSourceFileRegistry oldSourceFileMap,ClassDescriptorSourceFileRegistry newSourceFileMap,LinkedList<ClassDescriptorSourceFile> updatedSourceFiles,LinkedList<ClassDescriptorSourceFile> newSourceFiles,LinkedList<ClassDescriptorSourceFile> deletedSourceFiles)
     {
         ClassDescriptorSourceFileScript scriptFileDesc = (scriptFile == null) ? null : processSourceFileScript(scriptFile,oldSourceFileMap,newSourceFileMap,updatedSourceFiles,newSourceFiles,deletedSourceFiles);
         File folderSources = engine.getFolderSources();
-        String[] children = folderSources.list(); // No esperamos que no exista
-        recursiveSourceFileJavaSearch(folderSources,children,oldSourceFileMap,newSourceFileMap,updatedSourceFiles,newSourceFiles,deletedSourceFiles);
-        if (oldSourceFileMap != null && !oldSourceFileMap.isEmpty())        
-            deletedSourceFiles.addAll(oldSourceFileMap.getClassDescriptorSourceFileColl());
-        
+        if (folderSources != null) // Si es null es el caso de shell interactivo o code snippet
+        {
+            String[] children = folderSources.list(); // No esperamos que no exista
+            recursiveSourceFileJavaSearch(folderSources,children,oldSourceFileMap,newSourceFileMap,updatedSourceFiles,newSourceFiles,deletedSourceFiles);
+            if (oldSourceFileMap != null && !oldSourceFileMap.isEmpty())        
+                deletedSourceFiles.addAll(oldSourceFileMap.getClassDescriptorSourceFileColl());
+        }
         return scriptFileDesc;
     }
     
@@ -54,7 +56,7 @@ public class JavaSourcesSearch
         }
     }    
     
-    private ClassDescriptorSourceFileScript processSourceFileScript(SourceFileScript file,ClassDescriptorSourceFileRegistry oldSourceFileMap,ClassDescriptorSourceFileRegistry newSourceFileMap,LinkedList<ClassDescriptorSourceFile> updatedSourceFiles,LinkedList<ClassDescriptorSourceFile> newSourceFiles,LinkedList<ClassDescriptorSourceFile> deletedSourceFiles)
+    private ClassDescriptorSourceFileScript processSourceFileScript(SourceScript file,ClassDescriptorSourceFileRegistry oldSourceFileMap,ClassDescriptorSourceFileRegistry newSourceFileMap,LinkedList<ClassDescriptorSourceFile> updatedSourceFiles,LinkedList<ClassDescriptorSourceFile> newSourceFiles,LinkedList<ClassDescriptorSourceFile> deletedSourceFiles)
     {             
         String className = file.getClassNameFromSourceFileScriptAbsPath(engine.getFolderSources()); 
         return (ClassDescriptorSourceFileScript)processSourceFile(file,className,true,oldSourceFileMap,newSourceFileMap,updatedSourceFiles,newSourceFiles,deletedSourceFiles);        
@@ -66,7 +68,7 @@ public class JavaSourcesSearch
         return (ClassDescriptorSourceFileJava)processSourceFile(file,className,false,oldSourceFileMap,newSourceFileMap,updatedSourceFiles,newSourceFiles,deletedSourceFiles);        
     }
     
-    private ClassDescriptorSourceFile processSourceFile(SourceFile file,String className,boolean script,ClassDescriptorSourceFileRegistry oldSourceFileMap,ClassDescriptorSourceFileRegistry newSourceFileMap,LinkedList<ClassDescriptorSourceFile> updatedSourceFiles,LinkedList<ClassDescriptorSourceFile> newSourceFiles,LinkedList<ClassDescriptorSourceFile> deletedSourceFiles)
+    private ClassDescriptorSourceFile processSourceFile(SourceUnit file,String className,boolean script,ClassDescriptorSourceFileRegistry oldSourceFileMap,ClassDescriptorSourceFileRegistry newSourceFileMap,LinkedList<ClassDescriptorSourceFile> updatedSourceFiles,LinkedList<ClassDescriptorSourceFile> newSourceFiles,LinkedList<ClassDescriptorSourceFile> deletedSourceFiles)
     {
         long timestampSourceFile = file.lastModified();
         ClassDescriptorSourceFile sourceFile;

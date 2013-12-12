@@ -4,7 +4,9 @@ import com.innowhere.relproxy.RelProxyException;
 import com.innowhere.relproxy.RelProxyOnReloadListener;
 import com.innowhere.relproxy.impl.jproxy.clsmgr.ClassDescriptorSourceFileScript;
 import com.innowhere.relproxy.impl.jproxy.clsmgr.JProxyUtil;
-import com.innowhere.relproxy.impl.jproxy.clsmgr.SourceFileScriptNormal;
+import com.innowhere.relproxy.impl.jproxy.clsmgr.SourceScript;
+import com.innowhere.relproxy.impl.jproxy.clsmgr.SourceScriptFile;
+import com.innowhere.relproxy.impl.jproxy.clsmgr.SourceScriptInMemory;
 import com.innowhere.relproxy.jproxy.JProxyDiagnosticsListener;
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
@@ -27,9 +29,21 @@ public class JProxyShellImpl extends JProxyImpl
     public void init(String[] args)
     {    
 //System.out.println("ARG 0: " + args[0]);
-        SourceFileScriptNormal scriptFile = new SourceFileScriptNormal(new File(args[0]));
-        File parentDir = JProxyUtil.getParentDir(scriptFile.getFile());        
-        String inputPath = parentDir.getAbsolutePath();        
+        File scriptFile = new File(args[0]);
+        boolean isScriptFile = scriptFile.exists();
+        SourceScript sourceFileScript = null;
+        String inputPath = null;
+        if (isScriptFile)
+        {
+            sourceFileScript = new SourceScriptFile(scriptFile);
+            File parentDir = JProxyUtil.getParentDir(((SourceScriptFile)sourceFileScript).getFile());        
+            inputPath = parentDir.getAbsolutePath();        
+        }
+        else
+        {
+            String code = args[0];
+            sourceFileScript = new SourceScriptInMemory("_jproxyshellinmemoryclass_",code);
+        }
         
         String classFolder = null; 
         long scanPeriod = -1;
@@ -91,7 +105,7 @@ public class JProxyShellImpl extends JProxyImpl
         config.setCompilationOptions(compilationOptions);
         config.setJProxyDiagnosticsListener(diagnostics);      
         
-        ClassDescriptorSourceFileScript scriptFileDesc = super.init(config,scriptFile,classLoader);
+        ClassDescriptorSourceFileScript scriptFileDesc = super.init(config,sourceFileScript,classLoader);
         
         Class scriptClass = scriptFileDesc.getLastLoadedClass();
         if (scriptClass == null)

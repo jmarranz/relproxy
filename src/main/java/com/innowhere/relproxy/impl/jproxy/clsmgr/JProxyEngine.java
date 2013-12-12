@@ -15,7 +15,7 @@ import java.util.TimerTask;
 public class JProxyEngine 
 {
     protected JProxyCompilerInMemory compiler;    
-    protected SourceFileScript scriptFile; // Puede ser nulo
+    protected SourceScript scriptFile; // Puede ser nulo
     protected ClassLoader rootClassLoader;
     protected File folderSources;
     protected JProxyClassLoader customClassLoader;
@@ -26,11 +26,11 @@ public class JProxyEngine
     protected String sourceEncoding = "UTF-8"; // Por ahora, provisional
     public volatile boolean stop = false;
     
-    public JProxyEngine(SourceFileScript scriptFile,ClassLoader rootClassLoader,String pathSources,String classFolder,long scanPeriod,Iterable<String> compilationOptions,JProxyDiagnosticsListener diagnosticsListener)
+    public JProxyEngine(SourceScript scriptFile,ClassLoader rootClassLoader,String pathSources,String classFolder,long scanPeriod,Iterable<String> compilationOptions,JProxyDiagnosticsListener diagnosticsListener)
     {
         this.scriptFile = scriptFile;
         this.rootClassLoader = rootClassLoader;
-        this.folderSources = new File(pathSources); // Para normalizar;
+        this.folderSources = pathSources != null ? new File(pathSources) : null; // El File es para normalizar
         this.folderClasses = classFolder;
         this.scanPeriod = scanPeriod;
         this.compiler = new JProxyCompilerInMemory(this,compilationOptions,diagnosticsListener);        

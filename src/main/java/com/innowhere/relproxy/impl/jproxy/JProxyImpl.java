@@ -4,7 +4,7 @@ import com.innowhere.relproxy.impl.GenericProxyImpl;
 import com.innowhere.relproxy.impl.GenericProxyInvocationHandler;
 import com.innowhere.relproxy.impl.jproxy.clsmgr.ClassDescriptorSourceFileScript;
 import com.innowhere.relproxy.impl.jproxy.clsmgr.JProxyEngine;
-import com.innowhere.relproxy.impl.jproxy.clsmgr.SourceFileScript;
+import com.innowhere.relproxy.impl.jproxy.clsmgr.SourceScript;
 import com.innowhere.relproxy.jproxy.JProxyDiagnosticsListener;
 
 /**
@@ -21,7 +21,7 @@ public abstract class JProxyImpl extends GenericProxyImpl
         return Thread.currentThread().getContextClassLoader();
     }
     
-    public ClassDescriptorSourceFileScript init(JProxyConfigImpl config,SourceFileScript scriptFile,ClassLoader classLoader)
+    public ClassDescriptorSourceFileScript init(JProxyConfigImpl config,SourceScript scriptFile,ClassLoader classLoader)
     {
         super.init(config);
         
