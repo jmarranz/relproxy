@@ -65,7 +65,8 @@ public class JProxyEngine
                         ex.printStackTrace(System.err); // Si dejamos subir la excepción se acabó el timer
                     }
                 }
-            };                
+            };            
+
             timer.schedule(task, scanPeriod, scanPeriod);  // Ojo, después de la primera llamada a detectChangesInSources() 
         }        
         

@@ -9,8 +9,8 @@ export CLASSPATH=$PROJECT/target/classes
 export JAVA_OPTS="-client -Xmx100m"
 # Nothing really required in JAVA_OPTS, just to test
 
-export JPROXYSH_SCAN_PERIOD=-1
-export JPROXYSH_CACHE_CLASS_FOLDER="$PROJECT/tmp/java_shell_test_classes"
 export JPROXYSH_COMPILATION_OPTIONS="-source 1.6 -target 1.6"
 
-$PROJECT/src/main/webapp/WEB-INF/javashellex/code/test_java_shell "HELLO WORLD!"
+jproxysh 'System.out.print("This code snippet says: ");' \
+         'System.out.println("Hello World!!");'
+

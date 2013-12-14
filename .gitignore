@@ -2,6 +2,7 @@
 /build
 /bin
 /docs_internal
+/tmp
 .classpath
 .project
 .settings/

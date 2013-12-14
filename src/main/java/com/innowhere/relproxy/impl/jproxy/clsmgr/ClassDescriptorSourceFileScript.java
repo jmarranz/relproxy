@@ -1,5 +1,10 @@
 package com.innowhere.relproxy.impl.jproxy.clsmgr;
 
+import com.innowhere.relproxy.RelProxyException;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.LinkedList;
+
 /**
  *
  * @author jmarranz
@@ -46,5 +51,22 @@ public class ClassDescriptorSourceFileScript extends ClassDescriptorSourceFile
         return source;
     }
     
+    public void callMainMethod(LinkedList<String> argsToScript)
+    {       
+        try
+        {
+            Class scriptClass = getLastLoadedClass();            
+            Object obj = scriptClass.newInstance();
+            Method method = scriptClass.getDeclaredMethod("init",new Class[]{ String[].class });
+            String[] argsToScriptArr = argsToScript.size() > 0 ? argsToScript.toArray(new String[argsToScript.size()]) : new String[0];
+            method.invoke(obj, new Object[]{ argsToScriptArr });
+        }
+        catch (InstantiationException ex) { throw new RelProxyException(ex); }
+        catch (IllegalAccessException ex) { throw new RelProxyException(ex); }
+        catch (NoSuchMethodException ex) { throw new RelProxyException(ex); }
+        catch (SecurityException ex) { throw new RelProxyException(ex); }
+        catch (IllegalArgumentException ex) { throw new RelProxyException(ex); }
+        catch (InvocationTargetException ex) { throw new RelProxyException(ex); }     
+    }     
              
 }
