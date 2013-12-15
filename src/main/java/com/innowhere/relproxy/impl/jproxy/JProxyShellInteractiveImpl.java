@@ -3,6 +3,7 @@ package com.innowhere.relproxy.impl.jproxy;
 import com.innowhere.relproxy.RelProxyException;
 import com.innowhere.relproxy.impl.jproxy.clsmgr.ClassDescriptorSourceFileScript;
 import com.innowhere.relproxy.impl.jproxy.clsmgr.SourceScript;
+import com.innowhere.relproxy.impl.jproxy.clsmgr.SourceScriptInMemory;
 import java.util.LinkedList;
 
 /**
@@ -16,6 +17,11 @@ public class JProxyShellInteractiveImpl extends JProxyShellImpl
         super.init(args, false,  null);
     }      
     
+    protected void executeFirstTime(ClassDescriptorSourceFileScript scriptFileDesc,LinkedList<String> argsToScript,JProxyShellClassLoader classLoader)
+    {
+        // La primera vez el script es vacío, no hay nada que ejecutar
+    }    
+    
     @Override
     protected void processConfigParams(String[] args,LinkedList<String> argsToScript,JProxyConfigImpl config)
     {    
@@ -28,8 +34,8 @@ public class JProxyShellInteractiveImpl extends JProxyShellImpl
     @Override    
     protected SourceScript getSourceScript(String[] args,LinkedList<String> argsToScript) 
     {
-        return null; // Por ahora
-    }        
+        return new SourceScriptInMemory("_jproxyShellInMemoryClass_",""); // La primera vez no hace nada, sirve para "calentar" la app
+    }    
     
     @Override    
     protected JProxyShellClassLoader getJProxyShellClassLoader(JProxyConfigImpl config)
@@ -37,10 +43,5 @@ public class JProxyShellInteractiveImpl extends JProxyShellImpl
         // No hay classFolder => no hay necesidad de nuevo ClassLoader
         return null; 
     }    
-    
-    @Override
-    public void fixLastLoadedClass(ClassDescriptorSourceFileScript scriptFileDesc,JProxyShellClassLoader classLoader)
-    {
-        // Nada que arreglar, si el Class no está dará error más adelante y se considera un error inexperado
-    }    
+
 }

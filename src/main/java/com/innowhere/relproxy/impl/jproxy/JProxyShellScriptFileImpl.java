@@ -25,6 +25,13 @@ public class JProxyShellScriptFileImpl extends JProxyShellImpl
         super.init(args, true, inputPath);
     }    
     
+    protected void executeFirstTime(ClassDescriptorSourceFileScript scriptFileDesc,LinkedList<String> argsToScript,JProxyShellClassLoader classLoader)
+    {
+        fixLastLoadedClass(scriptFileDesc,classLoader);
+        
+        scriptFileDesc.callMainMethod(argsToScript);
+    }
+    
     @Override    
     protected SourceScript getSourceScript(String[] args,LinkedList<String> argsToScript) 
     {
@@ -41,8 +48,7 @@ public class JProxyShellScriptFileImpl extends JProxyShellImpl
             return null;
     }
     
-    @Override
-    public void fixLastLoadedClass(ClassDescriptorSourceFileScript scriptFileDesc,JProxyShellClassLoader classLoader)
+    protected void fixLastLoadedClass(ClassDescriptorSourceFileScript scriptFileDesc,JProxyShellClassLoader classLoader)
     {
         Class scriptClass = scriptFileDesc.getLastLoadedClass();
         if (scriptClass != null) return;

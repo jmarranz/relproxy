@@ -37,7 +37,7 @@ public abstract class JProxyShellImpl extends JProxyImpl
         }       
     }
 
-    public void init(String[] args,boolean isScriptFile,String inputPath)
+    public ClassDescriptorSourceFileScript init(String[] args,boolean isScriptFile,String inputPath)
     {
         // Esto quizás necesite una opción en plan "verbose" o "log" para mostrar por pantalla o nada
         RelProxyOnReloadListener proxyListener = new RelProxyOnReloadListener() {
@@ -61,15 +61,15 @@ public abstract class JProxyShellImpl extends JProxyImpl
 
         ClassDescriptorSourceFileScript scriptFileDesc = super.init(config,sourceFileScript,classLoader);
 
-        fixLastLoadedClass(scriptFileDesc,classLoader);
+        executeFirstTime(scriptFileDesc,argsToScript,classLoader);
         
-        scriptFileDesc.callMainMethod(argsToScript);
-    }
-    
-    public abstract void fixLastLoadedClass(ClassDescriptorSourceFileScript scriptFileDesc,JProxyShellClassLoader classLoader);
+        return scriptFileDesc;
+    }        
+
     
     protected abstract SourceScript getSourceScript(String[] args,LinkedList<String> argsToScript);
     protected abstract JProxyShellClassLoader getJProxyShellClassLoader(JProxyConfigImpl config);    
+    protected abstract void executeFirstTime(ClassDescriptorSourceFileScript scriptFileDesc,LinkedList<String> argsToScript,JProxyShellClassLoader classLoader);    
     
     private static Iterable<String> parseCompilationOptions(String value)
     {

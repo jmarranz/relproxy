@@ -17,6 +17,12 @@ public class JProxyShellCodeSnippetImpl extends JProxyShellImpl
         super.init(args, false, null);
     }      
     
+    @Override    
+    protected void executeFirstTime(ClassDescriptorSourceFileScript scriptFileDesc,LinkedList<String> argsToScript,JProxyShellClassLoader classLoader)
+    {
+        scriptFileDesc.callMainMethod(argsToScript);
+    }    
+    
     @Override
     protected void processConfigParams(String[] args,LinkedList<String> argsToScript,JProxyConfigImpl config)
     {    
@@ -42,10 +48,5 @@ public class JProxyShellCodeSnippetImpl extends JProxyShellImpl
         // No hay classFolder => no hay necesidad de nuevo ClassLoader
         return null; 
     }
-    
-    @Override
-    public void fixLastLoadedClass(ClassDescriptorSourceFileScript scriptFileDesc,JProxyShellClassLoader classLoader)
-    {
-        // Nada que arreglar, si el Class no está dará error más adelante y se considera un error inexperado
-    }
+
 }
