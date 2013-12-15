@@ -28,7 +28,7 @@ public class SourceScriptFile extends SourceScript
     }
     
     @Override
-    public String getCodeBody(String encoding)
+    public String getScriptCode(String encoding)
     {
         String codeBody = JProxyUtil.readTextFile(sourceFile,encoding);         
         // Eliminamos la primera línea #!  (debe estar en la primera línea y sin espacios antes)

@@ -1,8 +1,8 @@
 #!/usr/bin/env jproxysh
 
-// Test comment
+    // Test comment
 
-/* Another test comment
+  /* Another test comment
  *
  */
 

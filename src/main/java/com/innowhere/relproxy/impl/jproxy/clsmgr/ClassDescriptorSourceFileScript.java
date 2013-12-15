@@ -28,23 +28,23 @@ public class ClassDescriptorSourceFileScript extends ClassDescriptorSourceFile
     
     private void generateSourceCode()
     {
-        String codeBody = getSourceFileScript().getCodeBody(getEncoding());         
+        String scriptCode = getSourceFileScript().getScriptCode(getEncoding());         
         
-        StringBuilder code = new StringBuilder();        
-        this.completeClass = isCompleteClass(codeBody);
+        StringBuilder finalCode = new StringBuilder();        
+        this.completeClass = isCompleteClass(scriptCode);
         
         if (completeClass)
         {
-            code.append(codeBody);  
+            finalCode.append(scriptCode);  
         }
         else
         {
-            code.append("public class " + className + " { public static void main(String[] args) {\n"); // Lo ponemos todo en una línea para que en caso de error la línea de error coincida con el script original pues hemos quitado la primera línea #!
-            code.append(codeBody);        
-            code.append("  }\n");        
-            code.append("}\n");         
+            finalCode.append("public class " + className + " { public static void main(String[] args) {\n"); // Lo ponemos todo en una línea para que en caso de error la línea de error coincida con el script original pues hemos quitado la primera línea #!
+            finalCode.append(scriptCode);        
+            finalCode.append("  }\n");        
+            finalCode.append("}\n");         
         }
-        this.source = code.toString();        
+        this.source = finalCode.toString();        
     }
     
     private boolean isCompleteClass(String codeBody)
@@ -82,7 +82,7 @@ public class ClassDescriptorSourceFileScript extends ClassDescriptorSourceFile
         for(i = 0; i < code.length(); i++)
         {
             char c = code.charAt(i);
-            if (c == ' ' || c == '\n') continue;
+            if (c == ' ' || c == '\n' || c == '\t') continue;
             else if (c == '/' && i + 1 < code.length())
             {
                 char c2 = code.charAt(i + 1);

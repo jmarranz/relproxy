@@ -8,6 +8,6 @@ import java.io.File;
  */
 public abstract class SourceScript extends SourceUnit
 {
-    public abstract String getCodeBody(String encoding);
+    public abstract String getScriptCode(String encoding);
     public abstract String getClassNameFromSourceFileScriptAbsPath(File rootPathOfSourcesFile);    
 }

@@ -24,7 +24,7 @@ public class SourceScriptInMemory extends SourceScript
     }     
 
     @Override
-    public String getCodeBody(String encoding)
+    public String getScriptCode(String encoding)
     {
         return codeBody;
     }
