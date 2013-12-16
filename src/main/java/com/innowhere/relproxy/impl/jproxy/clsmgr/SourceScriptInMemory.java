@@ -9,14 +9,14 @@ import java.io.File;
 public class SourceScriptInMemory extends SourceScript
 {
     protected String className;
-    protected String codeBody;
+    protected String code;
     
-    public SourceScriptInMemory(String className,String codeBody)
+    public SourceScriptInMemory(String className,String code)
     {
         this.className = className;
-        this.codeBody = codeBody;
+        this.code = code;
     }
-
+    
     @Override
     public long lastModified()
     {
@@ -26,8 +26,13 @@ public class SourceScriptInMemory extends SourceScript
     @Override
     public String getScriptCode(String encoding)
     {
-        return codeBody;
+        return code;
     }
+    
+    public void setScriptCode(String code)
+    {
+        this.code = code;
+    }    
     
     public String getClassNameFromSourceFileScriptAbsPath(File rootPathOfSourcesFile)
     {

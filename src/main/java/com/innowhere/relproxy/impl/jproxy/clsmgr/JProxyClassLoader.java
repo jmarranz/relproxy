@@ -56,7 +56,7 @@ public class JProxyClassLoader extends ClassLoader
         }
     }    
     
-    public Class loadInnerClass(ClassDescriptorSourceFile parentDesc,String innerClassName)
+    public Class loadInnerClass(ClassDescriptorSourceUnit parentDesc,String innerClassName)
     {
         synchronized(engine)
         {         

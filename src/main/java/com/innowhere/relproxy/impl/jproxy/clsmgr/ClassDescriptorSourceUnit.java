@@ -6,14 +6,14 @@ import java.util.LinkedList;
  *
  * @author jmarranz
  */
-public abstract class ClassDescriptorSourceFile extends ClassDescriptor
+public abstract class ClassDescriptorSourceUnit extends ClassDescriptor
 {
     protected JProxyEngine engine;
     protected long timestamp;
     protected SourceUnit sourceFile; 
     protected LinkedList<ClassDescriptorInner> innerClasses;
     
-    public ClassDescriptorSourceFile(JProxyEngine engine,String className,SourceUnit sourceFile, long timestamp) 
+    public ClassDescriptorSourceUnit(JProxyEngine engine,String className,SourceUnit sourceFile, long timestamp) 
     {
         super(className);
         this.engine = engine;
@@ -21,10 +21,10 @@ public abstract class ClassDescriptorSourceFile extends ClassDescriptor
         this.timestamp = timestamp;
     }
 
-    public static ClassDescriptorSourceFile create(boolean script,JProxyEngine engine,String className,SourceUnit sourceFile, long timestamp)
+    public static ClassDescriptorSourceUnit create(boolean script,JProxyEngine engine,String className,SourceUnit sourceFile, long timestamp)
     {
         if (sourceFile instanceof SourceScript)
-            return new ClassDescriptorSourceFileScript(engine,className,(SourceScript)sourceFile,timestamp);  
+            return new ClassDescriptorSourceScript(engine,className,(SourceScript)sourceFile,timestamp);  
         else if (sourceFile instanceof SourceFileJavaNormal)
             return new ClassDescriptorSourceFileJava(engine,className,(SourceFileJavaNormal)sourceFile,timestamp);
         else

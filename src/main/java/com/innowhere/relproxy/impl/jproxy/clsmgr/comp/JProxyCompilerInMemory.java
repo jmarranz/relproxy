@@ -3,10 +3,10 @@ package com.innowhere.relproxy.impl.jproxy.clsmgr.comp;
 import com.innowhere.relproxy.RelProxyException;
 import com.innowhere.relproxy.impl.jproxy.clsmgr.ClassDescriptor;
 import com.innowhere.relproxy.impl.jproxy.clsmgr.ClassDescriptorInner;
-import com.innowhere.relproxy.impl.jproxy.clsmgr.ClassDescriptorSourceFile;
+import com.innowhere.relproxy.impl.jproxy.clsmgr.ClassDescriptorSourceUnit;
 import com.innowhere.relproxy.impl.jproxy.clsmgr.ClassDescriptorSourceFileJava;
 import com.innowhere.relproxy.impl.jproxy.clsmgr.ClassDescriptorSourceFileRegistry;
-import com.innowhere.relproxy.impl.jproxy.clsmgr.ClassDescriptorSourceFileScript;
+import com.innowhere.relproxy.impl.jproxy.clsmgr.ClassDescriptorSourceScript;
 import com.innowhere.relproxy.impl.jproxy.clsmgr.JProxyClassLoader;
 import com.innowhere.relproxy.impl.jproxy.clsmgr.JProxyEngine;
 import com.innowhere.relproxy.jproxy.JProxyDiagnosticsListener;
@@ -47,7 +47,7 @@ public class JProxyCompilerInMemory
         return new JProxyCompilerContext(standardFileManager,diagnostics,diagnosticsListener);
     }
     
-    public void compileSourceFile(ClassDescriptorSourceFile sourceFileDesc,JProxyCompilerContext context,JProxyClassLoader customClassLoader,ClassDescriptorSourceFileRegistry sourceRegistry)
+    public void compileSourceFile(ClassDescriptorSourceUnit sourceFileDesc,JProxyCompilerContext context,JProxyClassLoader customClassLoader,ClassDescriptorSourceFileRegistry sourceRegistry)
     {
         //File sourceFile = sourceFileDesc.getSourceFile();
         LinkedList<JavaFileObjectOutputClass> outClassList = compile(sourceFileDesc,context,customClassLoader,sourceRegistry);
@@ -95,7 +95,7 @@ public class JProxyCompilerInMemory
         }
     }        
     
-    private LinkedList<JavaFileObjectOutputClass> compile(ClassDescriptorSourceFile sourceFileDesc,JProxyCompilerContext context,ClassLoader classLoader,ClassDescriptorSourceFileRegistry sourceRegistry)
+    private LinkedList<JavaFileObjectOutputClass> compile(ClassDescriptorSourceUnit sourceFileDesc,JProxyCompilerContext context,ClassLoader classLoader,ClassDescriptorSourceFileRegistry sourceRegistry)
     {
         // http://stackoverflow.com/questions/12173294/compiling-fully-in-memory-with-javax-tools-javacompiler
         // http://www.accordess.com/wpblog/an-overview-of-java-compilation-api-jsr-199/
@@ -120,9 +120,9 @@ public class JProxyCompilerInMemory
             sourceFileList.add(((ClassDescriptorSourceFileJava)sourceFileDesc).getSourceFile());            
             compilationUnits = standardFileManager.getJavaFileObjectsFromFiles(sourceFileList);
         }
-        else if (sourceFileDesc instanceof ClassDescriptorSourceFileScript)
+        else if (sourceFileDesc instanceof ClassDescriptorSourceScript)
         {
-            ClassDescriptorSourceFileScript sourceFileDescScript = (ClassDescriptorSourceFileScript)sourceFileDesc;
+            ClassDescriptorSourceScript sourceFileDescScript = (ClassDescriptorSourceScript)sourceFileDesc;
             LinkedList<JavaFileObject> compilationUnitsList = new LinkedList<JavaFileObject>();            
             String code = sourceFileDescScript.getSourceCode();
             compilationUnitsList.add(new JavaFileObjectInputSourceInMemory(sourceFileDescScript.getClassName(),code,sourceFileDescScript.getEncoding(),sourceFileDescScript.getTimestamp()));            

@@ -6,7 +6,7 @@ import java.io.File;
  *
  * @author jmarranz
  */
-public class ClassDescriptorSourceFileJava extends ClassDescriptorSourceFile
+public class ClassDescriptorSourceFileJava extends ClassDescriptorSourceUnit
 {
     public ClassDescriptorSourceFileJava(JProxyEngine engine,String className, SourceFileJavaNormal sourceFile, long timestamp)
     {

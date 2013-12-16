@@ -6,9 +6,9 @@ package com.innowhere.relproxy.impl.jproxy.clsmgr;
  */
 public class ClassDescriptorInner extends ClassDescriptor
 {
-    protected ClassDescriptorSourceFile parent;
+    protected ClassDescriptorSourceUnit parent;
     
-    public ClassDescriptorInner(String className,ClassDescriptorSourceFile parent) 
+    public ClassDescriptorInner(String className,ClassDescriptorSourceUnit parent) 
     {
         super(className);
         this.parent = parent;
@@ -19,7 +19,7 @@ public class ClassDescriptorInner extends ClassDescriptor
         return true;
     }     
     
-    public ClassDescriptorSourceFile getClassDescriptorSourceFile()
+    public ClassDescriptorSourceUnit getClassDescriptorSourceUnit()
     {
         return parent;
     }

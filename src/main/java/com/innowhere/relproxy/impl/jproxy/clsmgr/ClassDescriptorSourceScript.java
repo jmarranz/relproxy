@@ -9,32 +9,33 @@ import java.util.LinkedList;
  *
  * @author jmarranz
  */
-public class ClassDescriptorSourceFileScript extends ClassDescriptorSourceFile
+public class ClassDescriptorSourceScript extends ClassDescriptorSourceUnit
 {
     protected String source;
     protected boolean completeClass;    
     
-    public ClassDescriptorSourceFileScript(JProxyEngine engine,String className,SourceScript sourceFile,long timestamp)
+    public ClassDescriptorSourceScript(JProxyEngine engine,String className,SourceScript sourceFile,long timestamp)
     {
         super(engine,className, sourceFile, timestamp);
                 
         generateSourceCode();
     }
     
-    public SourceScript getSourceFileScript()
+    public SourceScript getSourceScript()
     {
         return (SourceScript)sourceFile;
     }
     
-    private void generateSourceCode()
+    public void generateSourceCode()
     {
-        String scriptCode = getSourceFileScript().getScriptCode(getEncoding());         
+        String scriptCode = getSourceScript().getScriptCode(getEncoding());         
         
         StringBuilder finalCode = new StringBuilder();        
         this.completeClass = isCompleteClass(scriptCode);
         
         if (completeClass)
         {
+            finalCode.append("\n");   // Como hemos quitado la línea #! añadimos una nueva para que los números de línea en caso de error coincidan con el original
             finalCode.append(scriptCode);  
         }
         else
@@ -47,30 +48,24 @@ public class ClassDescriptorSourceFileScript extends ClassDescriptorSourceFile
         this.source = finalCode.toString();        
     }
     
-    private boolean isCompleteClass(String codeBody)
+    private boolean isCompleteClass(String code)
     {
-        // Buscamos si hay un " class ..." o un "import..." al comienzo para soportar la definición de una clase completa como script
-        int posEnd = codeBody.indexOf('{'); // Buscamos el { donde comenzaría la declaración de la clase o bien un primer bloque de sentencias ... para evitar buscar en todo el archivo
-        if (posEnd == -1) return false; 
-        
-        codeBody = codeBody.substring(0, posEnd); // Acotamos el código fuente a un trozo más pequeño
-        
-        int pos = codeBody.indexOf("class");        
+        // Buscamos si hay un " class ..." o un "import..." al comienzo para soportar la definición de una clase completa como script       
+        int pos = code.indexOf("class");        
         if (pos == -1) return false; 
-        // Hay al menos un "class", ojo que puede ser parte de una variable o dentro de un comentario
+        // Hay al menos un "class", ojo que puede ser parte de una variable o dentro de un comentario, pero si no existiera desde luego que no es clase completa
         
-        pos = getFirstPosIgnoringCommentsAndSeparators(codeBody);
+        pos = getFirstPosIgnoringCommentsAndSeparators(code);
         if (pos == -1) return false;
         
         // Lo primero que nos tenemos encontrar es un import o una declaración de class
-        int pos2 = codeBody.indexOf("import",pos);
+        int pos2 = code.indexOf("import",pos);
         if (pos2 == pos)
             return true; // Si hay un import hay declaración de clase
-        
 
         // Vemos si es un "public class..." o similar
-        int posClass = codeBody.indexOf("class", pos);
-        String visibility = codeBody.substring(pos, posClass);
+        int posClass = code.indexOf("class", pos);
+        String visibility = code.substring(pos, posClass);
         visibility = visibility.trim(); // No consideramos \n hay que ser retorcido poner un \n entre el public y el class por ejemplo
         if (visibility.isEmpty()) return true; // No hay visibilidad, que no compile no es cosa nuestra
         return ("private".equals(visibility) || "public".equals(visibility) || "protected".equals(visibility));  

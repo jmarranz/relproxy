@@ -16,36 +16,36 @@ import java.util.Map;
  */
 public class ClassDescriptorSourceFileRegistry
 {
-    protected Map<String,ClassDescriptorSourceFile> sourceFileMapByClassName;
+    protected Map<String,ClassDescriptorSourceUnit> sourceUnitMapByClassName;
     
     public ClassDescriptorSourceFileRegistry()
     {
-        this.sourceFileMapByClassName = new HashMap<String,ClassDescriptorSourceFile>();
+        this.sourceUnitMapByClassName = new HashMap<String,ClassDescriptorSourceUnit>();
     }
 
     public boolean isEmpty()
     {
-        return sourceFileMapByClassName.isEmpty();
+        return sourceUnitMapByClassName.isEmpty();
     }
       
-    public Collection<ClassDescriptorSourceFile> getClassDescriptorSourceFileColl()
+    public Collection<ClassDescriptorSourceUnit> getClassDescriptorSourceFileColl()
     {
-        return sourceFileMapByClassName.values();
+        return sourceUnitMapByClassName.values();
     }
     
-    public ClassDescriptorSourceFile getClassDescriptorSourceFile(String className)
+    public ClassDescriptorSourceUnit getClassDescriptorSourceUnit(String className)
     {
-        return sourceFileMapByClassName.get(className);
+        return sourceUnitMapByClassName.get(className);
     }        
     
-    public void removeClassDescriptorSourceFile(String className)
+    public ClassDescriptorSourceUnit removeClassDescriptorSourceUnit(String className)
     {
-        sourceFileMapByClassName.remove(className);
+        return sourceUnitMapByClassName.remove(className);
     }            
     
-    public void addClassDescriptorSourceFile(ClassDescriptorSourceFile sourceFile)
+    public void addClassDescriptorSourceUnit(ClassDescriptorSourceUnit sourceFile)
     {
-        sourceFileMapByClassName.put(sourceFile.getClassName(), sourceFile);
+        sourceUnitMapByClassName.put(sourceFile.getClassName(), sourceFile);
     }
     
     public ClassDescriptor getClassDescriptor(String className)
@@ -65,7 +65,7 @@ public class ClassDescriptorSourceFileRegistry
             parentClassName = className;
             inner = false;
         }
-        ClassDescriptorSourceFile sourceDesc = sourceFileMapByClassName.get(parentClassName);        
+        ClassDescriptorSourceUnit sourceDesc = sourceUnitMapByClassName.get(parentClassName);        
         if (!inner) return sourceDesc;
         return sourceDesc.getInnerClassDescriptor(className,true);
     }    

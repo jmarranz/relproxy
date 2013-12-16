@@ -1,7 +1,7 @@
 package com.innowhere.relproxy.impl.jproxy;
 
 import com.innowhere.relproxy.RelProxyException;
-import com.innowhere.relproxy.impl.jproxy.clsmgr.ClassDescriptorSourceFileScript;
+import com.innowhere.relproxy.impl.jproxy.clsmgr.ClassDescriptorSourceScript;
 import com.innowhere.relproxy.impl.jproxy.clsmgr.SourceScript;
 import com.innowhere.relproxy.impl.jproxy.clsmgr.SourceScriptInMemory;
 import java.util.LinkedList;
@@ -14,11 +14,11 @@ public class JProxyShellCodeSnippetImpl extends JProxyShellImpl
 {
     public void init(String[] args)
     {       
-        super.init(args, false, null);
+        super.init(args, null);
     }      
     
     @Override    
-    protected void executeFirstTime(ClassDescriptorSourceFileScript scriptFileDesc,LinkedList<String> argsToScript,JProxyShellClassLoader classLoader)
+    protected void executeFirstTime(ClassDescriptorSourceScript scriptFileDesc,LinkedList<String> argsToScript,JProxyShellClassLoader classLoader)
     {
         scriptFileDesc.callMainMethod(argsToScript);
     }    

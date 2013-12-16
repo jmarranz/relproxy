@@ -1,6 +1,6 @@
 package com.innowhere.relproxy.impl.jproxy.clsmgr.comp;
 
-import com.innowhere.relproxy.impl.jproxy.clsmgr.ClassDescriptorSourceFile;
+import com.innowhere.relproxy.impl.jproxy.clsmgr.ClassDescriptorSourceUnit;
 import com.innowhere.relproxy.impl.jproxy.clsmgr.ClassDescriptorSourceFileRegistry;
 import java.io.IOException;
 import java.util.Collection;
@@ -90,7 +90,7 @@ public class JavaFileManagerInMemory extends ForwardingJavaFileManager
                 for(JavaFileObjectInputClassInFileSystem fileObj : classList)
                 {
                     String className = fileObj.getBinaryName();
-                    ClassDescriptorSourceFile sourceFileDesc = sourceRegistry.getClassDescriptorSourceFile(className);
+                    ClassDescriptorSourceUnit sourceFileDesc = sourceRegistry.getClassDescriptorSourceUnit(className);
                     if (sourceFileDesc != null && sourceFileDesc.getClassBytes() != null)
                     {
                         JavaFileObjectInputClassInMemory fileInput = new JavaFileObjectInputClassInMemory(className,sourceFileDesc.getClassBytes(),sourceFileDesc.getTimestamp());

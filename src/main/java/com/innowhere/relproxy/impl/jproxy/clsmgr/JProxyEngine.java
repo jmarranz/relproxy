@@ -38,9 +38,9 @@ public class JProxyEngine
         this.sourcesSearch = new JavaSourcesSearch(this);       
     }
     
-    public ClassDescriptorSourceFileScript init()
+    public ClassDescriptorSourceScript init()
     {
-        ClassDescriptorSourceFileScript scriptFileDesc = detectChangesInSources(); // Primera vez para detectar cambios en los .java respecto a los .class mientras el servidor estaba parado
+        ClassDescriptorSourceScript scriptFileDesc = detectChangesInSources(); // Primera vez para detectar cambios en los .java respecto a los .class mientras el servidor estaba parado
         
         if (scanPeriod > 0)  // Si es 0 o negativo sólo se recargan una vez (la inicial ya ejecutada)
         {
@@ -113,7 +113,7 @@ public class JProxyEngine
     
     private void addNewClassLoader()
     {
-        for(ClassDescriptorSourceFile sourceFile : sourceRegistry.getClassDescriptorSourceFileColl())
+        for(ClassDescriptorSourceUnit sourceFile : sourceRegistry.getClassDescriptorSourceFileColl())
         {
             sourceFile.resetLastLoadedClass(); // resetea también las innerclasses
         }
@@ -121,7 +121,7 @@ public class JProxyEngine
         this.customClassLoader = new JProxyClassLoader(this);               
     }
     
-    private void cleanBeforeCompile(ClassDescriptorSourceFile sourceFile)
+    private void cleanBeforeCompile(ClassDescriptorSourceUnit sourceFile)
     {
         if (isSaveClassesMode()) 
             deleteClasses(sourceFile); // Antes de que nos las carguemos en memoria la clase principal y las inner tras recompilar
@@ -129,7 +129,7 @@ public class JProxyEngine
         sourceFile.cleanOnSourceCodeChanged(); // El código fuente nuevo puede haber cambiado totalmente las innerclasses antiguas (añadido, eliminado) y por supuesto el bytecode necesita olvidarse   
     }
     
-    private void compile(ClassDescriptorSourceFile sourceFile,JProxyCompilerContext context)
+    private void compile(ClassDescriptorSourceUnit sourceFile,JProxyCompilerContext context)
     {       
         if (sourceFile.getClassBytes() != null)
             return; // Ya ha sido compilado seguramente por dependencia de un archivo compilado inmediatamente antes, recuerda que el atributo classBytes se pone a null antes de compilar los archivos cambiados/nuevos
@@ -137,14 +137,14 @@ public class JProxyEngine
         compiler.compileSourceFile(sourceFile,context,customClassLoader,sourceRegistry);      
     }        
     
-    private void reloadAndSaveSource(ClassDescriptorSourceFile sourceFile)
+    private void reloadAndSaveSource(ClassDescriptorSourceUnit sourceFile)
     {       
         reloadSource(sourceFile,false); // No hace falta que detectemos las innerclasses porque al compilar se "descubren" todas
 
         if (isSaveClassesMode()) saveClasses(sourceFile);        
     }       
     
-    private void reloadSource(ClassDescriptorSourceFile sourceFile,boolean detectInnerClasses)
+    private void reloadSource(ClassDescriptorSourceUnit sourceFile,boolean detectInnerClasses)
     {
         Class clasz = customClassLoader.loadClass(sourceFile,true);      
 
@@ -179,7 +179,7 @@ public class JProxyEngine
         }     
     }    
     
-    private void saveClasses(ClassDescriptorSourceFile sourceFile)
+    private void saveClasses(ClassDescriptorSourceUnit sourceFile)
     {
         // Salvamos la clase principal
         {
@@ -199,7 +199,7 @@ public class JProxyEngine
         }                           
     }    
     
-    private void deleteClasses(ClassDescriptorSourceFile sourceFile)
+    private void deleteClasses(ClassDescriptorSourceUnit sourceFile)
     {
         // Puede ocurrir que esta clase nunca se haya cargado y se ha modificado el código fuente y queramos limpiar los .class correspondientes pues se van a recrear
         // como no conocemos qué inner clases están asociadas para saber que .class hay que eliminar, pues lo que hacemos es directamente obtener los .class que hay 
@@ -231,18 +231,18 @@ public class JProxyEngine
         }
     }          
     
-    public synchronized ClassDescriptorSourceFileScript detectChangesInSources()
+    public synchronized ClassDescriptorSourceScript detectChangesInSources()
     {
         // boolean firstTime = (sourceFileMap == null); // La primera vez sourceFileMap es null
 
-        LinkedList<ClassDescriptorSourceFile> updatedSourceFiles = new LinkedList<ClassDescriptorSourceFile>();
-        LinkedList<ClassDescriptorSourceFile> newSourceFiles = new LinkedList<ClassDescriptorSourceFile>();        
-        LinkedList<ClassDescriptorSourceFile> deletedSourceFiles = new LinkedList<ClassDescriptorSourceFile>();
+        LinkedList<ClassDescriptorSourceUnit> updatedSourceFiles = new LinkedList<ClassDescriptorSourceUnit>();
+        LinkedList<ClassDescriptorSourceUnit> newSourceFiles = new LinkedList<ClassDescriptorSourceUnit>();        
+        LinkedList<ClassDescriptorSourceUnit> deletedSourceFiles = new LinkedList<ClassDescriptorSourceUnit>();
         
         ClassDescriptorSourceFileRegistry oldSourceRegistry = this.sourceRegistry; // Puede ser null (la primera vez)
         ClassDescriptorSourceFileRegistry newSourceRegistry = new ClassDescriptorSourceFileRegistry();
         
-        ClassDescriptorSourceFileScript scriptFileDesc = sourcesSearch.sourceFileSearch(scriptFile,oldSourceRegistry,newSourceRegistry,updatedSourceFiles,newSourceFiles,deletedSourceFiles);
+        ClassDescriptorSourceScript scriptFileDesc = sourcesSearch.sourceFileSearch(scriptFile,oldSourceRegistry,newSourceRegistry,updatedSourceFiles,newSourceFiles,deletedSourceFiles);
         
         this.sourceRegistry = newSourceRegistry;
 
@@ -250,7 +250,7 @@ public class JProxyEngine
         {   
             addNewClassLoader();
                         
-            LinkedList<ClassDescriptorSourceFile> sourceFilesToRecompile = new LinkedList<ClassDescriptorSourceFile>();
+            LinkedList<ClassDescriptorSourceUnit> sourceFilesToRecompile = new LinkedList<ClassDescriptorSourceUnit>();
             sourceFilesToRecompile.addAll(updatedSourceFiles);
             sourceFilesToRecompile.addAll(newSourceFiles);            
             
@@ -261,13 +261,13 @@ public class JProxyEngine
             {
                 // Eliminamos el estado de la anterior compilación de todas las clases que van a recompilarse antes de compilarlas porque al compilar una clase es posible que
                 // se necesite recompilar al mismo tiempo una dependiente de otra (ej clase base) y luego se intente compilar la dependiente y sería un problema que limpiáramos antes de compilar cada archivo
-                for(ClassDescriptorSourceFile sourceFile : sourceFilesToRecompile)            
+                for(ClassDescriptorSourceUnit sourceFile : sourceFilesToRecompile)            
                     cleanBeforeCompile(sourceFile);   
                 
                 JProxyCompilerContext context = compiler.createJProxyCompilerContext();
                 try
                 {
-                    for(ClassDescriptorSourceFile sourceFile : sourceFilesToRecompile)            
+                    for(ClassDescriptorSourceUnit sourceFile : sourceFilesToRecompile)            
                         compile(sourceFile,context);        
                 }
                 finally
@@ -275,16 +275,16 @@ public class JProxyEngine
                     context.close();
                 }
                 
-                for(ClassDescriptorSourceFile sourceFile : sourceFilesToRecompile)            
+                for(ClassDescriptorSourceUnit sourceFile : sourceFilesToRecompile)            
                     reloadAndSaveSource(sourceFile);                
             }
 
             if (isSaveClassesMode() && !deletedSourceFiles.isEmpty())
-                for(ClassDescriptorSourceFile sourceFile : deletedSourceFiles)
+                for(ClassDescriptorSourceUnit sourceFile : deletedSourceFiles)
                     deleteClasses(sourceFile);                     
             
             
-            for(ClassDescriptorSourceFile sourceFile : sourceRegistry.getClassDescriptorSourceFileColl())
+            for(ClassDescriptorSourceUnit sourceFile : sourceRegistry.getClassDescriptorSourceFileColl())
             {
                 if (sourceFilesToRecompile.contains(sourceFile))
                     continue;

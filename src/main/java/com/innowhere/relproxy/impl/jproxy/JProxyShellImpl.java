@@ -2,7 +2,7 @@ package com.innowhere.relproxy.impl.jproxy;
 
 import com.innowhere.relproxy.RelProxyException;
 import com.innowhere.relproxy.RelProxyOnReloadListener;
-import com.innowhere.relproxy.impl.jproxy.clsmgr.ClassDescriptorSourceFileScript;
+import com.innowhere.relproxy.impl.jproxy.clsmgr.ClassDescriptorSourceScript;
 import com.innowhere.relproxy.impl.jproxy.clsmgr.SourceScript;
 import java.io.File;
 import java.lang.reflect.Method;
@@ -37,7 +37,7 @@ public abstract class JProxyShellImpl extends JProxyImpl
         }       
     }
 
-    public ClassDescriptorSourceFileScript init(String[] args,boolean isScriptFile,String inputPath)
+    protected ClassDescriptorSourceScript init(String[] args,String inputPath)
     {
         // Esto quizás necesite una opción en plan "verbose" o "log" para mostrar por pantalla o nada
         RelProxyOnReloadListener proxyListener = new RelProxyOnReloadListener() {
@@ -59,7 +59,7 @@ public abstract class JProxyShellImpl extends JProxyImpl
 
         JProxyShellClassLoader classLoader = getJProxyShellClassLoader(config);
 
-        ClassDescriptorSourceFileScript scriptFileDesc = super.init(config,sourceFileScript,classLoader);
+        ClassDescriptorSourceScript scriptFileDesc = super.init(config,sourceFileScript,classLoader);
 
         executeFirstTime(scriptFileDesc,argsToScript,classLoader);
         
@@ -69,7 +69,7 @@ public abstract class JProxyShellImpl extends JProxyImpl
     
     protected abstract SourceScript getSourceScript(String[] args,LinkedList<String> argsToScript);
     protected abstract JProxyShellClassLoader getJProxyShellClassLoader(JProxyConfigImpl config);    
-    protected abstract void executeFirstTime(ClassDescriptorSourceFileScript scriptFileDesc,LinkedList<String> argsToScript,JProxyShellClassLoader classLoader);    
+    protected abstract void executeFirstTime(ClassDescriptorSourceScript scriptFileDesc,LinkedList<String> argsToScript,JProxyShellClassLoader classLoader);    
     
     private static Iterable<String> parseCompilationOptions(String value)
     {

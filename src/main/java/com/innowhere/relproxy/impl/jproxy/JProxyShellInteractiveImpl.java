@@ -1,7 +1,8 @@
 package com.innowhere.relproxy.impl.jproxy;
 
 import com.innowhere.relproxy.RelProxyException;
-import com.innowhere.relproxy.impl.jproxy.clsmgr.ClassDescriptorSourceFileScript;
+import com.innowhere.relproxy.impl.jproxy.clsmgr.ClassDescriptorSourceScript;
+import com.innowhere.relproxy.impl.jproxy.clsmgr.JProxyEngine;
 import com.innowhere.relproxy.impl.jproxy.clsmgr.SourceScript;
 import com.innowhere.relproxy.impl.jproxy.clsmgr.SourceScriptInMemory;
 import java.util.LinkedList;
@@ -14,10 +15,24 @@ public class JProxyShellInteractiveImpl extends JProxyShellImpl
 {
     public void init(String[] args)
     {       
-        super.init(args, false,  null);
+        ClassDescriptorSourceScript script = super.init(args, null);
+        
+        SourceScriptInMemory sourceScript = (SourceScriptInMemory)script.getSourceScript();
+        
+        sourceScript.setScriptCode("System.out.println(\"Hello World\");");
+        script.generateSourceCode();
+        
+        script.updateTimestamp(System.currentTimeMillis());
+        
+        JProxyEngine engine = getJProxyEngine();
+        if (engine.detectChangesInSources() != script)
+            throw new RelProxyException("Internal Error");
+        
+        script.callMainMethod(new LinkedList<String>());
+
     }      
     
-    protected void executeFirstTime(ClassDescriptorSourceFileScript scriptFileDesc,LinkedList<String> argsToScript,JProxyShellClassLoader classLoader)
+    protected void executeFirstTime(ClassDescriptorSourceScript scriptFileDesc,LinkedList<String> argsToScript,JProxyShellClassLoader classLoader)
     {
         // La primera vez el script es vacío, no hay nada que ejecutar
     }    
