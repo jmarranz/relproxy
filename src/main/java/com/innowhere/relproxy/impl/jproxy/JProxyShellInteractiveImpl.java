@@ -20,9 +20,7 @@ public class JProxyShellInteractiveImpl extends JProxyShellImpl
         SourceScriptInMemory sourceScript = (SourceScriptInMemory)script.getSourceScript();
         
         sourceScript.setScriptCode("System.out.println(\"Hello World\");");
-        script.generateSourceCode();
-        
-        script.updateTimestamp(System.currentTimeMillis());
+        script.updateTimestamp(System.currentTimeMillis() + 1); // Sirve para regenerar el código
         
         JProxyEngine engine = getJProxyEngine();
         if (engine.detectChangesInSources() != script)
@@ -44,6 +42,10 @@ public class JProxyShellInteractiveImpl extends JProxyShellImpl
         
         String classFolder = config.getClassFolder();
         if (classFolder != null && !classFolder.trim().isEmpty()) throw new RelProxyException("cacheClassFolder is useless to execute in interactive mode");        
+        
+        // No tiene sentido especificar un tiempo de scan porque no hay directorio de entrada en el que escanear archivos
+        if (config.getScanPeriod() >= 0) // 0 no puede ser porque da error antes pero lo ponemos para reforzar la idea
+            throw new RelProxyException("scanPeriod positive value has no sense in interactive execution");        
     }    
 
     @Override    

@@ -30,6 +30,10 @@ public class JProxyShellCodeSnippetImpl extends JProxyShellImpl
         
         String classFolder = config.getClassFolder();
         if (classFolder != null && !classFolder.trim().isEmpty()) throw new RelProxyException("cacheClassFolder is useless to execute a code snippet");        
+        
+        // No tiene sentido especificar un tiempo de scan porque no hay directorio de entrada en el que escanear archivos
+        if (config.getScanPeriod() >= 0) // 0 no puede ser porque da error antes pero lo ponemos para reforzar la idea
+            throw new RelProxyException("scanPeriod positive value has no sense in code snippet execution");
     }        
     
     @Override    

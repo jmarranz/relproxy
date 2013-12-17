@@ -1,5 +1,6 @@
 package com.innowhere.relproxy.impl.jproxy;
 
+import com.innowhere.relproxy.RelProxyException;
 import com.innowhere.relproxy.RelProxyOnReloadListener;
 import com.innowhere.relproxy.impl.GenericProxyConfigBaseImpl;
 import com.innowhere.relproxy.jproxy.JProxyConfig;
@@ -43,6 +44,7 @@ public class JProxyConfigImpl extends GenericProxyConfigBaseImpl implements JPro
 
     public JProxyConfig setScanPeriod(long scanPeriod)
     {
+        if (scanPeriod == 0) throw new RelProxyException("scanPeriod cannot be zero");
         this.scanPeriod = scanPeriod;      
         return this;        
     }
