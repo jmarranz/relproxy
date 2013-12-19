@@ -22,7 +22,8 @@
             String[] args = new String[] 
             { 
                 "", // El args[0] esperado
-                "-DcompilationOptions=" + compilationOptions                
+                "-DcompilationOptions=" + compilationOptions,
+                "-Dtest=true"                        
             };
             try
             {

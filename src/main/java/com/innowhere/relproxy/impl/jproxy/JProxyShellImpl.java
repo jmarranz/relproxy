@@ -59,7 +59,7 @@ public abstract class JProxyShellImpl extends JProxyImpl
 
         JProxyShellClassLoader classLoader = getJProxyShellClassLoader(config);
 
-        ClassDescriptorSourceScript scriptFileDesc = super.init(config,sourceFileScript,classLoader);
+        ClassDescriptorSourceScript scriptFileDesc = init(config,sourceFileScript,classLoader);
 
         executeFirstTime(scriptFileDesc,argsToScript,classLoader);
         
@@ -90,7 +90,8 @@ public abstract class JProxyShellImpl extends JProxyImpl
         String classFolder = null;
         long scanPeriod = -1;
         Iterable<String> compilationOptions = null;
-
+        boolean test = false;
+        
         for(int i = 1; i < args.length; i++)
         {
             String arg = args[i];
@@ -116,6 +117,10 @@ public abstract class JProxyShellImpl extends JProxyImpl
                 {
                     compilationOptions = parseCompilationOptions(value);
                 }
+                else if ("test".equals(name))
+                {
+                    test = Boolean.parseBoolean(value);
+                }                
                 else throw new RelProxyException("Unknown parameter: " + arg);
             }
             else
@@ -127,6 +132,7 @@ public abstract class JProxyShellImpl extends JProxyImpl
         config.setClassFolder(classFolder);
         config.setScanPeriod(scanPeriod);
         config.setCompilationOptions(compilationOptions);
+        config.setTest(test);        
     }
 
 }

@@ -17,7 +17,8 @@ public class JProxyConfigImpl extends GenericProxyConfigBaseImpl implements JPro
     protected long scanPeriod = -1;
     protected Iterable<String> compilationOptions;
     protected JProxyDiagnosticsListener diagnosticsListener;
-
+    protected boolean test = false;
+    
     public JProxyConfig setEnabled(boolean enabled)
     {
         this.enabled = enabled;
@@ -86,4 +87,14 @@ public class JProxyConfigImpl extends GenericProxyConfigBaseImpl implements JPro
         return diagnosticsListener;
     }
   
+    public boolean isTest()
+    {
+        return test;
+    }
+
+    public void setTest(boolean test)
+    {
+        this.test = test;
+    }
+    
 }

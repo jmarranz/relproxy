@@ -26,7 +26,7 @@ public class ClassDescriptorSourceScript extends ClassDescriptorSourceUnit
         return (SourceScript)sourceFile;
     }
     
-    public void generateSourceCode()
+    private void generateSourceCode()
     {
         String scriptCode = getSourceScript().getScriptCode(getEncoding());         
         

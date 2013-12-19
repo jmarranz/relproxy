@@ -12,6 +12,7 @@ import java.lang.reflect.Proxy;
 public abstract class GenericProxyImpl
 {
     protected RelProxyOnReloadListener reloadListener;
+    protected GenericProxyConfigBaseImpl config;
     
     public GenericProxyImpl()
     {
@@ -36,7 +37,7 @@ public abstract class GenericProxyImpl
     
     public RelProxyOnReloadListener getRelProxyOnReloadListener()
     {
-        return reloadListener;
+        return config.getRelProxyOnReloadListener();
     }    
     
     public <T> T create(T obj,Class<T> clasz)

@@ -6,29 +6,67 @@ import com.innowhere.relproxy.impl.jproxy.clsmgr.JProxyEngine;
 import com.innowhere.relproxy.impl.jproxy.clsmgr.SourceScript;
 import com.innowhere.relproxy.impl.jproxy.clsmgr.SourceScriptInMemory;
 import java.util.LinkedList;
+import java.util.Scanner;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
- *
+ * Alguna inspiración: http://groovy.codehaus.org/Groovy+Shell
+ * 
  * @author jmarranz
  */
 public class JProxyShellInteractiveImpl extends JProxyShellImpl
 {
+    protected boolean test = false;
+    
     public void init(String[] args)
     {       
         ClassDescriptorSourceScript script = super.init(args, null);
         
         SourceScriptInMemory sourceScript = (SourceScriptInMemory)script.getSourceScript();
+
+        if (test) 
+        { 
+            try { Thread.sleep(2); } catch (InterruptedException ex){  }
+            execute("System.out.println(\"Hello World\");",script,sourceScript);
+            return;
+        }
         
-        sourceScript.setScriptCode("System.out.println(\"Hello World\");");
-        script.updateTimestamp(System.currentTimeMillis() + 1); // Sirve para regenerar el código
+        loop(script,sourceScript);
+    }      
+    
+    @Override
+    public ClassDescriptorSourceScript init(JProxyConfigImpl config,SourceScript scriptFile,ClassLoader classLoader)
+    {    
+        ClassDescriptorSourceScript script = super.init(config, scriptFile, classLoader);
+        
+        this.test = config.isTest();
+        
+        return script;
+    }
+    
+    private void loop(ClassDescriptorSourceScript script,SourceScriptInMemory sourceScript)
+    {
+        Scanner sc = new Scanner(System.in);        
+        while(true)
+        {
+            System.out.print(">");
+            String line = sc.nextLine();
+            execute(line,script,sourceScript);
+        }
+    }
+    
+    private void execute(String code,ClassDescriptorSourceScript script,SourceScriptInMemory sourceScript)
+    {
+        sourceScript.setScriptCode(code);
+        // Recuerda que cada vez que se obtiene el timestamp se llama a System.currentTimeMillis(), es imposible que el usuario haga algo en menos de 1ms
         
         JProxyEngine engine = getJProxyEngine();
         if (engine.detectChangesInSources() != script)
             throw new RelProxyException("Internal Error");
         
-        script.callMainMethod(new LinkedList<String>());
-
-    }      
+        script.callMainMethod(new LinkedList<String>());    
+    }
     
     protected void executeFirstTime(ClassDescriptorSourceScript scriptFileDesc,LinkedList<String> argsToScript,JProxyShellClassLoader classLoader)
     {
