@@ -16,7 +16,7 @@ public class JProxyShellScriptFileImpl extends JProxyShellImpl
 {
     protected File scriptFile;
     
-    public void init(String[] args,File scriptFile)
+    public void init(String[] args,File scriptFile) throws Throwable
     {
         this.scriptFile = scriptFile;
 
@@ -25,11 +25,11 @@ public class JProxyShellScriptFileImpl extends JProxyShellImpl
         super.init(args, inputPath);
     }    
     
-    protected void executeFirstTime(ClassDescriptorSourceScript scriptFileDesc,LinkedList<String> argsToScript,JProxyShellClassLoader classLoader)
+    protected void executeFirstTime(ClassDescriptorSourceScript scriptFileDesc,LinkedList<String> argsToScript,JProxyShellClassLoader classLoader) throws Throwable
     {
         fixLastLoadedClass(scriptFileDesc,classLoader);
         
-        scriptFileDesc.callMainMethod(argsToScript);
+        scriptFileDesc.callMainMethod(argsToScript);   
     }
     
     @Override    

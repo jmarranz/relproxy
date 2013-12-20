@@ -12,15 +12,15 @@ import java.util.LinkedList;
  */
 public class JProxyShellCodeSnippetImpl extends JProxyShellImpl
 {
-    public void init(String[] args)
+    public void init(String[] args) throws Throwable
     {       
         super.init(args, null);
     }      
     
     @Override    
-    protected void executeFirstTime(ClassDescriptorSourceScript scriptFileDesc,LinkedList<String> argsToScript,JProxyShellClassLoader classLoader)
+    protected void executeFirstTime(ClassDescriptorSourceScript scriptFileDesc,LinkedList<String> argsToScript,JProxyShellClassLoader classLoader) throws Throwable
     {
-        scriptFileDesc.callMainMethod(argsToScript);
+        scriptFileDesc.callMainMethod(argsToScript);      
     }    
     
     @Override

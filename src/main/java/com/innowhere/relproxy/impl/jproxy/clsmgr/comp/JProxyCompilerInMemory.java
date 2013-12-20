@@ -53,7 +53,7 @@ public class JProxyCompilerInMemory
         LinkedList<JavaFileObjectOutputClass> outClassList = compile(sourceFileDesc,context,customClassLoader,sourceRegistry);
         
         if (outClassList == null) 
-            throw new RelProxyException("Cannot reload class: " + sourceFileDesc.getClassName());
+            throw new JProxyCompilationException(sourceFileDesc);
         
         String className = sourceFileDesc.getClassName();        
         

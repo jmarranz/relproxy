@@ -15,7 +15,7 @@ import java.util.LinkedList;
  */
 public abstract class JProxyShellImpl extends JProxyImpl
 {
-    public static void main(String[] args)
+    public static void main(String[] args) throws Throwable
     {
         File scriptFile = new File(args[0]);
         if (scriptFile.exists())
@@ -37,7 +37,7 @@ public abstract class JProxyShellImpl extends JProxyImpl
         }       
     }
 
-    protected ClassDescriptorSourceScript init(String[] args,String inputPath)
+    protected ClassDescriptorSourceScript init(String[] args,String inputPath) throws Throwable
     {
         // Esto quizás necesite una opción en plan "verbose" o "log" para mostrar por pantalla o nada
         RelProxyOnReloadListener proxyListener = new RelProxyOnReloadListener() {
@@ -69,7 +69,7 @@ public abstract class JProxyShellImpl extends JProxyImpl
     
     protected abstract SourceScript getSourceScript(String[] args,LinkedList<String> argsToScript);
     protected abstract JProxyShellClassLoader getJProxyShellClassLoader(JProxyConfigImpl config);    
-    protected abstract void executeFirstTime(ClassDescriptorSourceScript scriptFileDesc,LinkedList<String> argsToScript,JProxyShellClassLoader classLoader);    
+    protected abstract void executeFirstTime(ClassDescriptorSourceScript scriptFileDesc,LinkedList<String> argsToScript,JProxyShellClassLoader classLoader) throws Throwable;    
     
     private static Iterable<String> parseCompilationOptions(String value)
     {

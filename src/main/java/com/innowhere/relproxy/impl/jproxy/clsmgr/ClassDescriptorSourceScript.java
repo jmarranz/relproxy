@@ -121,7 +121,7 @@ public class ClassDescriptorSourceScript extends ClassDescriptorSourceUnit
         return source;
     }
     
-    public void callMainMethod(LinkedList<String> argsToScript)
+    public void callMainMethod(LinkedList<String> argsToScript) throws Throwable 
     {       
         try
         {
@@ -133,8 +133,8 @@ public class ClassDescriptorSourceScript extends ClassDescriptorSourceUnit
         catch (IllegalAccessException ex) { throw new RelProxyException(ex); }
         catch (NoSuchMethodException ex) { throw new RelProxyException(ex); }
         catch (SecurityException ex) { throw new RelProxyException(ex); }
-        catch (IllegalArgumentException ex) { throw new RelProxyException(ex); }
-        catch (InvocationTargetException ex) { throw new RelProxyException(ex); }     
+        catch (IllegalArgumentException ex) { throw new RelProxyException(ex); }  
+        catch (InvocationTargetException ex) { throw ex.getCause(); } // Los errores de ejecución se envuelven en un InvocationTargetException        
     }     
              
 }
