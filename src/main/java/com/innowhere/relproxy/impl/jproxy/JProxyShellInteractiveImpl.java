@@ -6,6 +6,10 @@ import com.innowhere.relproxy.impl.jproxy.clsmgr.JProxyEngine;
 import com.innowhere.relproxy.impl.jproxy.clsmgr.SourceScript;
 import com.innowhere.relproxy.impl.jproxy.clsmgr.SourceScriptInMemory;
 import com.innowhere.relproxy.impl.jproxy.clsmgr.comp.JProxyCompilationException;
+import com.innowhere.relproxy.impl.jproxy.shell.Keyboard;
+import com.innowhere.relproxy.impl.jproxy.shell.WindowUnicodeKeyboard;
+import java.nio.charset.Charset;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Scanner;
 
@@ -17,7 +21,7 @@ import java.util.Scanner;
 public class JProxyShellInteractiveImpl extends JProxyShellImpl
 {
     protected boolean test = false;
-    protected LinkedList<String> codeBuffer = new LinkedList<String>();
+    protected ArrayList<String> codeBuffer = new ArrayList<String>(20);
     
     public void init(String[] args) throws Throwable
     {       
@@ -76,70 +80,83 @@ public class JProxyShellInteractiveImpl extends JProxyShellImpl
         return null; 
     }    
 
-    private void loop(ClassDescriptorSourceScript script,SourceScriptInMemory sourceScript)
+    private void loop(ClassDescriptorSourceScript scriptClass,SourceScriptInMemory sourceScript)
     {
-        Scanner sc = new Scanner(System.in);        
+        Scanner sc = new Scanner(System.in,Charset.defaultCharset().name());  // No encuentro nada interesante en http://docs.oracle.com/javase/6/docs/api/java/io/Console.html  
         while(true)
         {
             System.out.print(">");
             String line = sc.nextLine();
-            if (!processCommand(line,script,sourceScript))
+            if (!processCommand(line,scriptClass,sourceScript))
                 codeBuffer.add(line);
         }
     }
     
-    private boolean processCommand(String cmd,ClassDescriptorSourceScript script,SourceScriptInMemory sourceScript)
+    private boolean processCommand(String cmd,ClassDescriptorSourceScript scriptClass,SourceScriptInMemory sourceScript)
     {
         cmd = cmd.trim();
         if (cmd.equals("clear"))
         {
-            codeBuffer.clear();
+            commandClear();
             return true;
         }     
+        else if (cmd.equals("display"))
+        {
+            commandDisplay();
+            return true;
+        }       
+        else if (cmd.equals("edit"))
+        {           
+            System.out.print(">");            
+            Keyboard keyb = new WindowUnicodeKeyboard(); // new Keyboard();
+            keyb.type("áéñç");
+            
+            /*
+            seguir;
+
+            try {
+                Robot robot = new Robot();
+
+                // Simulate a mouse click
+               
+                // Simulate a key press
+                for(int i = 0; i < 10; i++) { robot.keyPress(KeyEvent.VK_A); robot.keyRelease(KeyEvent.VK_A); }
+            robot.keyPress(KeyEvent.);
+                return true;
+            } catch (AWTException ex) {
+                Logger.getLogger(JProxyShellInteractiveImpl.class.getName()).log(Level.SEVERE, null, ex);
+            }
+*/
+        }               
         else if (cmd.equals("exec"))
         {
-            StringBuilder code = new StringBuilder();
-            for(String line : codeBuffer)
-            {
-                code.append(line);
-                code.append("\n");                
-            }
-            
-            execute(code.toString(),script,sourceScript);
+            commandExec(scriptClass,sourceScript);
             return true;
-        }     
+        }
         else if (cmd.equals("exit"))
         {
-            System.exit(0);
+            commandExit();
             return true;
-        }           
-        else if (cmd.equals("show"))
+        }
+        else if (cmd.equals("quit"))
         {
-            int i = 1;
-            for(String line : codeBuffer)
-            {
-                for(int j = 0; j < 3 - String.valueOf(i).length(); j++) System.out.print("0"); 
-                System.out.print(i + ">");
-                System.out.print(line);                
-                System.out.println(); 
-                i++;
-            }
+            commandExit();
             return true;
-        }             
+        }        
         return false;
     }
     
-    private void execute(String code,ClassDescriptorSourceScript script,SourceScriptInMemory sourceScript)
+    private void execute(String code,ClassDescriptorSourceScript scriptClass,SourceScriptInMemory sourceScript)
     {
         sourceScript.setScriptCode(code);
         // Recuerda que cada vez que se obtiene el timestamp se llama a System.currentTimeMillis(), es imposible que el usuario haga algo en menos de 1ms
         
         JProxyEngine engine = getJProxyEngine();
         
-        ClassDescriptorSourceScript script2 = null;
+        ClassDescriptorSourceScript scriptClass2 = null;
         try
         {
-            script2 = engine.detectChangesInSources();
+            scriptClass2 = engine.detectChangesInSources();
         }
         catch(JProxyCompilationException ex) 
         {
@@ -147,18 +164,51 @@ public class JProxyShellInteractiveImpl extends JProxyShellImpl
             return;
         }
         
-        if (script2 != script)
+        if (scriptClass2 != scriptClass)
             throw new RelProxyException("Internal Error");
-        
-        
         
         try
         {            
-            script.callMainMethod(new LinkedList<String>());    
+            scriptClass.callMainMethod(new LinkedList<String>());    
         }
         catch(Throwable ex)
         {
             ex.printStackTrace(System.out);
         }
     }    
+    
+    private void commandClear()
+    {
+        codeBuffer.clear();
+    }
+    
+    private void commandExit()
+    {
+        System.exit(0);
+    }    
+    
+    private void commandDisplay()
+    {
+        int i = 1;
+        for(String line : codeBuffer)
+        {
+            for(int j = 0; j < 3 - String.valueOf(i).length(); j++) System.out.print("0"); 
+            System.out.print(i + ">");
+            System.out.print(line);                
+            System.out.println(); 
+            i++;
+        }        
+    }
+    
+    private void commandExec(ClassDescriptorSourceScript scriptClass,SourceScriptInMemory sourceScript)
+    {
+        StringBuilder code = new StringBuilder();
+        for(String line : codeBuffer)
+        {
+            code.append(line);
+            code.append("\n");                
+        }
+
+        execute(code.toString(),scriptClass,sourceScript);        
+    }
 }
