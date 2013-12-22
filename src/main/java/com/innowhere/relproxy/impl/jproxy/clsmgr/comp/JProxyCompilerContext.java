@@ -56,8 +56,10 @@ public class JProxyCompilerContext
                    System.err.println("Diagnostic " + i);
                    System.err.println("  code: " + diagnostic.getCode());
                    System.err.println("  kind: " + diagnostic.getKind());
-                   System.err.println("  position: " + diagnostic.getPosition());
+                   System.err.println("  line number: " + diagnostic.getLineNumber());                   
+                   System.err.println("  column number: " + diagnostic.getColumnNumber());
                    System.err.println("  start position: " + diagnostic.getStartPosition());
+                   System.err.println("  position: " + diagnostic.getPosition());                   
                    System.err.println("  end position: " + diagnostic.getEndPosition());
                    System.err.println("  source: " + diagnostic.getSource());
                    System.err.println("  message: " + diagnostic.getMessage(null));
