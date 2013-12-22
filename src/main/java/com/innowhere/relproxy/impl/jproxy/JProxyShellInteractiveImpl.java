@@ -8,6 +8,9 @@ import com.innowhere.relproxy.impl.jproxy.clsmgr.SourceScriptInMemory;
 import com.innowhere.relproxy.impl.jproxy.clsmgr.comp.JProxyCompilationException;
 import com.innowhere.relproxy.impl.jproxy.shell.Keyboard;
 import com.innowhere.relproxy.impl.jproxy.shell.WindowUnicodeKeyboard;
+import java.io.InputStreamReader;
+import java.io.PrintStream;
+import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -21,10 +24,12 @@ import java.util.Scanner;
 public class JProxyShellInteractiveImpl extends JProxyShellImpl
 {
     protected boolean test = false;
+    protected Charset encoding = Charset.defaultCharset();
     protected ArrayList<String> codeBuffer = new ArrayList<String>(20);
+    protected WindowUnicodeKeyboard keyboard = new WindowUnicodeKeyboard(encoding);
     
     public void init(String[] args) throws Throwable
-    {       
+    {          
         ClassDescriptorSourceScript script = super.init(args, null);
         
         SourceScriptInMemory sourceScript = (SourceScriptInMemory)script.getSourceScript();
@@ -82,17 +87,20 @@ public class JProxyShellInteractiveImpl extends JProxyShellImpl
 
     private void loop(ClassDescriptorSourceScript scriptClass,SourceScriptInMemory sourceScript)
     {
-        Scanner sc = new Scanner(System.in,Charset.defaultCharset().name());  // No encuentro nada interesante en http://docs.oracle.com/javase/6/docs/api/java/io/Console.html  
+        Scanner sc = new Scanner(System.in,encoding.name());  // No encuentro nada interesante en http://docs.oracle.com/javase/6/docs/api/java/io/Console.html  
+        System.out.print(">");        
         while(true)
         {
-            System.out.print(">");
             String line = sc.nextLine();
-            if (!processCommand(line,scriptClass,sourceScript))
+            Runnable[] task = new Runnable[1];
+            if (!processCommand(line,scriptClass,sourceScript,task))
                 codeBuffer.add(line);
+            System.out.print(">");            
+            if (task[0] != null) task[0].run();
         }
     }
     
-    private boolean processCommand(String cmd,ClassDescriptorSourceScript scriptClass,SourceScriptInMemory sourceScript)
+    private boolean processCommand(String cmd,ClassDescriptorSourceScript scriptClass,SourceScriptInMemory sourceScript,Runnable[] task)
     {
         cmd = cmd.trim();
         if (cmd.equals("clear"))
@@ -106,27 +114,14 @@ public class JProxyShellInteractiveImpl extends JProxyShellImpl
             return true;
         }       
         else if (cmd.equals("edit"))
-        {           
-            System.out.print(">");            
-            Keyboard keyb = new WindowUnicodeKeyboard(); // new Keyboard();
-            keyb.type("áéñç");
-            
-            /*
-            seguir;
-
-            try {
-                Robot robot = new Robot();
-
-                // Simulate a mouse click
-               
-                // Simulate a key press
-                for(int i = 0; i < 10; i++) { robot.keyPress(KeyEvent.VK_A); robot.keyRelease(KeyEvent.VK_A); }
-            robot.keyPress(KeyEvent.);
-                return true;
-            } catch (AWTException ex) {
-                Logger.getLogger(JProxyShellInteractiveImpl.class.getName()).log(Level.SEVERE, null, ex);
-            }
-*/
+        {            
+            task[0] = new Runnable() {
+                public void run()
+                {
+                    keyboard.type("áéñç");
+                }                
+            };
+            return true;
         }               
         else if (cmd.equals("exec"))
         {
@@ -210,5 +205,18 @@ public class JProxyShellInteractiveImpl extends JProxyShellImpl
         }
 
         execute(code.toString(),scriptClass,sourceScript);        
+    }
+    
+    private void out(String msg)
+    {
+        try             
+        {
+            PrintStream out = new PrintStream(System.out, true, "UTF-8");
+            out.println(msg);
+        }
+        catch (UnsupportedEncodingException ex)
+        {
+            throw new RelProxyException(ex);
+        }
     }
 }

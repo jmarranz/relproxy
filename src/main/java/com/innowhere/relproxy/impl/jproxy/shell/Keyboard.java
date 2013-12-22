@@ -79,11 +79,6 @@ public class Keyboard
 {
     protected final Robot robot;
 
-    public static void main(String... args) throws Exception {
-        Keyboard keyboard = new Keyboard();
-        keyboard.type("Hello there, how are you?");
-    }
-
     public Keyboard() 
     {
         try

@@ -21,9 +21,11 @@ import java.nio.charset.Charset;
  */
 public class WindowUnicodeKeyboard extends Keyboard
 {
-    public WindowUnicodeKeyboard() 
+    protected Charset cs;
+    
+    public WindowUnicodeKeyboard(Charset cs)
     {
-
+        this.cs = cs;
     }
     
     @Override
@@ -33,16 +35,14 @@ public class WindowUnicodeKeyboard extends Keyboard
             super.type(character);
         }
         catch (IllegalArgumentException e) 
-        {
-            Charset cs = Charset.defaultCharset();
-System.out.println("Charset :" + cs.name());                
+        {               
             ByteBuffer buffer = cs.encode("" + character);
 
             byte b = buffer.get();
             int bi = b & 0x000000FF;
 
-            String unicodeDigits = String.valueOf(bi);
-System.out.println("DIGITS STR:" + unicodeDigits);            
+            
+            String unicodeDigits = String.valueOf(bi);         
             robot.keyPress(VK_ALT);
             try
             {
@@ -56,16 +56,15 @@ System.out.println("DIGITS STR:" + unicodeDigits);
             }
             
             
-if (false)                    
-{
-            //String unicodeDigits = String.valueOf(Character.codePointAt(new char[]{character},0));
-System.out.println("DIGITS STR:" + unicodeDigits);
+            /* Alternativa
+            String unicodeDigits = String.valueOf(Character.codePointAt(new char[]{character},0));
+
             robot.keyPress(VK_ALT);
             for (int i = 0; i < unicodeDigits.length(); i++) {
                 typeNumPad(Integer.parseInt(unicodeDigits.substring(i, i + 1)));
             }
             robot.keyRelease(VK_ALT);
-}
+            */
         }
     }
 

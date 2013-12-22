@@ -11,5 +11,8 @@ export JAVA_OPTS="-client -Xmx100m"
 
 export JPROXYSH_COMPILATION_OPTIONS="-source 1.6 -target 1.6"
 
+export LC_CTYPE="en_US.UTF-8"
+
 jproxysh   
+
 
