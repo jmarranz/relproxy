@@ -34,6 +34,10 @@ public class CommandOther extends Command
         {
             commandExit();
         }
+        else if (name.equals("help"))
+        {
+            commandHelp();
+        }        
         else if (name.equals("quit"))
         {
             commandExit();
@@ -82,5 +86,17 @@ public class CommandOther extends Command
         }
 
         parent.execute(code.toString(),scriptClass,sourceScript);        
+    }    
+    
+    private void commandHelp()
+    {
+        System.out.println("Commands:");
+        System.out.println(" clear : clears the buffer");        
+        System.out.println(" display : shows the buffer content");         
+        System.out.println(" edit last | number : edits the last introduced line code or the specified line number");        
+        System.out.println(" exec : compile and execute the buffer content");         
+        System.out.println(" exit : exits shell");          
+        System.out.println(" help : this command");        
+        System.out.println(" quit : same as exit");        
     }    
 }

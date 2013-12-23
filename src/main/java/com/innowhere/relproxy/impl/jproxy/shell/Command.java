@@ -45,6 +45,10 @@ public abstract class Command
         {
             return new CommandOther(parent,cmd);
         }
+        else if (cmd.equals("help"))
+        {
+            return new CommandOther(parent,cmd);
+        }        
         else if (cmd.equals("quit"))
         {
             return new CommandOther(parent,cmd);
