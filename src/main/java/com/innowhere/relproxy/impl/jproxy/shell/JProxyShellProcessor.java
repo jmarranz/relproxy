@@ -17,11 +17,14 @@ import java.util.Scanner;
  */
 public class JProxyShellProcessor
 {
+    public static int LINE_OFFSET = 2; // El índice en codeBuffer + este valor = al valor de la línea que se muestra al usuario, hay que tener en cuenta que contamos desde uno y la primera línea es siempre vacía
+    
     protected JProxyShellInteractiveImpl parent;
     protected Charset encoding = Charset.defaultCharset();
     protected ArrayList<String> codeBuffer = new ArrayList<String>(20);
     protected WindowUnicodeKeyboard keyboard = new WindowUnicodeKeyboard(encoding);
-    protected Command lastCommand;
+    protected int lastLine = -1; // Indice respecto a codeBuffer
+    protected int lineEditing = -1;  // Indice respecto a codeBuffer
     
     public JProxyShellProcessor(JProxyShellInteractiveImpl parent)
     {
@@ -36,6 +39,16 @@ public class JProxyShellProcessor
     public ArrayList<String> getCodeBuffer()
     {
         return codeBuffer;
+    }
+    
+    public int getLastLine()
+    {
+        return lastLine;
+    }
+    
+    public void setLineEditing(int lineEditing)
+    {
+        this.lineEditing = lineEditing;
     }
     
     public void test(ClassDescriptorSourceScript scriptClass,SourceScriptInMemory sourceScript)
@@ -54,22 +67,38 @@ public class JProxyShellProcessor
             Command command = Command.createCommand(this,line);
             if (command != null)
             {
-                boolean success = command.run(scriptClass, sourceScript);
-             
-                System.out.print(">"); 
-                
-                if (success)
+                if (command instanceof CommandError) // Era un comando pero con params erróneos
                 {
-                    command.runPostCommand(); // Lo normal es que no haga nada
-                    this.lastCommand = command;                    
+                    // Nada que hacer
+                    System.out.print(">");                     
+                }
+                else
+                {
+                    boolean success = command.run(scriptClass, sourceScript);
+
+                    System.out.print(">"); 
+
+                    if (success)
+                    {
+                        command.runPostCommand(); // Lo normal es que no haga nada                  
+                    }
                 }
             }
             else
             {
-                codeBuffer.add(line);            
-                System.out.print(">");
+                if (lineEditing != -1)
+                {
+                    codeBuffer.set(lineEditing, line);
+                    this.lastLine = lineEditing; 
+                    this.lineEditing = -1;
+                }
+                else
+                {
+                    codeBuffer.add(line);            
+                    this.lastLine = codeBuffer.size() - 1;
+                }
                 
-                this.lastCommand = null;                
+                System.out.print(">");              
             }
         }
     }    

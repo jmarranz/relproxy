@@ -100,7 +100,12 @@ public class Keyboard
         }
     }
 
-    public void type(char character) {
+    public boolean type(char character) {
+        
+        // He quitado todos los símbolos que son susceptibles de cambiar según el teclado pues hay que acertar exactamente la combinación de teclas del teclado
+        // concreto o da error, ej no vale emitir VK_COLON únicamente si en el teclado concreto es necesario un SHIFT
+        // En la clase derivada se procesan los caracteres no contemplados aquí
+        
         switch (character) {
         case 'a': doType(VK_A); break;
         case 'b': doType(VK_B); break;
@@ -165,6 +170,7 @@ public class Keyboard
         case '7': doType(VK_7); break;
         case '8': doType(VK_8); break;
         case '9': doType(VK_9); break;
+        /*    
         case '-': doType(VK_MINUS); break;
         case '=': doType(VK_EQUALS); break;
         case '~': doType(VK_SHIFT, VK_BACK_QUOTE); break;
@@ -198,24 +204,35 @@ public class Keyboard
         case '>': doType(VK_GREATER); break;
         case '/': doType(VK_SLASH); break;
         case '?': doType(VK_SHIFT, VK_SLASH); break;
+        */
         case ' ': doType(VK_SPACE); break;
         default:
-            throw new IllegalArgumentException("Cannot type character " + character);
+            return false;
         }
+        
+        return true;
     }
 
     protected void doType(int... keyCodes) {
-        doType(keyCodes, 0, keyCodes.length);
+        doTypeArr(keyCodes);
     }
 
-    private void doType(int[] keyCodes, int offset, int length) {
-        if (length == 0) {
-            return;
+    private void doTypeArr(int[] keyCodes) {
+        int length = keyCodes.length;
+        if (length == 1)
+        {
+            robot.keyPress(keyCodes[0]);
+            robot.keyRelease(keyCodes[0]);            
+        }        
+        else // 2   
+        {
+            robot.keyPress(keyCodes[0]);
+            
+            robot.keyPress(keyCodes[1]);            
+            robot.keyRelease(keyCodes[1]);            
+            
+            robot.keyRelease(keyCodes[0]);
         }
-
-        robot.keyPress(keyCodes[offset]);
-        doType(keyCodes, offset + 1, length - 1);
-        robot.keyRelease(keyCodes[offset]);
     }
 
 }

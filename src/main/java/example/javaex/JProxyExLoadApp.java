@@ -42,16 +42,18 @@ public class JProxyExLoadApp
             {
                 List<Diagnostic<? extends JavaFileObject>> diagList = diagnostics.getDiagnostics();                
                 int i = 1;
-                for (Diagnostic diag : diagList)
+                for (Diagnostic diagnostic : diagList)
                 {
                    System.err.println("Diagnostic " + i);
-                   System.err.println("  code: " + diag.getCode());
-                   System.err.println("  kind: " + diag.getKind());
-                   System.err.println("  position: " + diag.getPosition());
-                   System.err.println("  start position: " + diag.getStartPosition());
-                   System.err.println("  end position: " + diag.getEndPosition());
-                   System.err.println("  source: " + diag.getSource());
-                   System.err.println("  message: " + diag.getMessage(null));
+                   System.err.println("  code: " + diagnostic.getCode());
+                   System.err.println("  kind: " + diagnostic.getKind());
+                   System.err.println("  line number: " + diagnostic.getLineNumber());                   
+                   System.err.println("  column number: " + diagnostic.getColumnNumber());
+                   System.err.println("  start position: " + diagnostic.getStartPosition());
+                   System.err.println("  position: " + diagnostic.getPosition());                   
+                   System.err.println("  end position: " + diagnostic.getEndPosition());
+                   System.err.println("  source: " + diagnostic.getSource());
+                   System.err.println("  message: " + diagnostic.getMessage(null));
                    i++;
                 }
             }

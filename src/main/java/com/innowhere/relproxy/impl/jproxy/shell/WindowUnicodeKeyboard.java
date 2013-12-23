@@ -29,43 +29,44 @@ public class WindowUnicodeKeyboard extends Keyboard
     }
     
     @Override
-    public void type(char character) {
-        try 
+    public boolean type(char character) 
+    {
+        if (super.type(character))
+            return true;
+
+        // En Windows usar mintty porque usando la consola de MSYS por sí misma, que es realmente la de Windows, hay problemas con el set de caracteres, pues sería Cp1252 para Java pero Cp850 para la consola y salen mal por tanto los caracteres no ASCII
+
+        ByteBuffer buffer = cs.encode("" + character);
+
+        byte b = buffer.get();
+        int bi = b & 0x000000FF;
+
+
+        String unicodeDigits = String.valueOf(bi);         
+        robot.keyPress(VK_ALT);
+        try
         {
-            super.type(character);
-        }
-        catch (IllegalArgumentException e) 
-        {               
-            ByteBuffer buffer = cs.encode("" + character);
-
-            byte b = buffer.get();
-            int bi = b & 0x000000FF;
-
-            
-            String unicodeDigits = String.valueOf(bi);         
-            robot.keyPress(VK_ALT);
-            try
-            {
-                for (int i = 0; i < unicodeDigits.length(); i++) {
-                    typeNumPad(Integer.parseInt(unicodeDigits.substring(i, i + 1)));
-                }
-            }
-            finally
-            {
-                robot.keyRelease(VK_ALT);            
-            }
-            
-            
-            /* Alternativa
-            String unicodeDigits = String.valueOf(Character.codePointAt(new char[]{character},0));
-
-            robot.keyPress(VK_ALT);
             for (int i = 0; i < unicodeDigits.length(); i++) {
                 typeNumPad(Integer.parseInt(unicodeDigits.substring(i, i + 1)));
             }
-            robot.keyRelease(VK_ALT);
-            */
         }
+        finally
+        {
+            robot.keyRelease(VK_ALT);            
+        }
+
+
+        /* Alternativa
+        String unicodeDigits = String.valueOf(Character.codePointAt(new char[]{character},0));
+
+        robot.keyPress(VK_ALT);
+        for (int i = 0; i < unicodeDigits.length(); i++) {
+            typeNumPad(Integer.parseInt(unicodeDigits.substring(i, i + 1)));
+        }
+        robot.keyRelease(VK_ALT);
+        */
+        
+        return true;
     }
 
     private void typeNumPad(int digit) {

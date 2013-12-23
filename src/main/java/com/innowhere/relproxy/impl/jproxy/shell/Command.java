@@ -29,9 +29,13 @@ public abstract class Command
         {
             return new CommandOther(parent,cmd);
         }       
-        else if (cmd.equals("edit"))
+        else if (cmd.startsWith("edit"))
         {            
-            return new CommandEdit(parent,"áéñç");
+            CommandEdit command = CommandEdit.createCommandEdit(parent,cmd);
+            if (command != null)
+                return command;
+            else
+                return new CommandError(parent);            
         }               
         else if (cmd.equals("exec"))
         {
@@ -45,7 +49,7 @@ public abstract class Command
         {
             return new CommandOther(parent,cmd);
         }        
-        return null;
+        return null; // No es un comando
     }    
     
     public abstract boolean run(ClassDescriptorSourceScript scriptClass,SourceScriptInMemory sourceScript);    
