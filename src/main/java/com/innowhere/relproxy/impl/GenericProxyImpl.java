@@ -49,6 +49,6 @@ public abstract class GenericProxyImpl
         T proxy = (T)Proxy.newProxyInstance(obj.getClass().getClassLoader(),new Class[] { clasz }, handler);   
         return proxy;
     }        
-    
+  
     public abstract <T> GenericProxyInvocationHandler<T> createGenericProxyInvocationHandler(T obj);    
 }

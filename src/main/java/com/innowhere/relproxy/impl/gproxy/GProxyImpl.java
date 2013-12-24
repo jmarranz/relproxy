@@ -24,7 +24,7 @@ public abstract class GProxyImpl extends GenericProxyImpl
     public GProxyGroovyScriptEngine getGProxyGroovyScriptEngine()
     {
         return engine;
-    }
+    }   
     
     @Override
     public <T> GenericProxyInvocationHandler<T> createGenericProxyInvocationHandler(T obj)    

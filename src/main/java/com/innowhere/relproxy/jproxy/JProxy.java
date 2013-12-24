@@ -25,5 +25,13 @@ public class JProxy
         return JProxyDefaultImpl.createStatic(obj, clasz);
     }
     
-
+    public static boolean stop()
+    {
+        return JProxyDefaultImpl.stopStatic();
+    }
+    
+    public static boolean start()
+    {
+        return JProxyDefaultImpl.startStatic();
+    }    
 }

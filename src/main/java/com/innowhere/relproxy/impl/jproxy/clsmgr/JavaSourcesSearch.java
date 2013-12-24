@@ -1,5 +1,6 @@
 package com.innowhere.relproxy.impl.jproxy.clsmgr;
 
+import com.innowhere.relproxy.impl.jproxy.JProxyUtil;
 import java.io.File;
 import java.net.URL;
 import java.util.LinkedList;

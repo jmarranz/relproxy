@@ -41,7 +41,17 @@ public abstract class JProxyImpl extends GenericProxyImpl
     {
         return engine;
     }
-
+    
+    public boolean stop()
+    {       
+        return engine.stop();
+    }                
+    
+    public boolean start()
+    {       
+        return engine.start();
+    }     
+    
     @Override
     public <T> GenericProxyInvocationHandler<T> createGenericProxyInvocationHandler(T obj)    
     {

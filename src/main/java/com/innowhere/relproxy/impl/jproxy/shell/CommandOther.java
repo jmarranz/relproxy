@@ -1,6 +1,7 @@
 
 package com.innowhere.relproxy.impl.jproxy.shell;
 
+import com.innowhere.relproxy.RelProxyException;
 import com.innowhere.relproxy.impl.jproxy.clsmgr.ClassDescriptorSourceScript;
 import com.innowhere.relproxy.impl.jproxy.clsmgr.SourceScriptInMemory;
 
@@ -37,11 +38,12 @@ public class CommandOther extends Command
         else if (name.equals("help"))
         {
             commandHelp();
-        }        
+        }                     
         else if (name.equals("quit"))
         {
             commandExit();
         }        
+        else throw new RelProxyException("Internal Error");
         
         return true;
     }    
@@ -53,7 +55,7 @@ public class CommandOther extends Command
     
     private void commandClear()
     {
-        parent.getCodeBuffer().clear();
+        parent.clearCodeBuffer();
     }
     
     private void commandExit()
@@ -73,30 +75,38 @@ public class CommandOther extends Command
             System.out.print(line);                
             System.out.println(); 
             i++;
-        }        
+        }    
     }
     
     private void commandExec(ClassDescriptorSourceScript scriptClass,SourceScriptInMemory sourceScript)
     {
-        StringBuilder code = new StringBuilder();
-        for(String line : parent.getCodeBuffer())
-        {
-            code.append(line);
-            code.append("\n");                
-        }
-
-        parent.execute(code.toString(),scriptClass,sourceScript);        
+        parent.execute(scriptClass,sourceScript);        
     }    
     
     private void commandHelp()
     {
-        System.out.println("Commands:");
-        System.out.println(" clear : clears the buffer");        
-        System.out.println(" display : shows the buffer content");         
-        System.out.println(" edit last | number : edits the last introduced line code or the specified line number");        
-        System.out.println(" exec : compile and execute the buffer content");         
-        System.out.println(" exit : exits shell");          
-        System.out.println(" help : this command");        
-        System.out.println(" quit : same as exit");        
+        System.out.println("Everything you write in the prompt is added to a code buffer, code buffer is compiled on the fly and executed by exec command, unless a command is detected");
+        System.out.println("");        
+        System.out.println("Available commands:");
+        System.out.println(" clear"); 
+        System.out.println("         Clears the buffer");            
+        System.out.println(" display");         
+        System.out.println("         Shows the buffer content");        
+        System.out.println(" edit last | <number>");        
+        System.out.println("         Edits the last introduced line code or the specified line number");        
+        System.out.println(" exec");         
+        System.out.println("         Compile and execute the buffer content");        
+        System.out.println(" exit");          
+        System.out.println("         Exits shell");         
+        System.out.println(" help");        
+        System.out.println("         This command"); 
+        System.out.println(" insert last | <number>");        
+        System.out.println("         Insert the next line of code before the last introduced line or the specified line number");        
+        System.out.println(" load <path> | <url>");        
+        System.out.println("         Load a file or URL into the buffer");         
+        System.out.println(" quit");        
+        System.out.println("         Same as exit"); 
+        System.out.println(" save <path>");        
+        System.out.println("         Save the current buffer to a file");         
     }    
 }

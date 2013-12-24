@@ -1,5 +1,6 @@
 package com.innowhere.relproxy.impl.jproxy.clsmgr;
 
+import com.innowhere.relproxy.impl.jproxy.JProxyUtil;
 import com.innowhere.relproxy.RelProxyException;
 import java.io.File;
 

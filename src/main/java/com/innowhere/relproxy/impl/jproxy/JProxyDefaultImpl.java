@@ -1,5 +1,6 @@
 package com.innowhere.relproxy.impl.jproxy;
 
+import com.innowhere.relproxy.RelProxyException;
 import com.innowhere.relproxy.jproxy.JProxyConfig;
 
 /**
@@ -30,4 +31,19 @@ public class JProxyDefaultImpl extends JProxyImpl
         return SINGLETON.create(obj, clasz);
     }    
 
+    public static boolean stopStatic()
+    {
+        if (SINGLETON == null) 
+            return false;
+        
+        return SINGLETON.stop();
+    }       
+    
+    public static boolean startStatic()
+    {
+        if (SINGLETON == null) 
+            return false;
+        
+        return SINGLETON.start();
+    }         
 }

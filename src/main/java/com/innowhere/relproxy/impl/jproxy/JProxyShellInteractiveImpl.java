@@ -17,7 +17,7 @@ public class JProxyShellInteractiveImpl extends JProxyShellImpl
     protected boolean test = false;
     protected JProxyShellProcessor processor = new JProxyShellProcessor(this);
     
-    public void init(String[] args) throws Throwable
+    public void init(String[] args)
     {          
         ClassDescriptorSourceScript script = super.init(args, null);
         

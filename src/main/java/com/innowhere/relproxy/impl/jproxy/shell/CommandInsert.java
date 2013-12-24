@@ -10,25 +10,23 @@ import static com.innowhere.relproxy.impl.jproxy.shell.CommandCodeChangerBase.ER
 import static com.innowhere.relproxy.impl.jproxy.shell.CommandCodeChangerBase.ERROR_OUT_OF_RANGE;
 import static com.innowhere.relproxy.impl.jproxy.shell.CommandCodeChangerBase.ERROR_VALUE_NOT_0_OR_NEGATIVE;
 import static com.innowhere.relproxy.impl.jproxy.shell.CommandCodeChangerBase.getLineFromParam;
-import static com.innowhere.relproxy.impl.jproxy.shell.CommandDelete.NAME;
+import static com.innowhere.relproxy.impl.jproxy.shell.CommandEdit.NAME;
 
 
 /**
  *
  * @author jmarranz
  */
-public class CommandEdit extends CommandCodeChangerBase
+public class CommandInsert extends CommandCodeChangerBase
 {
-    public static final String NAME = "edit";
-    protected String codeLine;       
+    public static final String NAME = "insert";        
     
-    public CommandEdit(JProxyShellProcessor parent,int line,String codeLine)
+    public CommandInsert(JProxyShellProcessor parent,int line)
     {
-        super(parent,NAME,line);
-        this.codeLine = codeLine;        
+        super(parent,NAME,line);        
     }    
     
-    public static CommandEdit createCommandEdit(JProxyShellProcessor parent,String cmd)
+    public static CommandInsert createCommandInsert(JProxyShellProcessor parent,String cmd)
     {
         int line = getLineFromParam(parent,NAME,cmd);
         if (line < 0)
@@ -39,7 +37,7 @@ public class CommandEdit extends CommandCodeChangerBase
                     System.out.println("Command error: parameter \"last\" or a line number is required");
                     break;
                 case ERROR_NO_LAST_LINE:
-                    System.out.println("Command error: no new or edited line code has been introduced");              
+                    System.out.println("Command error: no new or edited line code has been introduced");
                     break;
                 case ERROR_NOT_A_NUMBER:
                     System.out.println("Command error: line value is not a number");                    
@@ -48,23 +46,22 @@ public class CommandEdit extends CommandCodeChangerBase
                     System.out.println("Command error: line value cannot be 0 or negative");                   
                     break;  
                 case ERROR_LINE_1_NOT_VALID:
-                    System.out.println("Command error: line 1 is ever empty and cannot be edited");                   
+                    System.out.println("Command error: line 1 is ever empty and no code can be inserted before");                   
                     break;    
                 case ERROR_OUT_OF_RANGE:
                     System.out.println("Command error: line number out of range");                  
                     break; 
             }
             return null;
-        }        
-        
-        String codeLine = parent.getCodeBuffer().get(line);    
-        return new CommandEdit(parent,line,codeLine);    
+        }                
+            
+        return new CommandInsert(parent,line);    
     }
     
     @Override
     public void runPostCommand()
     {
-        parent.getWindowUnicodeKeyboard().type(codeLine);
+        parent.insertCodeBuffer(line,"");
         parent.setLineEditing(line);
     }
 }

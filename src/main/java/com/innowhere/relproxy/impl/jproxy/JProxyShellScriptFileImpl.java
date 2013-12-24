@@ -2,7 +2,6 @@ package com.innowhere.relproxy.impl.jproxy;
 
 import com.innowhere.relproxy.RelProxyException;
 import com.innowhere.relproxy.impl.jproxy.clsmgr.ClassDescriptorSourceScript;
-import com.innowhere.relproxy.impl.jproxy.clsmgr.JProxyUtil;
 import com.innowhere.relproxy.impl.jproxy.clsmgr.SourceScript;
 import com.innowhere.relproxy.impl.jproxy.clsmgr.SourceScriptFile;
 import java.io.File;
@@ -16,7 +15,7 @@ public class JProxyShellScriptFileImpl extends JProxyShellImpl
 {
     protected File scriptFile;
     
-    public void init(String[] args,File scriptFile) throws Throwable
+    public void init(String[] args,File scriptFile)
     {
         this.scriptFile = scriptFile;
 
@@ -25,11 +24,18 @@ public class JProxyShellScriptFileImpl extends JProxyShellImpl
         super.init(args, inputPath);
     }    
     
-    protected void executeFirstTime(ClassDescriptorSourceScript scriptFileDesc,LinkedList<String> argsToScript,JProxyShellClassLoader classLoader) throws Throwable
+    protected void executeFirstTime(ClassDescriptorSourceScript scriptFileDesc,LinkedList<String> argsToScript,JProxyShellClassLoader classLoader)
     {
         fixLastLoadedClass(scriptFileDesc,classLoader);
         
-        scriptFileDesc.callMainMethod(argsToScript);   
+        try
+        {
+            scriptFileDesc.callMainMethod(argsToScript);  
+        }
+        catch(Throwable ex)
+        {
+            ex.printStackTrace(System.out);
+        }          
     }
     
     @Override    

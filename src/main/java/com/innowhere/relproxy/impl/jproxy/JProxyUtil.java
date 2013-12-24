@@ -1,4 +1,4 @@
-package com.innowhere.relproxy.impl.jproxy.clsmgr;
+package com.innowhere.relproxy.impl.jproxy;
 
 import com.innowhere.relproxy.RelProxyException;
 import java.io.BufferedReader;

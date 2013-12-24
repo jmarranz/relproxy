@@ -2,7 +2,8 @@
 
 PROJECT=`dirname $0`/..
 
-export JAVA_HOME="/c/Archivos de programa/Java/jdk1.7.0_45/"
+if [ -z "$JAVA_HOME" ]; then JAVA_HOME="/c/Archivos de programa/Java/jdk1.7.0_45/"
+fi
 
 export PATH=$PATH:$PROJECT/cmd
 export CLASSPATH=$PROJECT/target/classes

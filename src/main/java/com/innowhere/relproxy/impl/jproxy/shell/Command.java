@@ -25,6 +25,14 @@ public abstract class Command
         {
             return new CommandOther(parent,cmd);
         }     
+        else if (cmd.startsWith("delete"))
+        {            
+            CommandDelete command = CommandDelete.createCommandDelete(parent,cmd);
+            if (command != null)
+                return command;
+            else
+                return new CommandError(parent);            
+        }        
         else if (cmd.equals("display"))
         {
             return new CommandOther(parent,cmd);
@@ -49,12 +57,48 @@ public abstract class Command
         {
             return new CommandOther(parent,cmd);
         }        
+        else if (cmd.startsWith("insert"))
+        {            
+            CommandInsert command = CommandInsert.createCommandInsert(parent,cmd);
+            if (command != null)
+                return command;
+            else
+                return new CommandError(parent);            
+        }         
+        else if (cmd.startsWith("load"))
+        {            
+            CommandLoad command = CommandLoad.createCommandLoad(parent,cmd);
+            if (command != null)
+                return command;
+            else
+                return new CommandError(parent);            
+        }                
         else if (cmd.equals("quit"))
         {
             return new CommandOther(parent,cmd);
-        }        
+        }     
+        else if (cmd.startsWith("save"))
+        {            
+            CommandSave command = CommandSave.createCommandSave(parent,cmd);
+            if (command != null)
+                return command;
+            else
+                return new CommandError(parent);            
+        }      
+        
         return null; // No es un comando
     }    
+    
+    protected static String getParameter(String cmdName,String cmd)
+    {
+        int pos = cmd.indexOf(cmdName + " ");
+        if (pos != 0)
+            return null;
+        pos = cmd.indexOf(' ');        
+        String param = cmd.substring(pos + 1);
+        param = param.trim();    
+        return param;
+    }
     
     public abstract boolean run(ClassDescriptorSourceScript scriptClass,SourceScriptInMemory sourceScript);    
     

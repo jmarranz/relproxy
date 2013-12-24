@@ -1,5 +1,6 @@
 package com.innowhere.relproxy.impl.jproxy.clsmgr;
 
+import com.innowhere.relproxy.impl.jproxy.JProxyUtil;
 import com.innowhere.relproxy.impl.jproxy.clsmgr.comp.JProxyCompilerContext;
 import com.innowhere.relproxy.impl.jproxy.clsmgr.comp.JProxyCompilerInMemory;
 import com.innowhere.relproxy.jproxy.JProxyDiagnosticsListener;
@@ -25,6 +26,7 @@ public class JProxyEngine
     protected ClassDescriptorSourceFileRegistry sourceRegistry;
     protected String sourceEncoding = "UTF-8"; // Por ahora, provisional
     public volatile boolean stop = false;
+    protected TimerTask task;
     
     public JProxyEngine(SourceScript scriptFile,ClassLoader rootClassLoader,String pathSources,String classFolder,long scanPeriod,Iterable<String> compilationOptions,JProxyDiagnosticsListener diagnosticsListener)
     {
@@ -42,10 +44,17 @@ public class JProxyEngine
     {
         ClassDescriptorSourceScript scriptFileDesc = detectChangesInSources(); // Primera vez para detectar cambios en los .java respecto a los .class mientras el servidor estaba parado
         
+        startScanner();
+        
+        return scriptFileDesc;
+    }
+    
+    private boolean startScanner()
+    {
         if (scanPeriod > 0)  // Si es 0 o negativo sólo se recargan una vez (la inicial ya ejecutada)
         {
             Timer timer = new Timer();  
-            TimerTask task = new TimerTask()
+            this.task = new TimerTask()
             {
                 @Override
                 public void run() 
@@ -68,10 +77,14 @@ public class JProxyEngine
             };            
 
             timer.schedule(task, scanPeriod, scanPeriod);  // Ojo, después de la primera llamada a detectChangesInSources() 
-        }        
-        
-        return scriptFileDesc;
+            return true;
+        }      
+        else
+        {
+            return false;
+        }
     }
+   
     
     public File getFolderSources()
     {
@@ -87,6 +100,26 @@ public class JProxyEngine
     {
         return sourceEncoding;
     }
+    
+    public synchronized boolean stop()    
+    {
+        if (task != null)
+        {
+            task.cancel();
+            this.task = null;
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }    
+    
+    public synchronized boolean start()    
+    {
+        if (task == null) return startScanner();
+        else return false;
+    }        
     
     private boolean isSaveClassesMode()
     {
