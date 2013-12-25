@@ -8,7 +8,7 @@
         <title>Test Java Shell</title>
     </head>
     <body>
-        <h1>Test Java Shell into the web app (for lazy people). Interactive</h1>        
+        <h1>Test Java Shell Interactive into the web app for lazy people (to easy debugging). </h1>        
 
         <%
             // This code is internal stuff just to make this test workable

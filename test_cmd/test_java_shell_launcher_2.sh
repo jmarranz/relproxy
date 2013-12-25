@@ -2,7 +2,9 @@
 
 PROJECT=`dirname $0`/..
 
-if [ -z "$JAVA_HOME" ]; then JAVA_HOME="/c/Archivos de programa/Java/jdk1.7.0_45/"
+if [ -z "$JAVA_HOME" ]; then 
+    echo Missing JAVA_HOME environment variable, exiting...
+    exit 1
 fi
 
 export PATH=$PATH:$PROJECT/cmd
