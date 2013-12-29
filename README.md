@@ -4,7 +4,8 @@ RelProxy
 
 Note: RelProxy v0.8 is finished but documentation and final packaging is still pending. v0.8 is just a prudential version, but the author, Jose María Arranz, thinks it is "production ready" in the current state.
 
-RelProxy is a simple Java and Groovy hot class reloader for Java and Groovy, and scripting support and shell of pure Java code. 
+
+RelProxy is a simple Java and Groovy hot class reloader for Java and Groovy providing transparent compilation and class reload on the fly, and scripting support and shell of pure Java code
 
 In case of Java "scripting", there is no a new language, is pure Java code with compilation on the fly.
 
