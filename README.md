@@ -11,7 +11,7 @@ More info here:
 http://www.innowhere.com/inexperiments/jreloadex?itsnat_doc_name=jreloadex
 http://www.innowhere.com/inexperiments/groovyex?itsnat_doc_name=groovyex
 
-Take a look source code of RelProxy and [ItsNat Experiments](https://github.com/jmarranz/itsnat/tree/master/inexperiments) for Maven and Ant configurations and code examples of how to use with ItsNat (Java and Groovy code) and standalone shell.
+Take a look to the source code of RelProxy and [ItsNat Experiments](https://github.com/jmarranz/itsnat/tree/master/inexperiments) for Maven and Ant configurations (for NetBeans) and code examples of how to use with ItsNat (Java and Groovy code) and standalone shell. ItsNat examples are just an example of use case of RelProxy, RelProxy has no dependency on ItsNat and is not part of ItsNat.
 
 You can get a compiled jar file with the last snapshot (virtually the final) here:
 https://github.com/jmarranz/itsnat/raw/master/inexperiments/web/WEB-INF/lib/relproxy-0.8-SNAPSHOT.jar
