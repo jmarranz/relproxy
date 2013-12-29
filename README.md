@@ -4,7 +4,11 @@ RelProxy
 
 Note: RelProxy v0.8 is finished but documentation and final packaging is still pending. v0.8 is just a prudential version, but the author, Jose María Arranz, thinks it is "production ready" in the current state.
 
-RelProxy is a simple Java and Groovy hot class reloader, in spite of is a general purpose tool it was heavily inspired in ItsNat web framework to provide hot class reload in development time... and if you want also in production.
+RelProxy is a simple Java and Groovy hot class reloader for Java and Groovy, and scripting support and shell of pure Java code. 
+
+In case of Java "scripting", there is no a new language, is pure Java code with compilation on the fly.
+
+In spite of RelProxy is a general purpose tool it was heavily inspired in ItsNat web framework to provide hot class reload in development time... and if you want also in production.
 
 More info here:
 
@@ -18,7 +22,7 @@ https://github.com/jmarranz/itsnat/raw/master/inexperiments/web/WEB-INF/lib/relp
 
 As bonus, RelProxy provides a shell environment to execute:
 
-1) A pure Java archive packaged like a shell script file with no need of previous compilation, compilation is done on the fly and optionally .class can be saved in a cache to provide the fastest "scripting" language of the world. Code in the initial archive can call to other normal Java files, again with compilation on the fly. [Example 1](https://github.com/jmarranz/relproxy/blob/master/src/main/webapp/WEB-INF/javashellex/code/test_java_shell) and [example 2](https://github.com/jmarranz/relproxy/blob/master/src/main/webapp/WEB-INF/javashellex/code/test_java_shell_2)
+1) A pure Java archive packaged like a shell script file with no need of previous compilation, compilation is done on the fly and optionally .class can be saved in a cache to provide the fastest "scripting" language of the world. Code in the initial archive can call to other normal Java files, again with compilation on the fly and optional compilation caching as .class files. [Example 1](https://github.com/jmarranz/relproxy/blob/master/src/main/webapp/WEB-INF/javashellex/code/test_java_shell) and [example 2](https://github.com/jmarranz/relproxy/blob/master/src/main/webapp/WEB-INF/javashellex/code/test_java_shell_2)
 
 2) Execution of Java code snippets in command line (no need of packaging in an archive). [Example](https://github.com/jmarranz/relproxy/blob/master/test_cmd/test_java_shell_snippet_launcher.sh).
 
