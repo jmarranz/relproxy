@@ -2,7 +2,6 @@
 package com.innowhere.relproxy.jproxy;
 
 import com.innowhere.relproxy.RelProxyOnReloadListener;
-import com.innowhere.relproxy.impl.jproxy.JProxyConfigImpl;
 
 /**
  *

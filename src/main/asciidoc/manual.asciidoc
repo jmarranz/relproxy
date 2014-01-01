@@ -1,0 +1,34 @@
+// :icons: font es necesario para que se considere en la generación de HTML usando Font Awesome en donde palabras especiales son iconos por ej en "NOTE:" "IMPORTANT:" etc 
+:icons: font  
+// :linkcss: por si acaso, pues linkamos asciidoctor.css
+:linkcss:
+// :copycss: es para que copie el asciidoctor.css por defecto junto al HTML generado
+:copycss:
+:toc2:
+
+= My Article
+J. Smith
+
+http://wikipedia.org[Wikipedia] is an
+on-line encyclopaedia, available in
+English and many other languages.
+
+== Software
+
+You can install 'package-name' using
+the +gem+ command:
+
+ gem install package-name
+
+== Hardware
+
+Metals commonly used include:
+* copper
+* tin
+* lead
+
+
+
+NOTE: Esto es una nota
+
+IMPORTANT: Esto es importante
