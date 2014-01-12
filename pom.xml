@@ -113,10 +113,10 @@
                         <goal>process-asciidoc</goal>
                     </goals>
                     <configuration>
-                        <sourceHighlighter>coderay</sourceHighlighter>
+                        <!--<sourceHighlighter>highlightjs</sourceHighlighter> -->
                         <backend>html</backend>
                         <attributes>
-                            <toc/>                         
+                            <!--<toc/> -->
                         </attributes>
                     </configuration>
                 </execution>
