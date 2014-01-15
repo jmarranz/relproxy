@@ -11,7 +11,7 @@
 :source-highlighter: prettify
 
 = RelProxy
-Jose María Arranz Santamaría
+(C) Jose María Arranz Santamaría
 v0.8
 
 Because Java is also a dynamic language and Groovy can remain a dynamic language in a Java based environment.
@@ -62,22 +62,124 @@ for instance in BeanShell there is no support of Java 1.5 features like generics
 
 That is all, welcome to dynamic Java, welcome to a more dynamic Groovy in a Java environment.
  
+== What is RelProxy 
+
+RelProxy is:
+
+. A simple Java and Groovy hot class reloader for Java and Groovy providing transparent compilation and class reload on the fly with no need of a bootstrap class loader agent.
+. A scripting environment to execute Java code snippets the same as a shell script, there is no new language, is Java compiled on the fly, code in the initial archive can call 
+to other normal Java files. Optionally .class can be saved in a cache to provide the fastest "scripting" language of the world.
+. Execution of Java code snippets in command line (no need of packaging into an archive).
+. A simple shell to code, edit and execute code snippets in Java interactively.
+
+== Requisites and installation
+
+RelProxy requires a JDK 1.6 or upper, RelProxy have been tested on Oracle JDK 1.6 and OpenJDK 1.7.
+
+RelProxy distribution file has two important files:
+
+. relproxy-X.X.jar : needed in classpath to use RelProxy in any form. 
+. jproxysh : whether command line scripting capabilities are to be used
 
 
+== Registering hot reloadable Groovy objects in Java
 
-////
-PRUEBAS
++com.innowhere.relproxy.gproxy.GProxy+ is the main Java class of RelProxy to provide this feature, with +GProxy+ you can create Java proxies for Groovy objects because +java.lang.reflect.Proxy+ is passed instead of 
+the original Groovy object, the original Groovy object is retained under the hood and method calls to the proxy are redirected to the real object calling the corresponding 
+method using reflection. When the source code of the Groovy class changes GProxy automatically reloads the Groovy class and creates a new object to replace the old one, 
+the fields of the original object are got and re-set to the new object to keep the state (number of fields and types must be the same otherwise reloading is not possible 
+and a redeploy is required).
 
-[source,java]
-.app.java
+The following code is an example of how to use RelProxy along with ItsNat web framework, this code is part of the example code of RelProxy source code. 
+
+The +servlet+ variable is a servlet object containing a just configured +groovy.util.GroovyScriptEngine+: 
+
+
+[source,groovy]
+.groovy_servlet_init.groovy
 ----
-public void hola()
-{
-  int i = 10;
-  String a = "Hola";
-  System.out.println("Adios");
-}
+package example.groovyex;
+
+import org.itsnat.core.http.ItsNatHttpServlet;
+import org.itsnat.core.tmpl.ItsNatDocumentTemplate;
+import org.itsnat.core.event.ItsNatServletRequestListener;
+import groovy.util.GroovyScriptEngine;
+import java.lang.reflect.Method;
+import com.innowhere.relproxy.RelProxyOnReloadListener;
+import com.innowhere.relproxy.gproxy.GProxy;
+import com.innowhere.relproxy.gproxy.GProxyGroovyScriptEngine;
+import com.innowhere.relproxy.gproxy.GProxyConfig;
+
+
+GroovyScriptEngine groovyEngine = servlet.getGroovyScriptEngine();
+
+def gproxyGroovyEngine = {
+             String scriptName -> return (java.lang.Class)groovyEngine.loadScriptByName(scriptName) 
+        } as GProxyGroovyScriptEngine;
+
+def reloadListener = { 
+        Object objOld,Object objNew,Object proxy, Method method, Object[] args -> 
+           println("Reloaded " + objNew + " Calling method: " + method)
+      } as RelProxyOnReloadListener;
+
+def gpConfig = GProxy.createGProxyConfig();
+gpConfig.setEnabled(true)
+        .setRelProxyOnReloadListener(reloadListener)
+        .setGProxyGroovyScriptEngine(gproxyGroovyEngine);
+
+GProxy.init(gpConfig);
+
+
+def db = new FalseDB();
+
+String pathPrefix = context.getRealPath("/") + "/WEB-INF/groovyex/pages/";
+
+def docTemplate;
+docTemplate = itsNatServlet.registerItsNatDocumentTemplate("groovyex","text/html", pathPrefix + "groovyex.html");
+
+ItsNatServletRequestListener listener = GProxy.create(new example.groovyex.GroovyExampleLoadListener(db), ItsNatServletRequestListener.class);
+docTemplate.addItsNatServletRequestListener(listener);
+
 ----
 
-////
+
+Let's explain the previous code:
+
+[source,groovy]
+----
+def gproxyGroovyEngine = {
+             String scriptName -> return (java.lang.Class)groovyEngine.loadScriptByName(scriptName) 
+        } as GProxyGroovyScriptEngine;
+----
+
+Defines a listener needed by GProxy to indirectly call the +groovy.util.GroovyScriptEngine+ to load classes, take a look to the signature of +GProxyGroovyScriptEngine+ there is no dependency
+with +groovy.*+ packages, this is why you can use RelProxy in pure Java projects with no Groovy dependency in spite of Groovy support.
+
+
+[source,groovy]
+----
+def reloadListener = { 
+        Object objOld,Object objNew,Object proxy, Method method, Object[] args -> 
+           println("Reloaded " + objNew + " Calling method: " + method)
+      } as RelProxyOnReloadListener;
+----
+
+Defines an optional listener to be called when a Groovy class is reloaded, the listener receives the old and new object cause of reloading because a proxied method was called.
+
+[source,groovy]
+----
+def gpConfig = GProxy.createGProxyConfig();
+gpConfig.setEnabled(true)
+        .setRelProxyOnReloadListener(reloadListener)
+        .setGProxyGroovyScriptEngine(gproxyGroovyEngine);
+
+GProxy.init(gpConfig);
+----
+
+Configures +GProxy+, now it is ready to proxy Groovy objects.
+
+Take a look to the optional +setEnabled(true)+ configuration call, +GProxy+ is enabled by default, this means proxied Groovy objects are instrumented for hot reload. 
+Calling +setEnabled(false)+ tells +GProxy+ to ignore any other configuration, +GProxy+ is disabled and no proxy is created, the original Groovy objects will be returned with absolute no performance penalty,
+this is the preferred configuration in production whether you do not want hot class reload in production.
+
 

@@ -4,14 +4,18 @@ package example.groovyex;
 import org.itsnat.core.http.ItsNatHttpServlet;
 import org.itsnat.core.tmpl.ItsNatDocumentTemplate;
 import org.itsnat.core.event.ItsNatServletRequestListener;
+import groovy.util.GroovyScriptEngine;
 import java.lang.reflect.Method;
 import com.innowhere.relproxy.RelProxyOnReloadListener;
 import com.innowhere.relproxy.gproxy.GProxy;
 import com.innowhere.relproxy.gproxy.GProxyGroovyScriptEngine;
 import com.innowhere.relproxy.gproxy.GProxyConfig;
 
-def groovyEngine = {
-             String scriptName -> return (java.lang.Class)servlet.getGroovyScriptEngine().loadScriptByName(scriptName) 
+
+GroovyScriptEngine groovyEngine = servlet.getGroovyScriptEngine();
+
+def gproxyGroovyEngine = {
+             String scriptName -> return (java.lang.Class)groovyEngine.loadScriptByName(scriptName) 
         } as GProxyGroovyScriptEngine;
 
 /* This alternative throws a weird error when called loadScriptByName, why?
@@ -27,7 +31,9 @@ def reloadListener = {
       } as RelProxyOnReloadListener;
 
 def gpConfig = GProxy.createGProxyConfig();
-gpConfig.setEnabled(true).setRelProxyOnReloadListener(reloadListener).setGProxyGroovyScriptEngine(groovyEngine);
+gpConfig.setEnabled(true)
+        .setRelProxyOnReloadListener(reloadListener)
+        .setGProxyGroovyScriptEngine(gproxyGroovyEngine);
 
 GProxy.init(gpConfig);
 
