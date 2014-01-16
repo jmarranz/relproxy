@@ -30,3 +30,15 @@ As bonus, RelProxy provides a shell environment to execute:
 3) Interactive console to edit and execute Java code (ever compilation on the fly). [Example of launcher](https://github.com/jmarranz/relproxy/blob/master/test_cmd/test_java_shell_interactive_launcher.sh)
 
 Yes, Java is also a dynamic and scripting language with no need of manual compilation and extremely fast and robust  :)
+
+Latest Doc
+------
+
+You can read the [in progress latest documentation here](https://github.com/jmarranz/relproxy/blob/master/src/main/asciidoc/manual.asciidoc)
+
+
+Ask Me Here
+------
+
+There is a [Google Group}(https://groups.google.com/forum/#!forum/relproxy) for RelProxy.
+

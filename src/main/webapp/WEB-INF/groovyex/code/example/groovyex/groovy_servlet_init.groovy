@@ -38,12 +38,12 @@ gpConfig.setEnabled(true)
 GProxy.init(gpConfig);
 
 
-def db = new FalseDB();
-
 String pathPrefix = context.getRealPath("/") + "/WEB-INF/groovyex/pages/";
 
 def docTemplate;
 docTemplate = itsNatServlet.registerItsNatDocumentTemplate("groovyex","text/html", pathPrefix + "groovyex.html");
+
+def db = new FalseDB();
 
 ItsNatServletRequestListener listener = GProxy.create(new example.groovyex.GroovyExampleLoadListener(db), ItsNatServletRequestListener.class);
 docTemplate.addItsNatServletRequestListener(listener);

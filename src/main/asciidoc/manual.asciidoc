@@ -68,7 +68,7 @@ RelProxy is:
 
 . A simple Java and Groovy hot class reloader for Java and Groovy providing transparent compilation and class reload on the fly with no need of a bootstrap class loader agent.
 . A scripting environment to execute Java code snippets the same as a shell script, there is no new language, is Java compiled on the fly, code in the initial archive can call 
-to other normal Java files. Optionally .class can be saved in a cache to provide the fastest "scripting" language of the world.
+to other normal Java files. Optionally .class can be saved in a cache to provide *the fastest "scripting" language* of the world.
 . Execution of Java code snippets in command line (no need of packaging into an archive).
 . A simple shell to code, edit and execute code snippets in Java interactively.
 
@@ -181,5 +181,78 @@ Configures +GProxy+, now it is ready to proxy Groovy objects.
 Take a look to the optional +setEnabled(true)+ configuration call, +GProxy+ is enabled by default, this means proxied Groovy objects are instrumented for hot reload. 
 Calling +setEnabled(false)+ tells +GProxy+ to ignore any other configuration, +GProxy+ is disabled and no proxy is created, the original Groovy objects will be returned with absolute no performance penalty,
 this is the preferred configuration in production whether you do not want hot class reload in production.
+
+The final code:
+
+[source,groovy]
+----
+def db = new FalseDB();
+
+ItsNatServletRequestListener listener = GProxy.create(new example.groovyex.GroovyExampleLoadListener(db), ItsNatServletRequestListener.class);
+docTemplate.addItsNatServletRequestListener(listener);
+----
+
+is an example of proxying a +example.groovyex.GroovyExampleLoadListener+ object and registering the returned Java proxy into the ItsNat infrastructure. 
+The class +example.groovyex.GroovyExampleLoadListener+ implements the ItsNat standard interface +ItsNatServletRequestListener+ implementing the method
++processRequest(ItsNatServletRequest request, ItsNatServletResponse response)+ this method is called by ItsNat, the proxy object receives this call and forwards this call
+to the latest class loaded, we are going to see more details later.
+
+Let's go to take a look to +example.groovyex.GroovyExampleLoadListener+:
+
+[source,groovy]
+----
+package example.groovyex;
+
+import org.itsnat.core.event.ItsNatServletRequestListener;
+import org.itsnat.core.ItsNatServletRequest;
+import org.itsnat.core.ItsNatServletResponse;
+import example.groovyex.FalseDB;
+
+class GroovyExampleLoadListener implements ItsNatServletRequestListener
+{
+    def db
+
+    GroovyExampleLoadListener() 
+    { 
+    }
+    
+    GroovyExampleLoadListener(FalseDB db) // Explicit type tells Groovy to reload FalseDB class when changed
+    {
+        this.db = db;
+    }
+
+    void processRequest(ItsNatServletRequest request, ItsNatServletResponse response)
+    { 
+        println("GroovyExampleLoadListener 4 ");
+        
+        new example.groovyex.GroovyExampleDocument(request.getItsNatDocument(),db);
+    }
+}
+----
+
+When RelProxy (through +groovy.util.GroovyScriptEngine+) detects the source code of the class +GroovyExampleLoadListener+ or dependent classes like +GroovyExampleDocument+ have 
+changed, all of changed classes are reloaded and a new ClassLoader is created for them, next calls to +GroovyExampleLoadListener+ proxy will use the new loaded class and the same
+with dependent classes.
+
+However a concrete +GroovyExampleLoadListener+ object was used to register, how can we reload a class with one alive object already created?
+
+The +GroovyExampleLoadListener+ object was the one proxied, this class is reloaded when the source change is detected (or any related class) because this is the objective, 
+but this object can have fields pointing to objects usually loaded BEFORE registering/proxying the +GroovyExampleLoadListener+ object. In spite of the classes of these 
+objects may be reloaded the new version is not effective because (not proxied) created objects are being used in other places. This is the case of the +db+ attribute of 
+class +FalseDB+, this attribute references a concrete +FalseDB+ object not able to be automatically reloaded. In case of the proxied object +GroovyExampleLoadListener+, 
+RelProxy recreates the object based on the new loaded class by calling the default constructor and *re-set the attributes*, by this way the new object is based on the new
+class containing the same attribute objects defined. 
+
+The proxied class usually creates new objects based on dependent classes to execute some task, if no object of these dependent classes is "saved" and/or used outside of proxied environment
+RelProxy can reload dependent classes with no problem.
+
+This is the case of the class +GroovyExampleDocument+ and dependent classes (see the source code).
+
+Other classes and interfaces like +ItsNatServletRequest+ or +ItsNatServletResponse+ are not reloaded in this example because they are ItsNat based and source code is not
+present in Groovy environment. +FalseDB+ class could be reloaded but reloading will fail because a shared attribute +db+ points to an object created before, RelProxy 
+will say you the reloading process has been failed and a redeploy is recommended to effectively use the new version of the class.
+
+
+
 
 
