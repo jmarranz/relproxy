@@ -40,5 +40,5 @@ You can read the [in progress latest documentation here](https://github.com/jmar
 Ask Me Here
 ------
 
-There is a [Google Group}(https://groups.google.com/forum/#!forum/relproxy) for RelProxy.
+There is a [Google Group](https://groups.google.com/forum/#!forum/relproxy) for RelProxy.
 
