@@ -74,25 +74,27 @@ to other normal Java files. Optionally .class can be saved in a cache to provide
 
 == Requisites and installation
 
-RelProxy requires a JDK 1.6 or upper, RelProxy have been tested on Oracle JDK 1.6 and OpenJDK 1.7.
+RelProxy requires JDK 1.6 or upper, RelProxy have been tested on Oracle JDK 1.6 and OpenJDK 1.7.
 
 RelProxy distribution file has two important files:
 
 . relproxy-X.X.jar : needed in classpath to use RelProxy in any form. 
-. jproxysh : whether command line scripting capabilities are to be used
+. jproxysh : whether command line scripting capabilities are going to be used.
 
 
 == Registering hot reloadable Groovy objects in Java
 
-+com.innowhere.relproxy.gproxy.GProxy+ is the main Java class of RelProxy to provide this feature, with +GProxy+ you can create Java proxies for Groovy objects because +java.lang.reflect.Proxy+ is passed instead of 
-the original Groovy object, the original Groovy object is retained under the hood and method calls to the proxy are redirected to the real object calling the corresponding 
-method using reflection. When the source code of the Groovy class changes GProxy automatically reloads the Groovy class and creates a new object to replace the old one, 
-the fields of the original object are got and re-set to the new object to keep the state (number of fields and types must be the same otherwise reloading is not possible 
-and a redeploy is required).
++com.innowhere.relproxy.gproxy.GProxy+ is the main Java class of RelProxy to provide this feature, with +GProxy+ you can create Java proxies for Groovy objects because 
+a +java.lang.reflect.Proxy+ wrapper is passed instead of the original Groovy object, the original Groovy object is retained under the hood and method calls to the proxy 
+are redirected to the real object calling the corresponding method using reflection. When the source code of the Groovy class changes GProxy automatically reloads the Groovy 
+class and creates a new object to replace the old one, the fields of the original object are got and re-set to the new object to keep the state (number of fields and types 
+must be the same otherwise reloading is not possible and a redeploy is required).
 
 The following code is an example of how to use RelProxy along with ItsNat web framework, this code is part of the example code of RelProxy source code. 
 
-The +servlet+ variable is a servlet object containing a just configured +groovy.util.GroovyScriptEngine+: 
+
+
+The +servlet+ variable is a servlet object containing a just configured +groovy.util.GroovyScriptEngine+, the setting up of this util object is omitted: 
 
 
 [source,groovy]
@@ -130,12 +132,12 @@ gpConfig.setEnabled(true)
 GProxy.init(gpConfig);
 
 
-def db = new FalseDB();
-
 String pathPrefix = context.getRealPath("/") + "/WEB-INF/groovyex/pages/";
 
 def docTemplate;
 docTemplate = itsNatServlet.registerItsNatDocumentTemplate("groovyex","text/html", pathPrefix + "groovyex.html");
+
+def db = new FalseDB();
 
 ItsNatServletRequestListener listener = GProxy.create(new example.groovyex.GroovyExampleLoadListener(db), ItsNatServletRequestListener.class);
 docTemplate.addItsNatServletRequestListener(listener);
@@ -200,6 +202,7 @@ to the latest class loaded, we are going to see more details later.
 Let's go to take a look to +example.groovyex.GroovyExampleLoadListener+:
 
 [source,groovy]
+.GroovyExampleLoadListener.groovy
 ----
 package example.groovyex;
 
@@ -230,18 +233,23 @@ class GroovyExampleLoadListener implements ItsNatServletRequestListener
 }
 ----
 
+To understand this code let's to explain how ItsNat works, the method +processRequest+ is called every time a page is loaded specifying the same ItsNat template, 
+because this listener was registered as the load processor.
+
 When RelProxy (through +groovy.util.GroovyScriptEngine+) detects the source code of the class +GroovyExampleLoadListener+ or dependent classes like +GroovyExampleDocument+ have 
-changed, all of changed classes are reloaded and a new ClassLoader is created for them, next calls to +GroovyExampleLoadListener+ proxy will use the new loaded class and the same
+changed, all changed classes are reloaded and a new +ClassLoader+ is created for them, next calls to +GroovyExampleLoadListener+ proxy will use the new loaded class and the same
 with dependent classes.
 
 However a concrete +GroovyExampleLoadListener+ object was used to register, how can we reload a class with one alive object already created?
 
-The +GroovyExampleLoadListener+ object was the one proxied, this class is reloaded when the source change is detected (or any related class) because this is the objective, 
-but this object can have fields pointing to objects usually loaded BEFORE registering/proxying the +GroovyExampleLoadListener+ object. In spite of the classes of these 
-objects may be reloaded the new version is not effective because (not proxied) created objects are being used in other places. This is the case of the +db+ attribute of 
-class +FalseDB+, this attribute references a concrete +FalseDB+ object not able to be automatically reloaded. In case of the proxied object +GroovyExampleLoadListener+, 
-RelProxy recreates the object based on the new loaded class by calling the default constructor and *re-set the attributes*, by this way the new object is based on the new
-class containing the same attribute objects defined. 
+The +GroovyExampleLoadListener+ object was the one proxied, the class of this object is reloaded when a source change is detected (or any related class) because this is the objective of RelProxy, 
+but this object can have fields pointing to objects usually loaded _before_ registering/proxying the +GroovyExampleLoadListener+ object. The classes of these attribute
+objects may be also reloaded but the new version is not effective because pointed objects are usually being used in other places, if we re-create these objects
+we are creating new instances for instance of objects designed to be singletons. This is the case of the +db+ attribute of 
+class +FalseDB+, this attribute references a concrete +FalseDB+ object not able to be automatically reloaded in spite of the Groovy +FalseDB+ class could be reloaded. 
+This is why in case of the proxied object +GroovyExampleLoadListener+, RelProxy recreates the object based on the new loaded class by calling the default constructor and *re-setting the attributes*, 
+by this way the new object is based on the new class containing the same attribute objects defined before, you cannot add, remove or change the type of attributes if you do so RelProxy 
+will not be able to hot reload and a new redeploy is needed.
 
 The proxied class usually creates new objects based on dependent classes to execute some task, if no object of these dependent classes is "saved" and/or used outside of proxied environment
 RelProxy can reload dependent classes with no problem.
@@ -249,10 +257,262 @@ RelProxy can reload dependent classes with no problem.
 This is the case of the class +GroovyExampleDocument+ and dependent classes (see the source code).
 
 Other classes and interfaces like +ItsNatServletRequest+ or +ItsNatServletResponse+ are not reloaded in this example because they are ItsNat based and source code is not
-present in Groovy environment. +FalseDB+ class could be reloaded but reloading will fail because a shared attribute +db+ points to an object created before, RelProxy 
+present in Groovy environment. +FalseDB+ class could be reloaded but reloading will fail because the proxied object (+GroovyExampleLoadListener+) holds an attribute +db+ of this class, RelProxy 
 will say you the reloading process has been failed and a redeploy is recommended to effectively use the new version of the class.
 
 
+== Registering hot reloadable Java objects
+
+Java hot reloadable proxies are very similar to Groovy support of RelProxy, in this case the task of detecting source changes, recompiling and reloading is fully done by RelProxy
+(in case of Groovy provided +groovy.util.GroovyScriptEngine+ does most of this work).
+
++com.innowhere.relproxy.jproxy.JProxy+ is the main Java class of RelProxy for hot reload of pure Java, with JProxy you can create Java +java.lang.reflect.Proxy+ proxies wrapping
+your original objects to be passed to listeners, the original object is retained under the hood and method calls to the proxy are redirected to the real object calling the 
+corresponding method using reflection. When the source code of the proxied Java class (or dependent classes) changes JProxy automatically reloads the class and creates a 
+new object to replace the old one, the fields of the original object are got and re-set to the new object to keep the state (number of fields and types must be the same 
+otherwise reloading is not possible and a redeploy is required).
+
+The following code is an example of how to use +JProxy+ along with ItsNat web framework, this code is part of the example code of RelProxy source code and basically 
+is the same as the Groovy example:
 
 
+[source,java]
+----
+public static void init(ItsNatHttpServlet itsNatServlet,ServletConfig config)
+{    
+    ServletContext context = itsNatServlet.getItsNatServletContext().getServletContext();
+    String inputPath = context.getRealPath("/") + "/WEB-INF/javaex/code/";           
+    String classFolder = null; // Optional: context.getRealPath("/") + "/WEB-INF/classes";
+    Iterable<String> compilationOptions = Arrays.asList(new String[]{"-source","1.6","-target","1.6"});
+    long scanPeriod = 200;
+
+    RelProxyOnReloadListener proxyListener = new RelProxyOnReloadListener() {
+        public void onReload(Object objOld, Object objNew, Object proxy, Method method, Object[] args) {
+            System.out.println("Reloaded " + objNew + " Calling method: " + method);
+        }        
+    };
+
+    JProxyDiagnosticsListener diagnosticsListener = new JProxyDiagnosticsListener()
+    {
+        public void onDiagnostics(DiagnosticCollector<JavaFileObject> diagnostics)
+        {
+            List<Diagnostic<? extends JavaFileObject>> diagList = diagnostics.getDiagnostics();                
+            int i = 1;
+            for (Diagnostic diagnostic : diagList)
+            {
+               System.err.println("Diagnostic " + i);
+               System.err.println("  code: " + diagnostic.getCode());
+               System.err.println("  kind: " + diagnostic.getKind());
+               System.err.println("  line number: " + diagnostic.getLineNumber());                   
+               System.err.println("  column number: " + diagnostic.getColumnNumber());
+               System.err.println("  start position: " + diagnostic.getStartPosition());
+               System.err.println("  position: " + diagnostic.getPosition());                   
+               System.err.println("  end position: " + diagnostic.getEndPosition());
+               System.err.println("  source: " + diagnostic.getSource());
+               System.err.println("  message: " + diagnostic.getMessage(null));
+               i++;
+            }
+        }
+    };
+
+    JProxyConfig jpConfig = JProxy.createJProxyConfig();
+    jpConfig.setEnabled(true)
+            .setRelProxyOnReloadListener(proxyListener)
+            .setInputPath(inputPath)
+            .setScanPeriod(scanPeriod)
+            .setClassFolder(classFolder)
+            .setCompilationOptions(compilationOptions)
+            .setJProxyDiagnosticsListener(diagnosticsListener);
+
+    JProxy.init(jpConfig);
+
+
+    String pathPrefix = context.getRealPath("/") + "/WEB-INF/javaex/pages/";
+
+    ItsNatDocumentTemplate docTemplate;
+    docTemplate = itsNatServlet.registerItsNatDocumentTemplate("javaex","text/html", pathPrefix + "javaex.html");
+
+    FalseDB db = new FalseDB();
+
+    ItsNatServletRequestListener listener = JProxy.create(new example.javaex.JProxyExampleLoadListener(db), ItsNatServletRequestListener.class);
+    docTemplate.addItsNatServletRequestListener(listener);
+} 
+----
+
+There is more code than Groovy code because +GroovyScriptEngine+ setting up was omitted (not specific of RelProxy) and now some configuration options are shown in spite of they may 
+be optional.
+
+Let's explain the previous code:
+
+[source,java]
+----
+    JProxyConfig jpConfig = JProxy.createJProxyConfig();
+    jpConfig.setEnabled(true)
+            .setRelProxyOnReloadListener(proxyListener)
+            .setInputPath(inputPath)
+            .setScanPeriod(scanPeriod)
+            .setClassFolder(classFolder)
+            .setCompilationOptions(compilationOptions)
+            .setJProxyDiagnosticsListener(diagnosticsListener);
+
+    JProxy.init(jpConfig);
+----
+
+This is an example of JProxy configuration.
+
+* +setEnabled(boolean)+ configuration method is the same as +GProxy+, when setting to false other configuration options are ignored, there is no hot reload and proxying and performance penalty is zero.
+
+* +setRelProxyOnReloadListener(proxyListener)+ is the same as +GProxy+ in fact the same interface +RelProxyOnReloadListener+ is shared between +GProxy+ and +JProxy+.
+
+* +setInputPath(inputPath)+ defines where the source code files of hot reloadable classes is.
+
+* +setScanPeriod(scanPeriod)+ defines the period (in ms) between checks of timestamps of source code files to detect changes.
+
+* +setClassFolder(classFolder)+ optionally defines where to save, as .class files, the bytecode resulting of re-compiling modified source files in runtime. 
+By this way the next time the application is started .class files are aligned with source files and no runtime compilation is needed (class folder of course must be in
+classpath).
+
+* +setCompilationOptions(compilationOptions)+ optionally sets the list of options you want for compiling phase, these are the same kind of options you would provide to the
+http://docs.oracle.com/javase/6/docs/technotes/tools/windows/javac.html[javac command], internally the 
+http://docs.oracle.com/javase/6/docs/api/javax/tools/JavaCompiler.html[Java compiler API] receives this parameters and the reason of the required format.
+
+* +setJProxyDiagnosticsListener(diagnosticsListener)+ optionally registers the +JProxyDiagnosticsListener+ listener to be executed when some warning or error happens compiling
+Java code, when providing null or not called RelProxy uses a default listener very similar to this example.
+
+
+The final code:
+
+[source,java]
+----
+    FalseDB db = new FalseDB();
+
+    ItsNatServletRequestListener listener = JProxy.create(new example.javaex.JProxyExampleLoadListener(db), ItsNatServletRequestListener.class);
+    docTemplate.addItsNatServletRequestListener(listener);
+----
+
+Is symmetric to Groovy counterpart, it is the same example and the same expected behavior of RelProxy but all in Java.
+
+Anyway this is the code of +JProxyExampleLoadListener+:
+
+[source,java]
+.JProxyExampleLoadListener.java
+----
+package example.javaex;
+
+import org.itsnat.core.event.ItsNatServletRequestListener;
+import org.itsnat.core.ItsNatServletRequest;
+import org.itsnat.core.ItsNatServletResponse;
+import org.itsnat.core.html.ItsNatHTMLDocument;
+
+public class JProxyExampleLoadListener implements ItsNatServletRequestListener
+{
+    protected FalseDB db;
+
+    public JProxyExampleLoadListener() 
+    { 
+    }
+    
+    public JProxyExampleLoadListener(FalseDB db) 
+    {
+        this.db = db;
+    }
+
+    public void processRequest(ItsNatServletRequest request, ItsNatServletResponse response)
+    { 
+        System.out.println("JProxyExampleLoadListener 4 " + this.getClass().getClassLoader().hashCode());
+
+        new example.javaex.JProxyExampleDocument(request,(ItsNatHTMLDocument)request.getItsNatDocument(),db);
+    }
+}
+----
+
+== Configuring your Maven POM in a web project to use JProxy or GProxy
+
+Probably JProxy and GProxy are going to be used frequently in web projects to avoid many tedious redeploys. In the case of ItsNat it can drastically reduce redeployments
+regarding to markup design and view logic, just reloading the page ItsNat automatically reloads pure HTML templates involved when changed, with JProxy or GProxy view logic code 
+is also reloaded without redeploying.
+
+Because the web application needs to load the source code hot reloadable, this source code must be also distributed into the war file, that is, in some place below +WEB-INF/+ 
+if you want to keep this code private, this folder or folders must be declared in POM to be copied to the war file by Maven.
+
+At the time of writing RelProxy is not in a Maven repository, you must manually include in your dependencies.
+
+The following POM is a simple example of a RelProxy (v0.8) ready web application including a public folder, +src/main/webapp/WEB-INF/code+, able to contain reloadable source code:
+
+[source,xml]
+.pom.xml
+----
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>com.mycompany</groupId>
+  <artifactId>relproxyexample</artifactId>
+  <packaging>war</packaging>
+  <version>1.0-SNAPSHOT</version>
+
+  <name>relproxyexample</name>
+  <url>http://maven.apache.org</url>
+
+  <dependencies>
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>servlet-api</artifactId>
+      <version>2.5</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>javax.servlet.jsp</groupId>
+      <artifactId>jsp-api</artifactId>
+      <version>2.1</version>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+        <groupId>relproxy</groupId>
+        <artifactId>relproxy-jar</artifactId>
+        <version>0.8</version>
+        <scope>system</scope>
+        <systemPath>${basedir}/src/main/webapp/WEB-INF/lib/relproxy-0.8.jar</systemPath>
+    </dependency>
+
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>2.0.2</version>
+        <configuration>
+          <source>1.6</source>
+          <target>1.6</target>          
+        </configuration>
+      </plugin>
+    </plugins>
+    <resources>  
+       <resource>
+         <directory>src/main/webapp/WEB-INF/code</directory>         
+       </resource>        
+    </resources>     
+  </build>
+
+  
+</project>
+----
+
+== Configuring Ant in NetBeans in a web project to use JProxy or GProxy
+
+When creating a standard web project in NetBeans, the generated Ant files filter .java files when deploying, to avoid this filtering just add to the build.xml:
+
+[source,xml]
+.build.xml
+----
+    <target name="-pre-dist"> 
+        <copy todir="${build.web.dir}/WEB-INF" preservelastmodified="true">
+            <fileset dir="${webinf.dir}" /> 
+        </copy>
+    </target>     
+----
 

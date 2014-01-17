@@ -26,7 +26,7 @@ public class JProxyExLoadApp
     {    
         ServletContext context = itsNatServlet.getItsNatServletContext().getServletContext();
         String inputPath = context.getRealPath("/") + "/WEB-INF/javaex/code/";           
-        String classFolder = null; // context.getRealPath("/") + "/WEB-INF/classes";
+        String classFolder = null; // Optional: context.getRealPath("/") + "/WEB-INF/classes";
         Iterable<String> compilationOptions = Arrays.asList(new String[]{"-source","1.6","-target","1.6"});
         long scanPeriod = 200;
         
@@ -71,13 +71,13 @@ public class JProxyExLoadApp
         JProxy.init(jpConfig);
 
         
-        FalseDB db = new FalseDB();
-
         String pathPrefix = context.getRealPath("/") + "/WEB-INF/javaex/pages/";
 
         ItsNatDocumentTemplate docTemplate;
         docTemplate = itsNatServlet.registerItsNatDocumentTemplate("javaex","text/html", pathPrefix + "javaex.html");
 
+        FalseDB db = new FalseDB();        
+        
         ItsNatServletRequestListener listener = JProxy.create(new example.javaex.JProxyExampleLoadListener(db), ItsNatServletRequestListener.class);
         docTemplate.addItsNatServletRequestListener(listener);
     } 
