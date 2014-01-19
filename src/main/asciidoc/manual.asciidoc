@@ -82,7 +82,7 @@ RelProxy distribution file has two important files:
 . jproxysh : whether command line scripting capabilities are going to be used.
 
 
-== Registering hot reloadable Groovy objects in Java
+== GProxy or how to be able to reload Groovy classes on Java environment
 
 +com.innowhere.relproxy.gproxy.GProxy+ is the main Java class of RelProxy to provide this feature, with +GProxy+ you can create Java proxies for Groovy objects because 
 a +java.lang.reflect.Proxy+ wrapper is passed instead of the original Groovy object, the original Groovy object is retained under the hood and method calls to the proxy 
@@ -237,7 +237,7 @@ To understand this code let's to explain how ItsNat works, the method +processRe
 because this listener was registered as the load processor.
 
 When RelProxy (through +groovy.util.GroovyScriptEngine+) detects the source code of the class +GroovyExampleLoadListener+ or dependent classes like +GroovyExampleDocument+ have 
-changed, all changed classes are reloaded and a new +ClassLoader+ is created for them, next calls to +GroovyExampleLoadListener+ proxy will use the new loaded class and the same
+changed, all classes with associated hot reloadable source, are reloaded and a new +ClassLoader+ is created for them, next calls to +GroovyExampleLoadListener+ proxy will use the new loaded class and the same
 with dependent classes.
 
 However a concrete +GroovyExampleLoadListener+ object was used to register, how can we reload a class with one alive object already created?
@@ -260,8 +260,14 @@ Other classes and interfaces like +ItsNatServletRequest+ or +ItsNatServletRespon
 present in Groovy environment. +FalseDB+ class could be reloaded but reloading will fail because the proxied object (+GroovyExampleLoadListener+) holds an attribute +db+ of this class, RelProxy 
 will say you the reloading process has been failed and a redeploy is recommended to effectively use the new version of the class.
 
+In summary, in this ItsNat example, when source code of +GroovyExampleLoadListener+ or dependent classes with source code controlled by RelProxy changes, all of these classes are reloaded.
+When the +processRequest+ method of the proxied +GroovyExampleLoadListener+ object is called because an end user is reloading the related web page, RelProxy detects this class has been reloaded and 
+recreates the +GroovyExampleLoadListener+ object with the new class re-setting the fields and finally the +processRequest+ method is called and method processing is done
+using the new version of dependent classes.
 
-== Registering hot reloadable Java objects
+Finally we have been able to reload Groovy classes mixed in a Java environment without using the strongly intrusive instrument of Java agents.
+
+== JProxy or how to be able to reload Java classes without using Java agents
 
 Java hot reloadable proxies are very similar to Groovy support of RelProxy, in this case the task of detecting source changes, recompiling and reloading is fully done by RelProxy
 (in case of Groovy provided +groovy.util.GroovyScriptEngine+ does most of this work).
@@ -516,3 +522,77 @@ When creating a standard web project in NetBeans, the generated Ant files filter
     </target>     
 ----
 
+== A new shell scripting language named Java
+
+When we think on a shell scripting language we think on sh or csh, or maybe on the scripting language of Windows console (based on the old MSDOS), or maybe you know
+your preferred conventional dynamic language usually can be executed like another shell language, for instance http://groovy.codehaus.org/Running[Groovy] or 
+http://www.linuxjournal.com/content/python-scripts-replacement-bash-utility-scripts[Python].
+
+But when you think Java like a new shell scripting language sure you say "it's impossible".
+
+No, it is possible, RelProxy includes a tool named *+jproxysh+* to make possible executing Java like another shell scripting language.
+
+The principle is simple and is very similar to Groovy scripting, Groovy compiles on the fly Groovy code saving in memory the compiled bytecode, by this way developers
+think Groovy script is interpreted and is not, the same approach is applied to Java through RelProxy. In the case of RelProxy, bytecode can be optionally saved as .class
+files to avoid compiling on the fly every time the script is executed. When the JVM is able to load .class files instead of compiling execution maybe extremely faster
+than conventional scripting languages interpreted line by line from sources, this is why the affirmation of Java as the fastest scripting language of the world is accurated.
+
+Let's see the first example (some background of UNIX shell is supposed):
+
+[source,java]
+.example_java_shell
+----
+#!/usr/bin/env jproxysh
+
+String msg = args.length > 0 ? args[0] : "";
+System.out.println(msg);
+
+System.out.println("example_java_shell 1 ");
+
+example.javashellex.JProxyShellExample.exec();
+----
+
+The best way to think this script is like the content of the standard method +main+ of a class with some invented name in the default package (no package), in fact, 
+this is how it is managed internally by RelProxy.
+
+Save this file in a folder root of the dependent classes. The dependent class in this example is +JProxyShellExample+ (this example in RelProxy distribution includes more classes
+but we are going to ignore them to simplify).
+
+The hierarchy is:
+
+++++
+<pre>
+&lt;root_folder&gt;
+  example_java_shell           (file)
+  example                      (folder)
+    javashellex                (folder)
+      JProxyShellExample.java  (file)
+</pre>
+++++
+
+
+{nbsp} +
+Yes, you are right, mentally adding the extension .java to example_java_shell you get the typical hierarchy of Java files. 
+
+
+The first requisite is +jproxysh+ must be accesible by environment +PATH+, anyway executing this script is not direct, it requires some previous configuration.
+
+First of all you must define the +JAVA_HOME+ variable 
+
+
+[source,sh]
+----
+export PATH=$PATH:$PROJECT/cmd
+export CLASSPATH=$PROJECT/target/classes
+export JAVA_OPTS="-client -Xmx100m"
+# Nothing really required in JAVA_OPTS, just to test
+
+export JPROXYSH_SCAN_PERIOD=-1
+export JPROXYSH_CACHE_CLASS_FOLDER="$PROJECT/tmp/java_shell_test_classes"
+export JPROXYSH_COMPILATION_OPTIONS="-source 1.6 -target 1.6"
+
+$PROJECT/src/main/webapp/WEB-INF/javashellex/code/example_java_shell "HELLO WORLD!"
+----
+
+
+NO OLVIDAR INDICAR COMO USAR RELPROXY EN WINDOWS CON MinGW/mintty 
