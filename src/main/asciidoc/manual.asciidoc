@@ -432,6 +432,20 @@ public class JProxyExampleLoadListener implements ItsNatServletRequestListener
 }
 ----
 
+=== Start and stop source change detection
+
+You can reduce to zero the footprint of RelProxy in production setting +setEnabled(boolean)+ to false, however if you are a brave guy or girl and you want to make also hot changes
+in production... +JProxy.start()+ and +JProxy.stop()+ methods are for you.
+
+Remember we must to define the period between source files checking for changes calling +setScanPeriod(scanPeriod)+, RelProxy defines behind the scene a +java.util.Timer+ for this task,
+of course every time source code is checked needs some time, because there are synchronizations between source code cheking and proxies use a very small performance penalty happen
+when checking source code. This is why we can +stop+ source code checking if we are not able to make source code changes reducing performance penalty to minimum, and we can call 
++start+ before performing some change.
+
+You can call several times to +JProxy.start()+ and +JProxy.stop()+ methods, if nothing is going to be done nothing is done without errors (both methods return true
+when a state change was effective), and they are thread safe.
+
+
 == Configuring your Maven POM in a web project to use JProxy or GProxy
 
 Probably JProxy and GProxy are going to be used frequently in web projects to avoid many tedious redeploys. In the case of ItsNat it can drastically reduce redeployments
@@ -525,8 +539,9 @@ When creating a standard web project in NetBeans, the generated Ant files filter
 == A new shell scripting language named Java
 
 When we think on a shell scripting language we think on sh or csh, or maybe on the scripting language of Windows console (based on the old MSDOS), or maybe you know
-your preferred conventional dynamic language usually can be executed like another shell language, for instance http://groovy.codehaus.org/Running[Groovy] or 
-http://www.linuxjournal.com/content/python-scripts-replacement-bash-utility-scripts[Python].
+your preferred conventional dynamic language usually can be executed like another shell language, for instance http://groovy.codehaus.org/Running[Groovy], 
+http://www.linuxjournal.com/content/python-scripts-replacement-bash-utility-scripts[Python], http://stackoverflow.com/questions/166347/how-do-i-use-ruby-for-shell-scripting[Ruby]
+or http://www.2ality.com/2011/12/nodejs-shell-scripting.html[JavaScript].
 
 But when you think Java like a new shell scripting language sure you say "it's impossible".
 
@@ -555,6 +570,9 @@ example.javashellex.JProxyShellExample.exec();
 The best way to think this script is like the content of the standard method +main+ of a class with some invented name in the default package (no package), in fact, 
 this is how it is managed internally by RelProxy.
 
+We could use +/bin/jproxysh+ or +/usr/local/bin/jproxysh+ but we are forced to install RelProxy in a concrete fixed place, by using +/usr/bin/env+ the command +jproxysh+ will be located
+using the current PATH.
+
 Save this file in a folder root of the dependent classes. The dependent class in this example is +JProxyShellExample+ (this example in RelProxy distribution includes more classes
 but we are going to ignore them to simplify).
 
@@ -572,7 +590,7 @@ The hierarchy is:
 
 
 {nbsp} +
-Yes, you are right, mentally adding the extension .java to example_java_shell you get the typical hierarchy of Java files. 
+Yes, you are right, mentally adding the .java extension to +example_java_shell+ you get the typical hierarchy of a JavaSE program files. 
 
 
 The first requisite is +jproxysh+ must be accesible by environment +PATH+, anyway executing this script is not direct, it requires some previous configuration.
