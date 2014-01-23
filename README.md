@@ -25,9 +25,9 @@ As bonus, RelProxy provides a shell environment to execute:
 
 1) A pure Java archive packaged like a shell script file with no need of previous compilation, compilation is done on the fly and optionally .class can be saved in a cache to provide the fastest "scripting" language of the world. Code in the initial archive can call to other normal Java files, again with compilation on the fly and optional compilation caching as .class files. [Example 1](https://github.com/jmarranz/relproxy/blob/master/src/main/webapp/WEB-INF/javashellex/code/example_java_shell) and [example 2](https://github.com/jmarranz/relproxy/blob/master/src/main/webapp/WEB-INF/javashellex/code/example_java_shell_2)
 
-2) Execution of Java code snippets in command line (no need of packaging in an archive). [Example](https://github.com/jmarranz/relproxy/blob/master/test_cmd_examples/test_java_shell_snippet_launcher.sh).
+2) Execution of Java code snippets in command line (no need of packaging in an archive). [Example](https://github.com/jmarranz/relproxy/blob/master/test_cmd/test_java_shell_snippet_launcher.sh).
 
-3) Interactive console to edit and execute Java code (ever compilation on the fly). [Example of launcher](https://github.com/jmarranz/relproxy/blob/master/test_cmd_examples/test_java_shell_interactive_launcher.sh)
+3) Interactive console to edit and execute Java code (ever compilation on the fly). [Example of launcher](https://github.com/jmarranz/relproxy/blob/master/test_cmd/test_java_shell_interactive_launcher.sh)
 
 Yes, Java is also a dynamic and scripting language with no need of manual compilation and extremely fast and robust  :)
 

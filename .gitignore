@@ -1,6 +1,5 @@
 /target/
 /build
-/bin
 /docs_internal
 /tmp
 .classpath
