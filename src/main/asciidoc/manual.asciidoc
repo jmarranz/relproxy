@@ -590,18 +590,37 @@ The hierarchy is:
 
 
 {nbsp} +
-Yes, you are right, mentally adding the .java extension to +example_java_shell+ you get the typical hierarchy of a JavaSE program files. 
+Yes, you are right, mentally adding the .java extension to +example_java_shell+ you get the typical file hierarchy of a JavaSE program. 
 
 
-The first requisite is +jproxysh+ must be accesible by environment +PATH+, anyway executing this script is not direct, it requires some previous configuration.
+The first requisite is that +jproxysh+ must be accesible by the environment variable +PATH+, anyway executing this script is not direct, it requires some previous configuration:
 
-First of all you must define the +JAVA_HOME+ variable 
+* First of all the +JAVA_HOME+ environment variable is required. 
+* The +CLASSPATH+ environment variable must locate the +relproxy-X.X.jar+ file and other folders and hards required by your Java application, conventions are the same than a typical JavaSE program.
+* Optionally you may specify +JAVA_OPTS+ to provide options for the JVM.
 
+There are other _optional_ environment variables in this case RelProxy specific:
+
+* JPROXYSH_SCAN_PERIOD : defines the milliseconds between source code change checking, by default is -1 (no check) but a positive value is interesting when the script loads a server and JProxy (already configured) is used inside.
+* JPROXYSH_CACHE_CLASS_FOLDER : defines where to save the .class files resulting of compiling on the fly the scripting code, this folder is automatically added to the class path, 
+so when the script is loaded the second time the .class are used instead of source code acording to the typical source-binary timestamp rules (if source code is more recent the class is ignored and replaced with a new file).
+* JPROXYSH_COMPILATION_OPTIONS : compilations passed to the JDK compiler, the format is the same as the command line +javac+.
+
+The following is an example of shell code to execute the previous +example_java_shell+, this example is included in RelProxy distribution:
 
 [source,sh]
 ----
-export PATH=$PATH:$PROJECT/cmd
-export CLASSPATH=$PROJECT/target/classes
+RELPROXY_JAR=relproxy-0.8.jar
+
+PROJECT=`dirname $0`/..
+
+if [ -z "$JAVA_HOME" ]; then 
+    echo Missing JAVA_HOME environment variable, exiting...
+    exit 1
+fi
+
+export PATH=$PATH:$PROJECT/bin
+export CLASSPATH=$PROJECT/lib/$RELPROXY_JAR
 export JAVA_OPTS="-client -Xmx100m"
 # Nothing really required in JAVA_OPTS, just to test
 
@@ -609,7 +628,7 @@ export JPROXYSH_SCAN_PERIOD=-1
 export JPROXYSH_CACHE_CLASS_FOLDER="$PROJECT/tmp/java_shell_test_classes"
 export JPROXYSH_COMPILATION_OPTIONS="-source 1.6 -target 1.6"
 
-$PROJECT/src/main/webapp/WEB-INF/javashellex/code/example_java_shell "HELLO WORLD!"
+$PROJECT/cmd_examples/code/example_java_shell "HELLO WORLD!"
 ----
 
 
