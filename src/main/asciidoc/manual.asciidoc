@@ -552,6 +552,8 @@ think Groovy script is interpreted and is not, the same approach is applied to J
 files to avoid compiling on the fly every time the script is executed. When the JVM is able to load .class files instead of compiling execution maybe extremely faster
 than conventional scripting languages interpreted line by line from sources, this is why the affirmation of Java as the fastest scripting language of the world is accurated.
 
+=== Defining a Java based shell scripting file
+
 Let's see the first example (some background of UNIX shell is supposed):
 
 [source,java]
@@ -606,10 +608,13 @@ There are other _optional_ environment variables in this case RelProxy specific:
 so when the script is loaded the second time the .class are used instead of source code acording to the typical source-binary timestamp rules (if source code is more recent the class is ignored and replaced with a new file).
 * JPROXYSH_COMPILATION_OPTIONS : compilations passed to the JDK compiler, the format is the same as the command line +javac+.
 
-The following is an example of shell code to execute the previous +example_java_shell+, this example is included in RelProxy distribution:
+The following is an example of shell code (into a script file) to execute the previous +example_java_shell+, this example is included in RelProxy distribution:
 
 [source,sh]
+.ex_java_shell_launcher.sh
 ----
+#!/bin/sh
+
 RELPROXY_JAR=relproxy-0.8.jar
 
 PROJECT=`dirname $0`/..
@@ -631,5 +636,107 @@ export JPROXYSH_COMPILATION_OPTIONS="-source 1.6 -target 1.6"
 $PROJECT/cmd_examples/code/example_java_shell "HELLO WORLD!"
 ----
 
+=== Defining a complete Java class
 
-NO OLVIDAR INDICAR COMO USAR RELPROXY EN WINDOWS CON MinGW/mintty 
+As you have seen in +example_java_shell+ example, you can access to other Java "scripting" classes from the initial scripting file, this is really interesting when your scripts 
+become too large and you need state (attributes) more methods and so on, that is, you need more classes.
+
+But in case most of or completely your code can be in just one class, or the main scripting file needs to be more structured, you have the option of defining a conventional class
+in the scripting main file.
+
+Take a look to this example also included in RelProxy distribution (slightly modified):
+
+[source,sh]
+.example_java_shell_2
+----
+#!/usr/bin/env jproxysh
+
+import example.javashellex.JProxyShellExample;
+
+public class example_java_shell_2
+{
+    public static void main(String[] args)
+    {
+        String msg = args.length > 0 ? args[0] : "";
+        System.out.println(msg);
+
+        System.out.println("example_java_shell_2 1 ");
+
+        JProxyShellExample.exec();
+    }
+}
+----
+
++example_java_shell_2+ is a conventional class, you can add methods, attributes and so on, the only limitation is the name of the class, it must be the same as the container file
+that is, the same as conventional JavaSE programming.
+
+=== Executing a Java code snippet
+
+You have done some powerful Java methods, these Java methods allows some combinations to make easily amazing things, you just need one, or two or just three sentences... 
+you don't need to create a Java shell scripting file, you just want to write down and execute. RelProxy through +jproxy+ allows executing Java code snippets on the fly.
+
+The following is a shell script included in RelProxy distribution which executes a simple code snippet:
+
+[source,sh]
+.example_java_shell_2
+----
+#!/bin/sh
+
+RELPROXY_JAR=relproxy-0.8.jar
+
+PROJECT=`dirname $0`/..
+
+if [ -z "$JAVA_HOME" ]; then 
+    echo Missing JAVA_HOME environment variable, exiting...
+    exit 1
+fi
+
+export PATH=$PATH:$PROJECT/bin
+export CLASSPATH=$PROJECT/lib/$RELPROXY_JAR
+export JAVA_OPTS="-client -Xmx100m"
+# Nothing really required in JAVA_OPTS, just to test
+
+export JPROXYSH_COMPILATION_OPTIONS="-source 1.6 -target 1.6"
+
+jproxysh 'System.out.print("This code snippet says: ");' \
+         'System.out.println("Hello World!!");'
+----
+
+You can execute a single code block (into a string parameter) or several blocks in several lines separated with "\", every block can contain several Java sentences.
+
+=== The interactive Java shell
+
+When you need something more interactive, just like the Groovy shell, RelProxy provides a simple interactive shell. 
+
+To launch the interactive shell define the required environment variables like the code snippet example and execute +jproxysh+ with no parameters:
+
+[source,sh]
+----
+jproxysh
+----
+
+A message info is shown and a prompt is shown waiting for your commands and or code. Write 'help' to know the shell options, if the text written is not recognized like a command
+it is interpreted as Java code and saved in a buffer to be executed when you want writting the 'exec' command.
+
+=== How to use RelProxy shell scripting in Windows
+
+RelProxy does not provide a +jproxysh+ version for Windows because you can easily build a mini-Linux/Unix in your Windows box with http://www.mingw.org/[MinGW/MSYS].
+
+Install MinGW/MSYS, you must be able to locate the shell launcher +msys.bat+ in a folder like +C:\MinGW\msys\1.0\+ (exact location may change according to your installation folder).
+
+Execute +msys.bat+ and you will get a simple Linux shell environment, in this environment you can execute your typical Linux commands like +ls+, +ps+, +find+ etc and of course
+launch the previous script files documented in this manual and included in RelProxy distribution.
+
+MSYS console is enough for most of purposes, if you also install +mintty+ using the MinGW GUI or command based installer, calling +mintty&+ in MSYS opens an even more sophisticated
+Linux console. Mintty has some problem with some keyboard characters editing Java code in the RelProxy interactive console, back to basic MSYS console when necesssary.
+
+If you need to execute Linux shell scripts (for instance RelProxy based) from Windows without a Linux like interactive console, do something like this in your Windows script or console:
+
+[source,sh]
+----
+set PATH=C:\MinGW\msys\1.0\bin;%PATH%
+sh <path to the shell file>
+----
+
+Where +<path to the shell file>+ can have Windows or Linux format (e.g. +/c/development/relproxy/cmd_examples/ex_java_shell_launcher.sh+).
+
