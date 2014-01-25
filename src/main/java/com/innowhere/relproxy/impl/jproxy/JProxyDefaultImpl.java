@@ -1,6 +1,6 @@
 package com.innowhere.relproxy.impl.jproxy;
 
-import com.innowhere.relproxy.RelProxyException;
+import com.innowhere.relproxy.impl.jproxy.core.JProxyImpl;
 import com.innowhere.relproxy.jproxy.JProxyConfig;
 
 /**

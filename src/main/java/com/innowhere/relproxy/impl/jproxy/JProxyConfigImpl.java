@@ -19,30 +19,35 @@ public class JProxyConfigImpl extends GenericProxyConfigBaseImpl implements JPro
     protected JProxyDiagnosticsListener diagnosticsListener;
     protected boolean test = false;
     
+    @Override
     public JProxyConfig setEnabled(boolean enabled)
     {
         this.enabled = enabled;
         return this;
     }
 
+    @Override
     public JProxyConfig setRelProxyOnReloadListener(RelProxyOnReloadListener relListener)
     {
         this.relListener = relListener;  
         return this;        
     }    
     
+    @Override
     public JProxyConfig setInputPath(String inputPath)
     {
         this.inputPath = inputPath;   
         return this;
     }
 
+    @Override
     public JProxyConfig setClassFolder(String classFolder)
     {
         this.classFolder = classFolder;    
         return this;        
     }
 
+    @Override
     public JProxyConfig setScanPeriod(long scanPeriod)
     {
         if (scanPeriod == 0) throw new RelProxyException("scanPeriod cannot be zero");
@@ -50,12 +55,14 @@ public class JProxyConfigImpl extends GenericProxyConfigBaseImpl implements JPro
         return this;        
     }
 
+    @Override
     public JProxyConfig setCompilationOptions(Iterable<String> compilationOptions)
     {
         this.compilationOptions = compilationOptions;  
         return this;        
     }
 
+    @Override
     public JProxyConfig setJProxyDiagnosticsListener(JProxyDiagnosticsListener diagnosticsListener)
     {
         this.diagnosticsListener = diagnosticsListener;
