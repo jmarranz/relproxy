@@ -686,7 +686,7 @@ You can execute this script by the same ways we executed +example_java_shell+, d
 The differences between a the +example_java_shell_complete_class+ script and a conventional Java source file are just the extension (missing) and the hash bang to execute jproxysh.
 
 We can remove the hashbang and set a +.java+ extension to the main scripting file, in this scenario the source code is the same as a conventional JavaSE application.
-Instead of compiling with +javac+ and executing with +java+ command, you just must execute with +jproxysh+
+Instead of compiling with +javac+ and executing with +java+ command, you just must execute it with +jproxysh+
 
 [source,sh]
 ----
