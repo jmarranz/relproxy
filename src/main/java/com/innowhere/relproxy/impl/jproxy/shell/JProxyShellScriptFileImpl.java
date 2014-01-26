@@ -17,10 +17,14 @@ public class JProxyShellScriptFileImpl extends JProxyShellImpl
 {
     protected File scriptFile;
     
-    public void init(String[] args,File scriptFile)
+    public void init(String[] args)
     {
+        File scriptFile = new File(args[0]);
+        if (!scriptFile.exists())        
+            throw new RelProxyException("File " + args[0] + " does not exist");
+        
         this.scriptFile = scriptFile;
-
+        
         File parentDir = JProxyUtil.getParentDir(scriptFile);
         String inputPath = parentDir.getAbsolutePath();        
         super.init(args, inputPath);
@@ -44,7 +48,7 @@ public class JProxyShellScriptFileImpl extends JProxyShellImpl
     @Override    
     protected SourceScript getSourceScript(String[] args,LinkedList<String> argsToScript) 
     {
-        return new SourceScriptFile(scriptFile);
+        return SourceScriptFile.createSourceScriptFile(scriptFile);
     }    
     
     @Override    

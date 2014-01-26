@@ -24,8 +24,9 @@ public class SourceScriptInMemory extends SourceScript
     }     
 
     @Override
-    public String getScriptCode(String encoding)
+    public String getScriptCode(String encoding,boolean[] hasHashBang)
     {
+        hasHashBang[0] = false;
         return code;
     }
     
@@ -34,6 +35,7 @@ public class SourceScriptInMemory extends SourceScript
         this.code = code;
     }    
     
+    @Override
     public String getClassNameFromSourceFileScriptAbsPath(File rootPathOfSourcesFile)
     {
         return className;

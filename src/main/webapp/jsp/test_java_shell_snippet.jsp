@@ -8,7 +8,7 @@
         <title>Test Java Shell</title>
     </head>
     <body>
-        <h1>Test Java Shell into the web app (for lazy people). Test with just sentences.</h1>        
+        <h1>Test Java Shell Interactive into the web app for lazy people (to easy debugging). </h1>        
 
         <%
             // This code is internal stuff just to make this test workable
@@ -16,18 +16,16 @@
             {
                 JProxyImpl.SINGLETON.getJProxyEngine().stop = true;
             }
-
-            String inputPath = application.getRealPath("/") + "/WEB-INF/javashellex/code/";                       
-            String cacheClassFolder = application.getRealPath("/") + "/WEB-INF/classes/";
+                    
             String compilationOptions = "-source 1.6  -target 1.6";
                     
             String[] args = new String[] 
             { 
-                inputPath + "/example_java_shell",
-                "HELLO WORLD!",
-                "-DscanPeriod=-1",
-                "-DcacheClassFolder=" + cacheClassFolder,
-                "-DcompilationOptions=" + compilationOptions                
+                "-c", 
+                "System.out.print(\"This code snippet says: \");",
+                "System.out.println(\"Hello World!!\");",
+                "-DcompilationOptions=" + compilationOptions,
+                "-Dtest=true"                        
             };
             try
             {

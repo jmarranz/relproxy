@@ -1,5 +1,5 @@
 <%@page import="com.innowhere.relproxy.jproxy.JProxyShell" %>
-<%@page import="com.innowhere.relproxy.impl.jproxy.JProxyImpl" %>
+<%@page import="com.innowhere.relproxy.impl.jproxy.core.JProxyImpl" %>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>

@@ -1,22 +1,30 @@
 package com.innowhere.relproxy.impl.jproxy.core.clsmgr;
 
 import com.innowhere.relproxy.impl.jproxy.JProxyUtil;
-import com.innowhere.relproxy.RelProxyException;
 import java.io.File;
 
 /**
  *
  * @author jmarranz
  */
-public class SourceScriptFile extends SourceScript
+public abstract class SourceScriptFile extends SourceScript
 {
     protected File sourceFile;
     
     public SourceScriptFile(File sourceFile)
     {
-        this.sourceFile = sourceFile;
+        this.sourceFile = sourceFile;         
     }
-
+    
+    public static SourceScriptFile createSourceScriptFile(File sourceFile)
+    {
+        String ext = JProxyUtil.getFileExtension(sourceFile); // Si no tiene extensión devuelve ""
+        if ("java".equals(ext))
+            return new SourceScriptFileJavaExt(sourceFile);
+        else
+            return new SourceScriptFileOtherExt(sourceFile);
+    }
+    
     @Override
     public long lastModified()
     {
@@ -29,21 +37,6 @@ public class SourceScriptFile extends SourceScript
     }
     
     @Override
-    public String getScriptCode(String encoding)
-    {
-        String codeBody = JProxyUtil.readTextFile(sourceFile,encoding);         
-        // Eliminamos la primera línea #!  (debe estar en la primera línea y sin espacios antes)
-        if (!codeBody.startsWith("#!"))
-            throw new RelProxyException("The first line of the script must start with #!");
-        
-        int pos = codeBody.indexOf('\n');
-        if (pos != -1) // Rarísimo que sólo esté el hash bang (script vacío)
-        {
-            codeBody = codeBody.substring(pos + 1);
-        }    
-        return codeBody;
-    }    
-    
     public String getClassNameFromSourceFileScriptAbsPath(File rootPathOfSourcesFile)
     {
         String path = sourceFile.getAbsolutePath();
@@ -53,7 +46,7 @@ public class SourceScriptFile extends SourceScript
         if (pos != 0) // DEBE SER 0, NO debería ocurrir
             return null;
         path = path.substring(rootPathOfSources.length() + 1); // Sumamos +1 para quitar también el / separador del pathInput y el path relativo de la clase
-        // En teoría NO tiene extensión pero es posible que se le haya dado (ej .jsh), la quitamos si existe
+        // Puede no tener extensión o bien ser .java o bien ser una inventada (ej .jsh), la quitamos si existe
         pos = path.lastIndexOf('.');        
         if (pos != -1) 
             path = path.substring(0, pos);        

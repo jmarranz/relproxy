@@ -8,7 +8,7 @@
         <title>Test Java Shell</title>
     </head>
     <body>
-        <h1>Test Java Shell into the web app (for lazy people). Test with just sentences.</h1>        
+        <h1>Test Java Shell into the web app (for lazy people). Test with a complete class.</h1>        
 
         <%
             // This code is internal stuff just to make this test workable
@@ -23,7 +23,7 @@
                     
             String[] args = new String[] 
             { 
-                inputPath + "/example_java_shell",
+                inputPath + "example_java_shell_complete_class",
                 "HELLO WORLD!",
                 "-DscanPeriod=-1",
                 "-DcacheClassFolder=" + cacheClassFolder,

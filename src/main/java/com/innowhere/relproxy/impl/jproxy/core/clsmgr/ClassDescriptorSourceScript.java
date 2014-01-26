@@ -11,8 +11,7 @@ import java.util.LinkedList;
  */
 public class ClassDescriptorSourceScript extends ClassDescriptorSourceUnit
 {
-    protected String source;
-    protected boolean completeClass;    
+    protected String source;  
     
     public ClassDescriptorSourceScript(JProxyEngine engine,String className,SourceScript sourceFile,long timestamp)
     {
@@ -28,14 +27,16 @@ public class ClassDescriptorSourceScript extends ClassDescriptorSourceUnit
     
     private void generateSourceCode()
     {
-        String scriptCode = getSourceScript().getScriptCode(getEncoding());         
+        boolean[] hasHashBang = new boolean[1];
+        
+        String scriptCode = getSourceScript().getScriptCode(getEncoding(),hasHashBang);         
+                
+        boolean completeClass = isCompleteClass(scriptCode);
         
         StringBuilder finalCode = new StringBuilder();        
-        this.completeClass = isCompleteClass(scriptCode);
-        
         if (completeClass)
         {
-            finalCode.append("\n");   // Como hemos quitado la línea #! añadimos una nueva para que los números de línea en caso de error coincidan con el original
+            if (hasHashBang[0]) finalCode.append("\n");   // Como hemos quitado la línea #! añadimos una nueva para que los números de línea en caso de error coincidan con el original
             finalCode.append(scriptCode);  
         }
         else

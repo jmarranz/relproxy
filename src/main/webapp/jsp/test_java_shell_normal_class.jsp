@@ -1,5 +1,5 @@
 <%@page import="com.innowhere.relproxy.jproxy.JProxyShell" %>
-<%@page import="com.innowhere.relproxy.impl.jproxy.JProxyImpl" %>
+<%@page import="com.innowhere.relproxy.impl.jproxy.core.JProxyImpl" %>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>
@@ -23,7 +23,7 @@
                     
             String[] args = new String[] 
             { 
-                inputPath + "test_java_shell_2",
+                inputPath + "example_normal_class.java",
                 "HELLO WORLD!",
                 "-DscanPeriod=-1",
                 "-DcacheClassFolder=" + cacheClassFolder,

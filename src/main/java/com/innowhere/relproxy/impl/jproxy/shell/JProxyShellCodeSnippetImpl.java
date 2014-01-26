@@ -47,8 +47,8 @@ public class JProxyShellCodeSnippetImpl extends JProxyShellImpl
     @Override    
     protected SourceScript getSourceScript(String[] args,LinkedList<String> argsToScript) 
     {
+        // En argsToScript no está el args[0] ni falta que hace porque es el flag "-c" 
         StringBuilder code = new StringBuilder();
-        code.append(args[0]);  // En argsToScript no está el args[0]
         for(String chunk : argsToScript)
             code.append(chunk);
         return new SourceScriptInMemory("_jproxyShellInMemoryClass_",code.toString());

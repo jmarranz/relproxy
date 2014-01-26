@@ -19,24 +19,27 @@ public abstract class JProxyShellImpl extends JProxyImpl
 {
     public static void main(String[] args)
     {
-        File scriptFile = new File(args[0]);
-        if (scriptFile.exists())
-        {
-            SINGLETON = new JProxyShellScriptFileImpl(); 
-            ((JProxyShellScriptFileImpl)SINGLETON).init(args,scriptFile);
-        }
-        else if (args[0].isEmpty()) 
+        if (args[0].isEmpty()) 
         {
             // Esto tiene explicación: cuando invocamos jproxysh sin parámetros (o espacios da igual) invocamos dentro jproxysh con com.innowhere.relproxy.jproxy.JProxyShell "$@"
             // el parámetro "$@" se convierte en "" que es un parámetro de verdad que recibimos pero de cadena vacía, lo cual nos viene GENIAL para distinguir el caso shell interactive            
             SINGLETON = new JProxyShellInteractiveImpl();         
-            ((JProxyShellInteractiveImpl)SINGLETON).init(args);
+            ((JProxyShellInteractiveImpl)SINGLETON).init(args);                   
         }
         else
         {
-            SINGLETON = new JProxyShellCodeSnippetImpl();
-            ((JProxyShellCodeSnippetImpl)SINGLETON).init(args);            
-        }       
+            if (args[0].equals("-c"))
+            {
+                SINGLETON = new JProxyShellCodeSnippetImpl();
+                ((JProxyShellCodeSnippetImpl)SINGLETON).init(args);            
+            }
+            else
+            {
+                SINGLETON = new JProxyShellScriptFileImpl(); 
+                ((JProxyShellScriptFileImpl)SINGLETON).init(args);
+            }
+
+        }
     }
 
     protected ClassDescriptorSourceScript init(String[] args,String inputPath) 

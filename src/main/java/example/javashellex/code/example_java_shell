@@ -1,8 +1,0 @@
-#!/usr/bin/env jproxysh
-
-String msg = args.length > 0 ? args[0] : "";
-System.out.println(msg);
-
-System.out.println("example_java_shell 1 ");
-
-example.javashellex.JProxyShellExample.exec();

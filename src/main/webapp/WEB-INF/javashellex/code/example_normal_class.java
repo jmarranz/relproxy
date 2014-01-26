@@ -1,4 +1,3 @@
-#!/usr/bin/env jproxysh
 
     // Test comment
 
@@ -9,14 +8,14 @@
 // Add this import to test if a complete class declaration is detected when imports present
 //import example.javashellex.JProxyShellExample;
 
-public class example_java_shell_2
+public class example_normal_class
 {
     public static void main(String[] args)
     {
         String msg = args.length > 0 ? args[0] : "";
         System.out.println(msg);
 
-        System.out.println("example_java_shell_2 1 ");
+        System.out.println("example_normal_class 1 ");
 
         example.javashellex.JProxyShellExample.exec();
     }

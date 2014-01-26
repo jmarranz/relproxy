@@ -636,6 +636,15 @@ export JPROXYSH_COMPILATION_OPTIONS="-source 1.6 -target 1.6"
 $PROJECT/cmd_examples/code/example_java_shell "HELLO WORLD!"
 ----
 
+Because +example_java_shell+ is a +jproxysh+ based script, nothing prevents of being executed directly using +jproxysh+:
+
+[source,sh]
+----
+jproxysh $PROJECT/cmd_examples/code/example_java_shell "HELLO WORLD!"
+----
+
+
+
 === Defining a complete Java class
 
 As you have seen in +example_java_shell+ example, you can access to other Java "scripting" classes from the initial scripting file, this is really interesting when your scripts 
@@ -647,38 +656,53 @@ in the scripting main file.
 Take a look to this example also included in RelProxy distribution (slightly modified):
 
 [source,sh]
-.example_java_shell_2
+.example_java_shell_complete_class
 ----
 #!/usr/bin/env jproxysh
 
 import example.javashellex.JProxyShellExample;
 
-public class example_java_shell_2
+public class example_java_shell_complete_class
 {
     public static void main(String[] args)
     {
         String msg = args.length > 0 ? args[0] : "";
         System.out.println(msg);
 
-        System.out.println("example_java_shell_2 1 ");
+        System.out.println("example_java_shell_complete_class 1 ");
 
         JProxyShellExample.exec();
     }
 }
 ----
 
-+example_java_shell_2+ is a conventional class, you can add methods, attributes and so on, the only limitation is the name of the class, it must be the same as the container file
++example_java_shell_complete_class+ is a conventional class, you can add methods, attributes and so on, the only limitation is the name of the class, it must be the same as the container file
 that is, the same as conventional JavaSE programming.
+
+You can execute this script by the same ways we executed +example_java_shell+, directly or as a parameter of +jproxysh+.
+
+=== Scripting conventional JavaSE source code
+
+The differences between a the +example_java_shell_complete_class+ script and a conventional Java source file are just the extension (missing) and the hash bang to execute jproxysh.
+
+We can remove the hashbang and set a +.java+ extension to the main scripting file, in this scenario the source code is the same as a conventional JavaSE application.
+Instead of compiling with +javac+ and executing with +java+ command, you just must execute with +jproxysh+
+
+[source,sh]
+----
+jproxysh $PROJECT/cmd_examples/code/example_normal_class.java "HELLO WORLD!"
+----
+
 
 === Executing a Java code snippet
 
 You have done some powerful Java methods, these Java methods allows some combinations to make easily amazing things, you just need one, or two or just three sentences... 
 you don't need to create a Java shell scripting file, you just want to write down and execute. RelProxy through +jproxy+ allows executing Java code snippets on the fly.
 
-The following is a shell script included in RelProxy distribution which executes a simple code snippet:
+The following is a shell script included in RelProxy distribution which executes a simple code snippet (the param +-c+ indicates you are going to execute inline code):
 
 [source,sh]
-.example_java_shell_2
+.ex_java_shell_snippet_launcher.sh
 ----
 #!/bin/sh
 
@@ -698,8 +722,8 @@ export JAVA_OPTS="-client -Xmx100m"
 
 export JPROXYSH_COMPILATION_OPTIONS="-source 1.6 -target 1.6"
 
-jproxysh 'System.out.print("This code snippet says: ");' \
-         'System.out.println("Hello World!!");'
+jproxysh -c 'System.out.print("This code snippet says: ");' \
+            'System.out.println("Hello World!!");'
 ----
 
 You can execute a single code block (into a string parameter) or several blocks in several lines separated with "\", every block can contain several Java sentences.
