@@ -1,8 +1,5 @@
 package com.innowhere.relproxy.impl.jproxy.shell.inter;
 
-import com.innowhere.relproxy.impl.jproxy.shell.inter.WindowUnicodeKeyboard;
-import com.innowhere.relproxy.impl.jproxy.shell.inter.CommandError;
-import com.innowhere.relproxy.impl.jproxy.shell.inter.Command;
 import com.innowhere.relproxy.RelProxy;
 import com.innowhere.relproxy.RelProxyException;
 import com.innowhere.relproxy.impl.jproxy.core.clsmgr.ClassDescriptorSourceScript;
@@ -59,13 +56,13 @@ public class JProxyShellProcessor
         this.lineEditing = lineEditing;
     }
     
-    public void test(ClassDescriptorSourceScript scriptClass,SourceScriptInMemory sourceScript)
+    public void test()
     {
         try { Thread.sleep(2); } catch (InterruptedException ex){  }
-        execute("System.out.println(\"Hello World\");",scriptClass,sourceScript); //  "Object o = null; o.equals(null);"    
+        execute("System.out.println(\"Hello World\");"); //  "Object o = null; o.equals(null);"    
     }
     
-    public void loop(ClassDescriptorSourceScript scriptClass,SourceScriptInMemory sourceScript)
+    public void loop()
     {
         System.out.println("RelProxy Java Shell v" + RelProxy.getVersion());
         System.out.println("Write help for help");
@@ -85,7 +82,7 @@ public class JProxyShellProcessor
                 }
                 else
                 {
-                    boolean success = command.run(scriptClass, sourceScript);
+                    boolean success = command.run();
 
                     System.out.print(">"); 
 
@@ -160,7 +157,7 @@ public class JProxyShellProcessor
         this.lastLine = - 1;        
     }        
     
-    public void execute(ClassDescriptorSourceScript scriptClass,SourceScriptInMemory sourceScript)
+    public void executeCodeBuffer()
     {    
         StringBuilder code = new StringBuilder();
         for(String line : codeBuffer)
@@ -168,15 +165,17 @@ public class JProxyShellProcessor
             code.append(line);
             code.append("\n");                
         }    
-        execute(code.toString(),scriptClass,sourceScript);
+        execute(code.toString());
     }
     
-    private void execute(String code,ClassDescriptorSourceScript scriptClass,SourceScriptInMemory sourceScript)
+    private void execute(String code)
     {
+        ClassDescriptorSourceScript classDescSourceScript = parent.getClassDescriptorSourceScript();
+        
         if (codeBufferModTimestamp > lastCodeExecutedTimestamp)
         {
             this.lastCodeExecutedTimestamp = System.currentTimeMillis();
-            sourceScript.setScriptCode(code);
+            parent.getSourceScriptInMemory().setScriptCode(code);
             // Recuerda que cada vez que se obtiene el timestamp se llama a System.currentTimeMillis(), es imposible que el usuario haga algo en menos de 1ms
 
             JProxyEngine engine = parent.getJProxyEngine();
@@ -192,13 +191,13 @@ public class JProxyShellProcessor
                 return;
             }
 
-            if (scriptClass2 != scriptClass)
+            if (scriptClass2 != parent.getClassDescriptorSourceScript())
                 throw new RelProxyException("Internal Error");
         }
         
         try
         {            
-            scriptClass.callMainMethod(new LinkedList<String>());    
+            classDescSourceScript.callMainMethod(new LinkedList<String>());    
         }
         catch(Throwable ex)
         {

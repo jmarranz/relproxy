@@ -34,11 +34,10 @@ public class CommandSave extends Command
     }
     
     @Override
-    public boolean run(ClassDescriptorSourceScript scriptClass, SourceScriptInMemory sourceScript)
+    public boolean run()
     {
         try
         {
-            
             List<String> codeBuffer = parent.getCodeBuffer();
             StringBuilder code = new StringBuilder();
             for(String line : codeBuffer)

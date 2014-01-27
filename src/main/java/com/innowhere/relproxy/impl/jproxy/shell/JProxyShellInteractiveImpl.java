@@ -17,21 +17,30 @@ public class JProxyShellInteractiveImpl extends JProxyShellImpl
 {
     protected boolean test = false;
     protected JProxyShellProcessor processor = new JProxyShellProcessor(this);
+    protected ClassDescriptorSourceScript classDescSourceScript;
     
     public void init(String[] args)
     {          
-        ClassDescriptorSourceScript script = super.init(args, null);
-        
-        SourceScriptInMemory sourceScript = (SourceScriptInMemory)script.getSourceScript();
+        this.classDescSourceScript = super.init(args, null);
 
         if (test) 
         { 
-            processor.test(script, sourceScript);
+            processor.test();
             return;
         }
         
-        processor.loop(script,sourceScript);
+        processor.loop();
     }      
+    
+    public ClassDescriptorSourceScript getClassDescriptorSourceScript()
+    {
+        return classDescSourceScript;
+    }
+    
+    public SourceScriptInMemory getSourceScriptInMemory()
+    {
+        return (SourceScriptInMemory)classDescSourceScript.getSourceScript();
+    }
     
     @Override
     public ClassDescriptorSourceScript init(JProxyConfigImpl config,SourceScript scriptFile,ClassLoader classLoader)

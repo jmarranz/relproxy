@@ -1,8 +1,5 @@
 package com.innowhere.relproxy.impl.jproxy.shell.inter;
 
-import com.innowhere.relproxy.impl.jproxy.core.clsmgr.ClassDescriptorSourceScript;
-import com.innowhere.relproxy.impl.jproxy.core.clsmgr.SourceScriptInMemory;
-
 /**
  *
  * @author jmarranz
@@ -100,7 +97,7 @@ public abstract class Command
         return param;
     }
     
-    public abstract boolean run(ClassDescriptorSourceScript scriptClass,SourceScriptInMemory sourceScript);    
+    public abstract boolean run();    
     
     public abstract void runPostCommand();    
 }

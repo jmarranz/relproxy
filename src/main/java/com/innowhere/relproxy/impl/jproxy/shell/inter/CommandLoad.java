@@ -1,8 +1,6 @@
 package com.innowhere.relproxy.impl.jproxy.shell.inter;
 
 import com.innowhere.relproxy.impl.jproxy.JProxyUtil;
-import com.innowhere.relproxy.impl.jproxy.core.clsmgr.ClassDescriptorSourceScript;
-import com.innowhere.relproxy.impl.jproxy.core.clsmgr.SourceScriptInMemory;
 import java.io.File;
 import java.net.URI;
 import java.net.URL;
@@ -37,7 +35,7 @@ public class CommandLoad extends Command
     }
     
     @Override
-    public boolean run(ClassDescriptorSourceScript scriptClass, SourceScriptInMemory sourceScript)
+    public boolean run()
     {
         try
         {

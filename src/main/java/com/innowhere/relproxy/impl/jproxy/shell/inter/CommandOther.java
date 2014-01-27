@@ -17,7 +17,7 @@ public class CommandOther extends Command
     }    
     
     @Override
-    public boolean run(ClassDescriptorSourceScript scriptClass,SourceScriptInMemory sourceScript)
+    public boolean run()
     {
         if (name.equals("clear"))
         {
@@ -29,7 +29,7 @@ public class CommandOther extends Command
         }            
         else if (name.equals("exec"))
         {
-            commandExec(scriptClass,sourceScript);
+            commandExec();
         }
         else if (name.equals("exit"))
         {
@@ -78,9 +78,9 @@ public class CommandOther extends Command
         }    
     }
     
-    private void commandExec(ClassDescriptorSourceScript scriptClass,SourceScriptInMemory sourceScript)
+    private void commandExec()
     {
-        parent.execute(scriptClass,sourceScript);        
+        parent.executeCodeBuffer();        
     }    
     
     private void commandHelp()

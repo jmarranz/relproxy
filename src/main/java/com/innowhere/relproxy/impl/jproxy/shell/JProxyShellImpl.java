@@ -6,7 +6,6 @@ import com.innowhere.relproxy.impl.jproxy.JProxyConfigImpl;
 import com.innowhere.relproxy.impl.jproxy.core.JProxyImpl;
 import com.innowhere.relproxy.impl.jproxy.core.clsmgr.ClassDescriptorSourceScript;
 import com.innowhere.relproxy.impl.jproxy.core.clsmgr.SourceScript;
-import java.io.File;
 import java.lang.reflect.Method;
 import java.util.LinkedList;
 

@@ -76,7 +76,7 @@ public abstract class CommandCodeChangerBase extends Command
     
     
     @Override
-    public boolean run(ClassDescriptorSourceScript scriptClass, SourceScriptInMemory sourceScript)
+    public boolean run()
     {
         return true;
     }    

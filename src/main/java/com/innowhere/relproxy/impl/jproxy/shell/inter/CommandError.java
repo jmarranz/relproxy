@@ -1,8 +1,5 @@
 package com.innowhere.relproxy.impl.jproxy.shell.inter;
 
-import com.innowhere.relproxy.impl.jproxy.core.clsmgr.ClassDescriptorSourceScript;
-import com.innowhere.relproxy.impl.jproxy.core.clsmgr.SourceScriptInMemory;
-
 /**
  *
  * @author jmarranz
@@ -15,7 +12,7 @@ public class CommandError extends Command
     }
 
     @Override
-    public boolean run(ClassDescriptorSourceScript scriptClass, SourceScriptInMemory sourceScript)
+    public boolean run()
     {
         return false;
     }
