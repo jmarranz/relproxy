@@ -1,5 +1,6 @@
-package com.innowhere.relproxy.impl.jproxy;
+package com.innowhere.relproxy.impl.jproxy.screngine;
 
+import com.innowhere.relproxy.impl.jproxy.JProxyConfigImpl;
 import com.innowhere.relproxy.jproxy.JProxyConfig;
 import com.innowhere.relproxy.jproxy.JProxyScriptEngineFactory;
 import java.util.List;
@@ -19,7 +20,7 @@ public class JProxyScriptEngineFactoryImpl extends JProxyScriptEngineFactory
         this.config = config;
     }
     
-    public static ScriptEngineFactory create(JProxyConfig config)
+    public static JProxyScriptEngineFactory create(JProxyConfig config)
     {
         return new JProxyScriptEngineFactoryImpl((JProxyConfigImpl)config);
     }    
@@ -93,6 +94,6 @@ public class JProxyScriptEngineFactoryImpl extends JProxyScriptEngineFactory
     @Override
     public ScriptEngine getScriptEngine()
     {
-        return new JProxyScriptEngineImpl(config);
+        return new JProxyScriptEngineImpl(this,config);
     }    
 }

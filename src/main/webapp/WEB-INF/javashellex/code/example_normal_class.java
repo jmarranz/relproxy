@@ -12,7 +12,7 @@ public class example_normal_class
 {
     public static void main(String[] args)
     {
-        String msg = args.length > 0 ? args[0] : "";
+        String msg = args[0] + args[1];
         System.out.println(msg);
 
         System.out.println("example_normal_class 1 ");

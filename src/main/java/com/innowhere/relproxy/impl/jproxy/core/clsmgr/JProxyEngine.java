@@ -1,6 +1,7 @@
 package com.innowhere.relproxy.impl.jproxy.core.clsmgr;
 
 import com.innowhere.relproxy.impl.jproxy.JProxyUtil;
+import com.innowhere.relproxy.impl.jproxy.core.JProxyImpl;
 import com.innowhere.relproxy.impl.jproxy.core.clsmgr.comp.JProxyCompilerContext;
 import com.innowhere.relproxy.impl.jproxy.core.clsmgr.comp.JProxyCompilerInMemory;
 import com.innowhere.relproxy.jproxy.JProxyDiagnosticsListener;
@@ -15,6 +16,7 @@ import java.util.TimerTask;
  */
 public class JProxyEngine 
 {
+    protected JProxyImpl parent;
     protected JProxyCompilerInMemory compiler;    
     protected SourceScript scriptFile; // Puede ser nulo
     protected ClassLoader rootClassLoader;
@@ -28,8 +30,9 @@ public class JProxyEngine
     public volatile boolean stop = false;
     protected TimerTask task;
     
-    public JProxyEngine(SourceScript scriptFile,ClassLoader rootClassLoader,String pathSources,String classFolder,long scanPeriod,Iterable<String> compilationOptions,JProxyDiagnosticsListener diagnosticsListener)
+    public JProxyEngine(JProxyImpl parent,SourceScript scriptFile,ClassLoader rootClassLoader,String pathSources,String classFolder,long scanPeriod,Iterable<String> compilationOptions,JProxyDiagnosticsListener diagnosticsListener)
     {
+        this.parent = parent;
         this.scriptFile = scriptFile;
         this.rootClassLoader = rootClassLoader;
         this.folderSources = pathSources != null ? new File(pathSources) : null; // El File es para normalizar
@@ -38,6 +41,11 @@ public class JProxyEngine
         this.compiler = new JProxyCompilerInMemory(this,compilationOptions,diagnosticsListener);        
         this.customClassLoader = new JProxyClassLoader(this);
         this.sourcesSearch = new JavaSourcesSearch(this);       
+    }
+    
+    public JProxyImpl getJProxy()
+    {
+        return parent;
     }
     
     public ClassDescriptorSourceScript init()

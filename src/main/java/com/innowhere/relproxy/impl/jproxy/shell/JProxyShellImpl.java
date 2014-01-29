@@ -40,7 +40,7 @@ public abstract class JProxyShellImpl extends JProxyImpl
 
         }
     }
-
+    
     protected ClassDescriptorSourceScript init(String[] args,String inputPath) 
     {
         // Esto quizás necesite una opción en plan "verbose" o "log" para mostrar por pantalla o nada
@@ -71,6 +71,12 @@ public abstract class JProxyShellImpl extends JProxyImpl
         return scriptFileDesc;
     }        
 
+    @Override
+    public Class getMainParamClass()
+    {
+        return String[].class;
+    }
+    
     
     protected abstract SourceScript getSourceScript(String[] args,LinkedList<String> argsToScript);
     protected abstract JProxyShellClassLoader getJProxyShellClassLoader(JProxyConfigImpl config);    

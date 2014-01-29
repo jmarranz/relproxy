@@ -4,7 +4,6 @@ import com.innowhere.relproxy.RelProxy;
 import com.innowhere.relproxy.RelProxyException;
 import com.innowhere.relproxy.impl.jproxy.core.clsmgr.ClassDescriptorSourceScript;
 import com.innowhere.relproxy.impl.jproxy.core.clsmgr.JProxyEngine;
-import com.innowhere.relproxy.impl.jproxy.core.clsmgr.SourceScriptInMemory;
 import com.innowhere.relproxy.impl.jproxy.core.clsmgr.comp.JProxyCompilationException;
 import com.innowhere.relproxy.impl.jproxy.shell.JProxyShellInteractiveImpl;
 import java.nio.charset.Charset;
@@ -24,12 +23,12 @@ public class JProxyShellProcessor
     
     protected JProxyShellInteractiveImpl parent;
     protected Charset encoding = Charset.defaultCharset();
-    protected ArrayList<String> codeBuffer = new ArrayList<String>(20);
-    protected long codeBufferModTimestamp = 0;    
+    protected ArrayList<String> codeBuffer = new ArrayList<String>(20);   
     protected WindowUnicodeKeyboard keyboard = new WindowUnicodeKeyboard(encoding);
     protected int lastLine = -1; // Indice respecto a codeBuffer
     protected int lineEditing = -1;  // Indice respecto a codeBuffer
-    protected long lastCodeExecutedTimestamp = 0;    
+    protected long codeBufferModTimestamp = 0;     
+    protected long lastCodeCompiledTimestamp = 0;    
     
     public JProxyShellProcessor(JProxyShellInteractiveImpl parent)
     {
@@ -172,18 +171,17 @@ public class JProxyShellProcessor
     {
         ClassDescriptorSourceScript classDescSourceScript = parent.getClassDescriptorSourceScript();
         
-        if (codeBufferModTimestamp > lastCodeExecutedTimestamp)
+        if (codeBufferModTimestamp >= lastCodeCompiledTimestamp)  // Incluimos el = por si acaso va todo muy seguido
         {
-            this.lastCodeExecutedTimestamp = System.currentTimeMillis();
             parent.getSourceScriptInMemory().setScriptCode(code);
             // Recuerda que cada vez que se obtiene el timestamp se llama a System.currentTimeMillis(), es imposible que el usuario haga algo en menos de 1ms
 
             JProxyEngine engine = parent.getJProxyEngine();
 
-            ClassDescriptorSourceScript scriptClass2 = null;
+            ClassDescriptorSourceScript classDescSourceScript2 = null;
             try
             {
-                scriptClass2 = engine.detectChangesInSources();
+                classDescSourceScript2 = engine.detectChangesInSources();
             }
             catch(JProxyCompilationException ex) 
             {
@@ -191,12 +189,14 @@ public class JProxyShellProcessor
                 return;
             }
 
-            if (scriptClass2 != parent.getClassDescriptorSourceScript())
+            if (classDescSourceScript2 != classDescSourceScript)
                 throw new RelProxyException("Internal Error");
+            
+            this.lastCodeCompiledTimestamp = System.currentTimeMillis();            
         }
         
         try
-        {            
+        {
             classDescSourceScript.callMainMethod(new LinkedList<String>());    
         }
         catch(Throwable ex)

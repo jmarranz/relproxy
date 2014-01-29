@@ -17,6 +17,11 @@ public class SourceScriptInMemory extends SourceScript
         this.code = code;
     }
     
+    public static SourceScriptInMemory createSourceScriptInMemory(String code)
+    {
+        return new SourceScriptInMemory("_jproxyShellInMemoryClass_",code);
+    }
+    
     @Override
     public long lastModified()
     {
@@ -27,6 +32,11 @@ public class SourceScriptInMemory extends SourceScript
     public String getScriptCode(String encoding,boolean[] hasHashBang)
     {
         hasHashBang[0] = false;
+        return code;
+    }
+    
+    public String getScriptCode()
+    {
         return code;
     }
     

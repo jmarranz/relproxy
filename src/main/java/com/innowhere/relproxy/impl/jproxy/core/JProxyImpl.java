@@ -33,7 +33,7 @@ public abstract class JProxyImpl extends GenericProxyImpl
         JProxyDiagnosticsListener diagnosticsListener = config.getJProxyDiagnosticsListener();
         
         classLoader = classLoader != null ? classLoader : getDefaultClassLoader();      
-        this.engine = new JProxyEngine(scriptFile,classLoader,inputPath,classFolder,scanPeriod,compilationOptions,diagnosticsListener);          
+        this.engine = new JProxyEngine(this,scriptFile,classLoader,inputPath,classFolder,scanPeriod,compilationOptions,diagnosticsListener);          
         return engine.init();
     }    
    
@@ -58,4 +58,6 @@ public abstract class JProxyImpl extends GenericProxyImpl
     {
         return new JProxyInvocationHandler<T>(obj,this);
     }
+    
+    public abstract Class getMainParamClass();
 }

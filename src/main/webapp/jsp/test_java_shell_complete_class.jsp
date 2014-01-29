@@ -24,7 +24,8 @@
             String[] args = new String[] 
             { 
                 inputPath + "example_java_shell_complete_class",
-                "HELLO WORLD!",
+                "HELLO ",
+                "WORLD!",
                 "-DscanPeriod=-1",
                 "-DcacheClassFolder=" + cacheClassFolder,
                 "-DcompilationOptions=" + compilationOptions                

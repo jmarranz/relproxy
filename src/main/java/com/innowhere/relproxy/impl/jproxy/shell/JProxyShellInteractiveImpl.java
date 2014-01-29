@@ -74,7 +74,7 @@ public class JProxyShellInteractiveImpl extends JProxyShellImpl
     @Override    
     protected SourceScript getSourceScript(String[] args,LinkedList<String> argsToScript) 
     {
-        return new SourceScriptInMemory("_jproxyShellInMemoryClass_",""); // La primera vez no hace nada, sirve para "calentar" la app
+        return SourceScriptInMemory.createSourceScriptInMemory(""); // La primera vez no hace nada, sirve para "calentar" la app
     }    
     
     @Override    

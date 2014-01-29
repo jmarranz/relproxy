@@ -51,7 +51,7 @@ public class JProxyShellCodeSnippetImpl extends JProxyShellImpl
         StringBuilder code = new StringBuilder();
         for(String chunk : argsToScript)
             code.append(chunk);
-        return new SourceScriptInMemory("_jproxyShellInMemoryClass_",code.toString());
+        return SourceScriptInMemory.createSourceScriptInMemory(code.toString());
     }    
    
     @Override    

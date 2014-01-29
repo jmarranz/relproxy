@@ -10,6 +10,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.Reader;
 import java.net.URL;
 import java.net.URLConnection;
 
@@ -123,10 +124,22 @@ public class JProxyUtil
 
     public static String readTextFile(File file,String encoding)
     {
+        Reader reader = null;
+        try 
+        {
+            reader = new InputStreamReader(new FileInputStream(file),encoding);   // FileReader no permite especificar el encoding y total no hace nada que no haga InputStreamReader       
+        }
+        catch(IOException ex) { throw new RelProxyException(ex);  }
+        
+        return readTextFile(reader);
+    }    
+    
+    public static String readTextFile(Reader reader)
+    {
         BufferedReader br = null;
         try 
         {
-            br = new BufferedReader(new InputStreamReader(new FileInputStream(file),encoding));   // FileReader no permite especificar el encoding y total no hace nada que no haga InputStreamReader       
+            br = new BufferedReader(reader);   // FileReader no permite especificar el encoding y total no hace nada que no haga InputStreamReader       
             StringBuilder sb = new StringBuilder();
             String line = br.readLine();
 
@@ -146,5 +159,5 @@ public class JProxyUtil
         {
             if (br != null) try { br.close(); } catch (IOException ex) { throw new RelProxyException(ex);  }
         }
-    }    
+    }     
 }

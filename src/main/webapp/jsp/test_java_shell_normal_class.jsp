@@ -24,7 +24,8 @@
             String[] args = new String[] 
             { 
                 inputPath + "example_normal_class.java",
-                "HELLO WORLD!",
+                "HELLO ",
+                "WORLD!",
                 "-DscanPeriod=-1",
                 "-DcacheClassFolder=" + cacheClassFolder,
                 "-DcompilationOptions=" + compilationOptions                

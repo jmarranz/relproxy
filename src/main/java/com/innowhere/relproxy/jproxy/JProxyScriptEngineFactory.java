@@ -1,6 +1,6 @@
 package com.innowhere.relproxy.jproxy;
 
-import com.innowhere.relproxy.impl.jproxy.JProxyScriptEngineFactoryImpl;
+import com.innowhere.relproxy.impl.jproxy.screngine.JProxyScriptEngineFactoryImpl;
 import javax.script.ScriptEngineFactory;
 
 /**
@@ -9,10 +9,8 @@ import javax.script.ScriptEngineFactory;
  */
 public abstract class JProxyScriptEngineFactory implements ScriptEngineFactory
 {
-    public static ScriptEngineFactory create(JProxyConfig config)
+    public static JProxyScriptEngineFactory create(JProxyConfig config)
     {
         return JProxyScriptEngineFactoryImpl.create(config);
     }
-
-
 }

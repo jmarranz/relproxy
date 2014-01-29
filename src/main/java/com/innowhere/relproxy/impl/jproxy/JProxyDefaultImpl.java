@@ -9,6 +9,16 @@ import com.innowhere.relproxy.jproxy.JProxyConfig;
  */
 public class JProxyDefaultImpl extends JProxyImpl
 {         
+    public JProxyDefaultImpl()
+    {
+    }
+    
+    @Override    
+    public Class getMainParamClass()
+    {
+        return null;
+    }
+
     public static JProxyConfig createJProxyConfig()
     {
         return new JProxyConfigImpl();

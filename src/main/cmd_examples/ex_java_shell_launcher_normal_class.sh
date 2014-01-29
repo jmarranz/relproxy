@@ -18,4 +18,4 @@ export JPROXYSH_SCAN_PERIOD=-1
 export JPROXYSH_CACHE_CLASS_FOLDER="$PROJECT/tmp/java_shell_test_classes"
 export JPROXYSH_COMPILATION_OPTIONS="-source 1.6 -target 1.6"
 
-jproxysh $PROJECT/cmd_examples/code/example_normal_class.java "HELLO WORLD!"
+jproxysh $PROJECT/cmd_examples/code/example_normal_class.java "HELLO " "WORLD!"

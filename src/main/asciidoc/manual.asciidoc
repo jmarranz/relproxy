@@ -561,7 +561,7 @@ Let's see the first example (some background of UNIX shell is supposed):
 ----
 #!/usr/bin/env jproxysh
 
-String msg = args.length > 0 ? args[0] : "";
+String msg = args[0] + args[1];
 System.out.println(msg);
 
 System.out.println("example_java_shell 1 ");
@@ -633,14 +633,14 @@ export JPROXYSH_SCAN_PERIOD=-1
 export JPROXYSH_CACHE_CLASS_FOLDER="$PROJECT/tmp/java_shell_test_classes"
 export JPROXYSH_COMPILATION_OPTIONS="-source 1.6 -target 1.6"
 
-$PROJECT/cmd_examples/code/example_java_shell "HELLO WORLD!"
+$PROJECT/cmd_examples/code/example_java_shell "HELLO " "WORLD!"
 ----
 
 Because +example_java_shell+ is a +jproxysh+ based script, nothing prevents of being executed directly using +jproxysh+:
 
 [source,sh]
 ----
-jproxysh $PROJECT/cmd_examples/code/example_java_shell "HELLO WORLD!"
+jproxysh $PROJECT/cmd_examples/code/example_java_shell "HELLO " "WORLD!"
 ----
 
 
@@ -666,7 +666,7 @@ public class example_java_shell_complete_class
 {
     public static void main(String[] args)
     {
-        String msg = args.length > 0 ? args[0] : "";
+        String msg = args[0] + args[1];
         System.out.println(msg);
 
         System.out.println("example_java_shell_complete_class 1 ");
@@ -690,7 +690,7 @@ Instead of compiling with +javac+ and executing with +java+ command, you just mu
 
 [source,sh]
 ----
-jproxysh $PROJECT/cmd_examples/code/example_normal_class.java "HELLO WORLD!"
+jproxysh $PROJECT/cmd_examples/code/example_normal_class.java "HELLO " "WORLD!"
 ----
 
 
