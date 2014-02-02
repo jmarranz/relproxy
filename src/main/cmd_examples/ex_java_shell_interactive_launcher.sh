@@ -4,6 +4,13 @@ RELPROXY_JAR=relproxy-0.8.jar
 
 PROJECT=`dirname $0`/..
 
+# set PROJECT env as absolute path
+TMP_PWD=`pwd`
+cd $PROJECT
+PROJECT=`pwd`
+cd $TMP_PWD
+
+
 if [ -z "$JAVA_HOME" ]; then 
     echo Missing JAVA_HOME environment variable, exiting...
     exit 1
@@ -17,4 +24,5 @@ export JAVA_OPTS="-client -Xmx100m"
 export JPROXYSH_COMPILATION_OPTIONS="-source 1.6 -target 1.6"
 
 jproxysh   
+
 

@@ -26,16 +26,16 @@ public class JavaSourcesSearch
         {
             String[] children = folderSources.list(); // No esperamos que no exista
             
-            SourceScriptFileJavaExt scriptFileJava = (scriptFile != null && (scriptFile instanceof SourceScriptFileJavaExt)) ? (SourceScriptFileJavaExt)scriptFile : null;
+            String scriptFileJavaAbsPath = (scriptFile != null && (scriptFile instanceof SourceScriptFileJavaExt)) ? ((SourceScriptFileJavaExt)scriptFile).getFile().getAbsolutePath() : null;
             
-            recursiveSourceFileJavaSearch(scriptFileJava,folderSources,children,oldSourceFileMap,newSourceFileMap,updatedSourceFiles,newSourceFiles,deletedSourceFiles);
+            recursiveSourceFileJavaSearch(scriptFileJavaAbsPath,folderSources,children,oldSourceFileMap,newSourceFileMap,updatedSourceFiles,newSourceFiles,deletedSourceFiles);
             if (oldSourceFileMap != null && !oldSourceFileMap.isEmpty())        
                 deletedSourceFiles.addAll(oldSourceFileMap.getClassDescriptorSourceFileColl());
         }
         return scriptFileDesc;
     }
     
-    private void recursiveSourceFileJavaSearch(SourceScriptFileJavaExt scriptFileJava,File parentPath,String[] relPathList,ClassDescriptorSourceFileRegistry oldSourceFileMap,ClassDescriptorSourceFileRegistry newSourceFileMap,LinkedList<ClassDescriptorSourceUnit> updatedSourceFiles,LinkedList<ClassDescriptorSourceUnit> newSourceFiles,LinkedList<ClassDescriptorSourceUnit> deletedSourceFiles)
+    private void recursiveSourceFileJavaSearch(String scriptFileJavaAbsPath,File parentPath,String[] relPathList,ClassDescriptorSourceFileRegistry oldSourceFileMap,ClassDescriptorSourceFileRegistry newSourceFileMap,LinkedList<ClassDescriptorSourceUnit> updatedSourceFiles,LinkedList<ClassDescriptorSourceUnit> newSourceFiles,LinkedList<ClassDescriptorSourceUnit> deletedSourceFiles)
     {
         for(String relPath : relPathList)
         {
@@ -43,7 +43,7 @@ public class JavaSourcesSearch
             if (file.isDirectory())
             {
                 String[] children = file.list();   
-                recursiveSourceFileJavaSearch(scriptFileJava,file,children,oldSourceFileMap,newSourceFileMap,updatedSourceFiles,newSourceFiles,deletedSourceFiles);
+                recursiveSourceFileJavaSearch(scriptFileJavaAbsPath,file,children,oldSourceFileMap,newSourceFileMap,updatedSourceFiles,newSourceFiles,deletedSourceFiles);
             }
             else
             {
@@ -51,7 +51,7 @@ public class JavaSourcesSearch
                 if (!"java".equals(ext)) continue;
                 //if (!"jsh".equals(ext)) continue;
 
-                if (scriptFileJava != null && scriptFileJava.getFile().getAbsolutePath().equals(file.getAbsolutePath()))
+                if (scriptFileJavaAbsPath != null && scriptFileJavaAbsPath.equals(file.getAbsolutePath()))
                     continue; // Es el propio archivo script inicial que es .java, así evitamos considerarlo dos veces
                 
                 SourceFileJavaNormal sourceFile = new SourceFileJavaNormal(file);

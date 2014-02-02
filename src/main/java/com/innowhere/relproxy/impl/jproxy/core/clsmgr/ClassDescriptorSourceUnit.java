@@ -36,6 +36,7 @@ public abstract class ClassDescriptorSourceUnit extends ClassDescriptor
         return engine.getSourceEncoding();
     }
     
+    @Override
     public boolean isInnerClass()
     {
         return false;

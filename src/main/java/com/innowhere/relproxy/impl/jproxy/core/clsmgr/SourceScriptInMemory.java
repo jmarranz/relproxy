@@ -10,11 +10,12 @@ public class SourceScriptInMemory extends SourceScript
 {
     protected String className;
     protected String code;
+    protected long timestamp;
     
     public SourceScriptInMemory(String className,String code)
     {
         this.className = className;
-        this.code = code;
+        setScriptCode(code,System.currentTimeMillis());
     }
     
     public static SourceScriptInMemory createSourceScriptInMemory(String code)
@@ -25,7 +26,7 @@ public class SourceScriptInMemory extends SourceScript
     @Override
     public long lastModified()
     {
-        return System.currentTimeMillis(); // Siempre ha sido modificado
+        return timestamp; // Siempre ha sido modificado
     }     
 
     @Override
@@ -40,9 +41,10 @@ public class SourceScriptInMemory extends SourceScript
         return code;
     }
     
-    public void setScriptCode(String code)
+    public final void setScriptCode(String code,long timestamp)
     {
         this.code = code;
+        this.timestamp = timestamp;
     }    
     
     @Override

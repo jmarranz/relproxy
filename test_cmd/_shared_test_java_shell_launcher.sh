@@ -2,6 +2,13 @@
 
 PROJECT=`dirname $0`/..
 
+# set PROJECT env as absolute path
+TMP_PWD=`pwd`
+cd $PROJECT
+PROJECT=`pwd`
+cd $TMP_PWD
+
+
 if [ -z "$JAVA_HOME" ]; then 
     echo Missing JAVA_HOME environment variable, exiting...
     exit 1

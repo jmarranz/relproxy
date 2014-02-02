@@ -619,6 +619,12 @@ RELPROXY_JAR=relproxy-0.8.jar
 
 PROJECT=`dirname $0`/..
 
+# set PROJECT env as absolute path
+TMP_PWD=`pwd`
+cd $PROJECT
+PROJECT=`pwd`
+cd $TMP_PWD
+
 if [ -z "$JAVA_HOME" ]; then 
     echo Missing JAVA_HOME environment variable, exiting...
     exit 1
@@ -710,6 +716,12 @@ RELPROXY_JAR=relproxy-0.8.jar
 
 PROJECT=`dirname $0`/..
 
+# set PROJECT env as absolute path
+TMP_PWD=`pwd`
+cd $PROJECT
+PROJECT=`pwd`
+cd $TMP_PWD
+
 if [ -z "$JAVA_HOME" ]; then 
     echo Missing JAVA_HOME environment variable, exiting...
     exit 1
@@ -764,3 +776,83 @@ sh <path to the shell file>
 
 Where +<path to the shell file>+ can have Windows or Linux format (e.g. +/c/development/relproxy/cmd_examples/ex_java_shell_launcher.sh+).
 
+== Java Scripting API implementation
+
+RelProxy implements the official JSR-223 http://docs.oracle.com/javase/6/docs/technotes/guides/scripting/programmer_guide/index.html[Java Scripting API] as found
+in Java 1.6.
+
+The following Java code shows how to initialize the Java Scripting factory, get an engine instance and execute some code:
+
+[source,java]
+----
+// ...
+JProxyConfig jpConfig = JProxy.createJProxyConfig();
+jpConfig.setEnabled(true)
+        .setRelProxyOnReloadListener(proxyListener)
+        .setInputPath(inputPath)
+        .setScanPeriod(scanPeriod)
+        .setClassFolder(classFolder)
+        .setCompilationOptions(compilationOptions)
+        .setJProxyDiagnosticsListener(diagnosticsListener);
+
+JProxyScriptEngineFactory factory = JProxyScriptEngineFactory.create(jpConfig);
+
+ScriptEngineManager manager = new ScriptEngineManager();
+manager.registerEngineName("Java", factory);
+
+manager.getBindings().put("msg","HELLO GLOBAL WORLD!");
+
+ScriptEngine engine = manager.getEngineByName("Java");
+
+Bindings bindings = engine.createBindings();
+bindings.put("msg","HELLO SCOPE WORLD!");
+
+
+StringBuilder code = new StringBuilder();
+code.append( " javax.script.Bindings bindings = context.getBindings(javax.script.ScriptContext.ENGINE_SCOPE); \n");
+code.append( " String msg = (String)bindings.get(\"msg\"); \n");
+code.append( " System.out.println(msg); \n");
+code.append( " bindings = context.getBindings(javax.script.ScriptContext.GLOBAL_SCOPE); \n");
+code.append( " msg = (String)bindings.get(\"msg\"); \n");
+code.append( " System.out.println(msg); \n");            
+code.append( " example.javashellex.JProxyShellExample.exec(engine); \n");
+code.append( " return \"SUCESS\";");
+
+String result = (String)engine.eval( code.toString() , bindings);
+System.out.println("RETURNED: " + result);
+
+((JProxyScriptEngine)engine).stop(); // Necessary if scanPeriod > 0 was defined
+----
+
+As you can see initialization code is the same as in +JProxy+ examples, the main difference between +JProxy+ and +ScriptEngine+ is that +JProxy+ is like a singleton and
+you get a new +ScriptEngine+ instance every time you call +manager.getEngineByName("Java")+.
+
+The last line:
+
+[source,java]
+----
+((JProxyScriptEngine)engine).stop(); // Necessary if scanPeriod > 0 was defined
+----
+
+shows that returned +ScriptEngine+ implements +JProxyScriptEngine+, this interface defines the same methods you are going to find in +JProxy+, for instance
+the +stop()+ method is necessary whether you define a +scanPeriod+ and you want to dispose the +ScriptEngine+ (otherwise the +ScriptEngine+ is looking for
+source changes forever). 
+
+As said before two +ScriptEngine+ objects created using the same factory, just share the same configuration but they are different instances, for instance,
+the +stop()+ method just affect to the concrete instance used to call.
+
+You can directly call the +JProxyScriptEngineFactory.getScriptEngine()+ method without registering on a +ScriptEngineManager+, in this case avoid calling 
++ServiceContext.getBindings(javax.script.ScriptContext.GLOBAL_SCOPE)+ use because the default global scope +Bindings+ object is not defined.
+
+If you need two or more different configurations, create one +JProxyScriptEngineFactory+ per configuration, use them standalone or create several +ScriptEngineManager+ instances.
+
+The scripting code can be the content of a main method with this signature:
+
+[source,java]
+----
+public static Object main(javax.script.ServiceContext context,javax.script.Bindings bindings)
+----
+
+Where +bindings+ is the engine scope parameter provided.
+
+Or optionally you can define a complete Java class containing the previous method.

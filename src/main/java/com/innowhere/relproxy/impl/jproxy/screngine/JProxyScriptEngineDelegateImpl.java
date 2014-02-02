@@ -10,7 +10,6 @@ import com.innowhere.relproxy.impl.jproxy.core.clsmgr.SourceScriptInMemory;
 import com.innowhere.relproxy.impl.jproxy.core.clsmgr.comp.JProxyCompilationException;
 import com.innowhere.relproxy.impl.jproxy.shell.JProxyShellClassLoader;
 import java.io.File;
-import java.util.LinkedList;
 import javax.script.ScriptContext;
 import javax.script.ScriptException;
 
@@ -20,12 +19,15 @@ import javax.script.ScriptException;
  */
 public class JProxyScriptEngineDelegateImpl extends JProxyImpl
 {
+    protected JProxyScriptEngineImpl engine;
     protected ClassDescriptorSourceScript classDescSourceScript;
     protected long codeBufferModTimestamp = 0;     
     protected long lastCodeCompiledTimestamp = 0;
     
-    public JProxyScriptEngineDelegateImpl(JProxyConfigImpl config)
+    public JProxyScriptEngineDelegateImpl(JProxyScriptEngineImpl engine,JProxyConfigImpl config)
     {
+        this.engine = engine;
+        
         SourceScript sourceFileScript = SourceScriptInMemory.createSourceScriptInMemory("");
 
         JProxyShellClassLoader classLoader = null;
@@ -58,7 +60,7 @@ public class JProxyScriptEngineDelegateImpl extends JProxyImpl
         
         if (codeBufferModTimestamp > lastCodeCompiledTimestamp)  
         {
-            getSourceScriptInMemory().setScriptCode(code);
+            getSourceScriptInMemory().setScriptCode(code,codeBufferModTimestamp);
             // Recuerda que cada vez que se obtiene el timestamp se llama a System.currentTimeMillis(), es imposible que el usuario haga algo en menos de 1ms
 
             JProxyEngine engine = getJProxyEngine();
@@ -77,16 +79,16 @@ public class JProxyScriptEngineDelegateImpl extends JProxyImpl
                 throw new RelProxyException("Internal Error");
             
             this.lastCodeCompiledTimestamp = System.currentTimeMillis();  
-            if (lastCodeCompiledTimestamp == codeBufferModTimestamp) // Demasiado rápido
+            if (lastCodeCompiledTimestamp == codeBufferModTimestamp) // Demasiado rápido compilando
             {
+                // Aseguramos que el siguiente código se ejecuta si o si con un codeBufferModTimestamp mayor que el timestamp de la compilación
                 try { Thread.sleep(1); } catch (InterruptedException ex) { throw new RelProxyException(ex);  }
-                this.lastCodeCompiledTimestamp = System.currentTimeMillis(); // Así aseguramos que es posterior a codeBufferModTimestamp
             }
         }
         
         try
         {
-            return classDescSourceScript.callMainMethod(context);    
+            return classDescSourceScript.callMainMethod(engine,context);    
         }
         catch(Throwable ex)
         {

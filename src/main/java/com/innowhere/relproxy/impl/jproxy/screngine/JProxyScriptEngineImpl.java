@@ -2,13 +2,11 @@ package com.innowhere.relproxy.impl.jproxy.screngine;
 
 import com.innowhere.relproxy.impl.jproxy.JProxyConfigImpl;
 import com.innowhere.relproxy.impl.jproxy.JProxyUtil;
-import com.innowhere.relproxy.impl.jproxy.screngine.BindingsImpl;
-import com.innowhere.relproxy.impl.jproxy.screngine.JProxyScriptEngineDelegateImpl;
+import com.innowhere.relproxy.jproxy.JProxyScriptEngine;
 import java.io.Reader;
 import javax.script.AbstractScriptEngine;
 import javax.script.Bindings;
 import javax.script.ScriptContext;
-import javax.script.ScriptEngine;
 import javax.script.ScriptEngineFactory;
 import javax.script.ScriptException;
 
@@ -16,15 +14,15 @@ import javax.script.ScriptException;
  *
  * @author jmarranz
  */
-public class JProxyScriptEngineImpl extends AbstractScriptEngine implements ScriptEngine
+public class JProxyScriptEngineImpl extends AbstractScriptEngine implements JProxyScriptEngine
 {
     protected JProxyScriptEngineFactoryImpl factory;
     protected JProxyScriptEngineDelegateImpl delegate;
-    
+
     public JProxyScriptEngineImpl(JProxyScriptEngineFactoryImpl factory,JProxyConfigImpl config)
     {
         this.factory = factory;
-        this.delegate = new JProxyScriptEngineDelegateImpl(config);
+        this.delegate = new JProxyScriptEngineDelegateImpl(this,config);
     }
 
     @Override
@@ -50,5 +48,23 @@ public class JProxyScriptEngineImpl extends AbstractScriptEngine implements Scri
     public ScriptEngineFactory getFactory()
     {
         return factory;
-    }   
+    }
+
+    @Override
+    public <T> T create(T obj,Class<T> clasz)
+    {
+        return delegate.create(obj, clasz);
+    }
+
+    @Override
+    public boolean start()
+    {
+        return delegate.start();
+    }
+
+    @Override
+    public boolean stop()
+    {
+        return delegate.stop();
+    }
 }

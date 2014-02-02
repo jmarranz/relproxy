@@ -2,10 +2,12 @@ package com.innowhere.relproxy.impl.jproxy.core.clsmgr;
 
 import com.innowhere.relproxy.RelProxyException;
 import com.innowhere.relproxy.impl.jproxy.core.JProxyImpl;
+import com.innowhere.relproxy.jproxy.JProxyScriptEngine;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.LinkedList;
 import javax.script.ScriptContext;
+import javax.script.ScriptEngine;
 
 /**
  *
@@ -45,27 +47,24 @@ public class ClassDescriptorSourceScript extends ClassDescriptorSourceUnit
         else
         {
             JProxyImpl jproxy = engine.getJProxy();     
-            String mainParamClassName = null;
-            String mainParamName = null;            
+            String mainParamsDec = null;          
             String mainReturnType = null;            
             
             Class mainParamClass = jproxy.getMainParamClass();
             if (mainParamClass.equals(String[].class))
             {
-                mainParamClassName = "String[]";
-                mainParamName = "args";
+                mainParamsDec = "String[] args";
                 mainReturnType = "void";
             }
             else if (mainParamClass.equals(ScriptContext.class))
             {
-                mainParamClassName = ScriptContext.class.getName();
-                mainParamName = "context";
+                mainParamsDec = ScriptEngine.class.getName() + " engine," + ScriptContext.class.getName() + " context";
                 mainReturnType = "Object";
                 
                 if (scriptCode.equals("")) scriptCode = "return null;";
             }
             
-            finalCode.append("public class " + className + " { public static " + mainReturnType + " main(" + mainParamClassName + " " + mainParamName + ") {\n"); // Lo ponemos todo en una línea para que en caso de error la línea de error coincida con el script original pues hemos quitado la primera línea #!
+            finalCode.append("public class " + className + " { public static " + mainReturnType + " main(" + mainParamsDec + ") {\n"); // Lo ponemos todo en una línea para que en caso de error la línea de error coincida con el script original pues hemos quitado la primera línea #!
             finalCode.append(scriptCode);        
             finalCode.append("  }\n");        
             finalCode.append("}\n");         
@@ -162,13 +161,13 @@ public class ClassDescriptorSourceScript extends ClassDescriptorSourceUnit
         catch (InvocationTargetException ex) { throw ex.getCause(); } // Los errores de ejecución se envuelven en un InvocationTargetException        
     }     
            
-    public Object callMainMethod(ScriptContext context) throws Throwable 
+    public Object callMainMethod(ScriptEngine engine,ScriptContext context) throws Throwable 
     {       
         try
         {
             Class scriptClass = getLastLoadedClass();            
-            Method method = scriptClass.getDeclaredMethod("main",new Class[]{ ScriptContext.class });
-            return method.invoke(null, new Object[]{ context });
+            Method method = scriptClass.getDeclaredMethod("main",new Class[]{ ScriptEngine.class,ScriptContext.class });
+            return method.invoke(null, new Object[]{ engine, context });
         }
         catch (IllegalAccessException ex) { throw new RelProxyException(ex); }
         catch (NoSuchMethodException ex) { throw new RelProxyException(ex); }

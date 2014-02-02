@@ -171,9 +171,9 @@ public class JProxyShellProcessor
     {
         ClassDescriptorSourceScript classDescSourceScript = parent.getClassDescriptorSourceScript();
         
-        if (codeBufferModTimestamp >= lastCodeCompiledTimestamp)  // Incluimos el = por si acaso va todo muy seguido
+        if (codeBufferModTimestamp > lastCodeCompiledTimestamp)  // Incluimos el = por si acaso va todo muy seguido
         {
-            parent.getSourceScriptInMemory().setScriptCode(code);
+            parent.getSourceScriptInMemory().setScriptCode(code,codeBufferModTimestamp);
             // Recuerda que cada vez que se obtiene el timestamp se llama a System.currentTimeMillis(), es imposible que el usuario haga algo en menos de 1ms
 
             JProxyEngine engine = parent.getJProxyEngine();
@@ -192,7 +192,13 @@ public class JProxyShellProcessor
             if (classDescSourceScript2 != classDescSourceScript)
                 throw new RelProxyException("Internal Error");
             
-            this.lastCodeCompiledTimestamp = System.currentTimeMillis();            
+            this.lastCodeCompiledTimestamp = System.currentTimeMillis();      
+            if (lastCodeCompiledTimestamp == codeBufferModTimestamp) // Demasiado rápido compilando
+            {
+                // El ser humano es muy raro y es posible que a alguien se le ocurra usar el shell de forma automatizada y se genere un siguiente cambio en el 
+                // código fuente tan rápido que no cambie el ms, así nos aseguramos con total rotundidad que la modificación posterior de código fuente su timestamp es MAYOR que el de compilación último
+                try { Thread.sleep(1); } catch (InterruptedException ex) { throw new RelProxyException(ex);  }
+            }
         }
         
         try
