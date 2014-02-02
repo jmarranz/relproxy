@@ -850,9 +850,14 @@ The scripting code can be the content of a main method with this signature:
 
 [source,java]
 ----
-public static Object main(javax.script.ServiceContext context,javax.script.Bindings bindings)
+public static Object main(ScriptEngine engine,javax.script.ServiceContext context)
 ----
 
-Where +bindings+ is the engine scope parameter provided.
-
 Or optionally you can define a complete Java class containing the previous method.
+
+Finally, because you have access to the +ScriptEngine+ you can define a hot reloadable server in a similar form to using static +JProxy+: 
+
+[source,java]
+----
+JProxyShellExampleListener listener = ((JProxyScriptEngine)engine).create(new JProxyShellExampleListenerImpl(), JProxyShellExampleListener.class);
+----

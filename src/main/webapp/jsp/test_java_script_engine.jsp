@@ -113,7 +113,7 @@
             bindings.put("msg","HELLO SCOPE WORLD 2!");
 
             code = new StringBuilder();
-            code.append( "public static Object main(javax.script.ServiceContext context,javax.script.Bindings bindings) {  \n");           
+            code.append( "public static Object main(javax.script.ServiceEngine engine,javax.script.ServiceContext context) {  \n");           
             code.append( "   javax.script.Bindings bindings = context.getBindings(javax.script.ScriptContext.ENGINE_SCOPE); \n");
             code.append( "   String msg = (String)bindings.get(\"msg\"); \n");
             code.append( "   System.out.println(msg); \n");
