@@ -2,8 +2,6 @@
 package com.innowhere.relproxy.impl.jproxy.shell.inter;
 
 import com.innowhere.relproxy.RelProxyException;
-import com.innowhere.relproxy.impl.jproxy.core.clsmgr.ClassDescriptorSourceScript;
-import com.innowhere.relproxy.impl.jproxy.core.clsmgr.SourceScriptInMemory;
 
 /**
  *

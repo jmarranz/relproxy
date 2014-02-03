@@ -8,11 +8,13 @@ import java.io.File;
  */
 public class SourceScriptInMemory extends SourceScript
 {
+    public static final String DEFAULT_CLASS_NAME = "_jproxyMainClass_";  // OJO NO CAMBIAR, está ya documentada
+    
     protected String className;
     protected String code;
     protected long timestamp;
-    
-    public SourceScriptInMemory(String className,String code)
+            
+    private SourceScriptInMemory(String className,String code)
     {
         this.className = className;
         setScriptCode(code,System.currentTimeMillis());
@@ -20,7 +22,7 @@ public class SourceScriptInMemory extends SourceScript
     
     public static SourceScriptInMemory createSourceScriptInMemory(String code)
     {
-        return new SourceScriptInMemory("_jproxyShellInMemoryClass_",code);
+        return new SourceScriptInMemory(DEFAULT_CLASS_NAME,code); 
     }
     
     @Override

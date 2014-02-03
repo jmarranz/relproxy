@@ -19,14 +19,14 @@ import javax.script.ScriptException;
  */
 public class JProxyScriptEngineDelegateImpl extends JProxyImpl
 {
-    protected JProxyScriptEngineImpl engine;
+    protected JProxyScriptEngineImpl parent;
     protected ClassDescriptorSourceScript classDescSourceScript;
     protected long codeBufferModTimestamp = 0;     
     protected long lastCodeCompiledTimestamp = 0;
     
-    public JProxyScriptEngineDelegateImpl(JProxyScriptEngineImpl engine,JProxyConfigImpl config)
+    public JProxyScriptEngineDelegateImpl(JProxyScriptEngineImpl parent,JProxyConfigImpl config)
     {
-        this.engine = engine;
+        this.parent = parent;
         
         SourceScript sourceFileScript = SourceScriptInMemory.createSourceScriptInMemory("");
 
@@ -44,56 +44,57 @@ public class JProxyScriptEngineDelegateImpl extends JProxyImpl
         return ScriptContext.class;
     }
     
-    public SourceScriptInMemory getSourceScriptInMemory()
+    private SourceScriptInMemory getSourceScriptInMemory()
     {
         return (SourceScriptInMemory)classDescSourceScript.getSourceScript();
     }    
     
     public Object execute(String code,ScriptContext context) throws ScriptException
     {    
-        // INTENTAR UNIFICAR CODIGO CON  JProxyShellProcessor
+        JProxyEngine jproxyEngine = getJProxyEngine();
         
-        if (!getSourceScriptInMemory().getScriptCode().equals(code))
+        Class scriptClass;
+        synchronized(jproxyEngine)
         {
-            this.codeBufferModTimestamp = System.currentTimeMillis();
-        }
-        
-        if (codeBufferModTimestamp > lastCodeCompiledTimestamp)  
-        {
-            getSourceScriptInMemory().setScriptCode(code,codeBufferModTimestamp);
-            // Recuerda que cada vez que se obtiene el timestamp se llama a System.currentTimeMillis(), es imposible que el usuario haga algo en menos de 1ms
-
-            JProxyEngine engine = getJProxyEngine();
-
-            ClassDescriptorSourceScript classDescSourceScript2 = null;
-            try
+            if (!getSourceScriptInMemory().getScriptCode().equals(code))  
             {
-                classDescSourceScript2 = engine.detectChangesInSources();
-            }
-            catch(JProxyCompilationException ex) 
-            {
-                throw new ScriptException(ex);
+                this.codeBufferModTimestamp = System.currentTimeMillis();
+
+                getSourceScriptInMemory().setScriptCode(code,codeBufferModTimestamp);
+                // Recuerda que cada vez que se obtiene el timestamp se llama a System.currentTimeMillis(), es imposible que el usuario haga algo en menos de 1ms
+
+                ClassDescriptorSourceScript classDescSourceScript2 = null;
+                try
+                {
+                    classDescSourceScript2 = jproxyEngine.detectChangesInSources();
+                }
+                catch(JProxyCompilationException ex) 
+                {
+                    throw new ScriptException(ex);
+                }
+
+                if (classDescSourceScript2 != classDescSourceScript)
+                    throw new RelProxyException("Internal Error");
+
+                this.lastCodeCompiledTimestamp = System.currentTimeMillis();  
+                if (lastCodeCompiledTimestamp == codeBufferModTimestamp) // Demasiado rápido compilando
+                {
+                    // Aseguramos que el siguiente código se ejecuta si o si con un codeBufferModTimestamp mayor que el timestamp de la compilación
+                    try { Thread.sleep(1); } catch (InterruptedException ex) { throw new RelProxyException(ex);  }
+                }
             }
 
-            if (classDescSourceScript2 != classDescSourceScript)
-                throw new RelProxyException("Internal Error");
-            
-            this.lastCodeCompiledTimestamp = System.currentTimeMillis();  
-            if (lastCodeCompiledTimestamp == codeBufferModTimestamp) // Demasiado rápido compilando
-            {
-                // Aseguramos que el siguiente código se ejecuta si o si con un codeBufferModTimestamp mayor que el timestamp de la compilación
-                try { Thread.sleep(1); } catch (InterruptedException ex) { throw new RelProxyException(ex);  }
-            }
+            scriptClass = classDescSourceScript.getLastLoadedClass();
         }
         
         try
         {
-            return classDescSourceScript.callMainMethod(engine,context);    
+            return ClassDescriptorSourceScript.callMainMethod(scriptClass,parent,context);    
         }
         catch(Throwable ex)
         {
             Exception ex2 = (ex instanceof Exception) ? (Exception)ex : new RelProxyException(ex);
             throw new ScriptException(ex2);
-        }
+        }        
     }          
 }

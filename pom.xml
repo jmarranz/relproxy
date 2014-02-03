@@ -75,7 +75,14 @@
         <groupId>org.codehaus.groovy</groupId>
         <artifactId>groovy-all</artifactId>
         <version>2.1.6</version>    
-    </dependency>    
+    </dependency>
+    
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.10</version>
+      <scope>test</scope>
+    </dependency>
     
   </dependencies>
 
@@ -129,8 +136,6 @@
                 <templateDir>src/main/asciidoc/styles/</templateDir>                  
             </configuration>
         </plugin>        
-        
-        
         
     </plugins>
     <resources>

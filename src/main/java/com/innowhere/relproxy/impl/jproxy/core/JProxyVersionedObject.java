@@ -19,6 +19,7 @@ public class JProxyVersionedObject<T> extends GenericProxyVersionedObject<T>
         this.className = obj.getClass().getName();
     }        
 
+    @Override
     public T getCurrent()
     {
         return obj;
