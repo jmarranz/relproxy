@@ -144,10 +144,7 @@
        </resource>  
        <resource>
          <directory>src/main/webapp/WEB-INF/javaex/code</directory>         
-       </resource>
-       <resource>
-         <directory>src/main/webapp/WEB-INF/javashellex/code</directory>         
-       </resource>                
+       </resource>              
     </resources>    
   </build>
   

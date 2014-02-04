@@ -14,7 +14,7 @@
 (C) Jose María Arranz Santamaría
 v0.8
 
-Because Java is also a dynamic language and Groovy can remain a dynamic language in a Java based environment.
+_Because Java is also a dynamic language and Groovy can still be a dynamic language in a Java based environment._
 
 == The origins of RelProxy
 
@@ -834,7 +834,7 @@ code.append( " bindings = context.getBindings(javax.script.ScriptContext.GLOBAL_
 code.append( " msg = (String)bindings.get(\"msg\"); \n");
 code.append( " System.out.println(msg); \n");            
 code.append( " example.javashellex.JProxyShellExample.exec(engine); \n");
-code.append( " return \"SUCESS\";");
+code.append( " return \"SUCCESS\";");
 
 String result = (String)engine.eval( code.toString() , bindings);
 System.out.println("RETURNED: " + result);
@@ -864,7 +864,10 @@ As said before two +ScriptEngine+ objects created using the same factory, just s
 the +stop()+ method just affect to the concrete instance used to call.
 
 You can directly call the +JProxyScriptEngineFactory.getScriptEngine()+ method without registering on a +ScriptEngineManager+, in this case avoid calling 
-+ServiceContext.getBindings(javax.script.ScriptContext.GLOBAL_SCOPE)+ use because the default global scope +Bindings+ object is not defined.
++ServiceContext.getBindings(javax.script.ScriptContext.GLOBAL_SCOPE)+ use because the default global scope +Bindings+ object is not defined. In fact the method
++ScriptEngineManager.getEngineByName(String)+ calls +JProxyScriptEngineFactory.getScriptEngine()+ and may return null if the +JProxyScriptEngineFactory.getScriptEngine()+ method throws an exception for instance when
+some configuration data is wrong, because there is no log info of this exception you have no way to know what is happening, in this case directly call 
++JProxyScriptEngineFactory.getScriptEngine()+ to know what is happening.
 
 If you need two or more different configurations, create one +JProxyScriptEngineFactory+ per configuration, use them standalone or create several +ScriptEngineManager+ instances.
 

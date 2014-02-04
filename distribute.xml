@@ -84,7 +84,7 @@
         <property name="src_cmd_examples" value="${program}/src/main/cmd_examples" />
         <property name="distribution_cmd_examples" value="${distribution_project}/cmd_examples" />
         
-        <property name="src_shell_ex_code" value="${program}/src/main/webapp/WEB-INF/javashellex/code" />
+        <property name="src_shell_ex_code" value="${program}/src/test/resources" />
         <property name="distribution_shell_ex_code" value="${distribution_project}/cmd_examples/code" />        
         
         <delete dir="${distribution_cmd_examples}" />        
