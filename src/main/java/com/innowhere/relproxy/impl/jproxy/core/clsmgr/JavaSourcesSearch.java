@@ -1,5 +1,6 @@
 package com.innowhere.relproxy.impl.jproxy.core.clsmgr;
 
+import com.innowhere.relproxy.RelProxyException;
 import com.innowhere.relproxy.impl.jproxy.JProxyUtil;
 import java.io.File;
 import java.net.URL;
@@ -25,6 +26,8 @@ public class JavaSourcesSearch
         if (folderSources != null) // Si es null es el caso de shell interactivo o code snippet
         {
             String[] children = folderSources.list(); // No esperamos que no exista
+            if (children == null)
+                throw new RelProxyException("Folder with sources is empty: " + folderSources.getAbsolutePath());
             
             String scriptFileJavaAbsPath = (scriptFile != null && (scriptFile instanceof SourceScriptFileJavaExt)) ? ((SourceScriptFileJavaExt)scriptFile).getFile().getAbsolutePath() : null;
             

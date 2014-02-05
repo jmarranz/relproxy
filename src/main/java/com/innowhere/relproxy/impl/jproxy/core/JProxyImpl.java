@@ -17,6 +17,10 @@ public abstract class JProxyImpl extends GenericProxyImpl
     public static JProxyImpl SINGLETON;      
     protected JProxyEngine engine;
     
+    protected JProxyImpl()
+    {
+    }
+    
     public static ClassLoader getDefaultClassLoader()
     {
         return Thread.currentThread().getContextClassLoader();

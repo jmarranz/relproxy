@@ -169,6 +169,8 @@ public class JProxyShellProcessor
     
     private void execute(String code)
     {
+        // Este código no es thread safe ni falta que hace.
+        
         ClassDescriptorSourceScript classDescSourceScript = parent.getClassDescriptorSourceScript();
         
         if (codeBufferModTimestamp > lastCodeCompiledTimestamp)  // Incluimos el = por si acaso va todo muy seguido

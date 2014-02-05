@@ -25,14 +25,16 @@ As bonus, RelProxy provides a shell environment to execute:
 
 1) A pure Java archive packaged like a shell script file with no need of previous compilation, compilation is done on the fly and optionally .class can be saved in a 
 cache to provide the fastest "scripting" language of the world. Code in the initial archive can call to other normal Java files, again with compilation on the fly 
-and optional compilation caching as .class files. [Example 1](https://github.com/jmarranz/relproxy/blob/master/src/main/webapp/WEB-INF/javashellex/code/example_java_shell) 
-and [example 2](https://github.com/jmarranz/relproxy/blob/master/src/main/webapp/WEB-INF/javashellex/code/example_java_shell_complete_class) or just
-a conventional [Java source file](https://github.com/jmarranz/relproxy/blob/master/src/main/webapp/WEB-INF/javashellex/code/example_normal_class.java) (yes you can execute a conventional
+and optional compilation caching as .class files. [Example 1](https://github.com/jmarranz/relproxy/blob/master/src/test/resources/example_java_shell) 
+and [example 2](https://github.com/jmarranz/relproxy/blob/master/src/test/resources/example_java_shell_complete_class) or just
+a conventional [Java source file](https://github.com/jmarranz/relproxy/blob/master/src/test/resources/example_normal_class.java) (yes you can execute a conventional
 JavaSE application from source code).
 
 2) Execution of Java code snippets in command line (no need of packaging in an archive). [Example](https://github.com/jmarranz/relproxy/blob/master/test_cmd/test_java_shell_snippet_launcher.sh).
 
 3) Interactive console to edit and execute Java code (ever compilation on the fly). [Example of launcher](https://github.com/jmarranz/relproxy/blob/master/test_cmd/test_java_shell_interactive_launcher.sh)
+
+RelProxy implements the official JSR-223 [Java Scripting API](http://docs.oracle.com/javase/6/docs/technotes/guides/scripting/programmer_guide/index.html) as found in Java 1.6 for "Java" language.
 
 Yes, Java is also a dynamic and scripting language with no need of manual compilation and extremely fast and robust  :)
 

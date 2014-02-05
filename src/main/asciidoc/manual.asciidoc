@@ -14,7 +14,7 @@
 (C) Jose María Arranz Santamaría
 v0.8
 
-Because Java is also a dynamic language and Groovy can remain a dynamic language in a Java based environment.
+_Because Java is also a dynamic language and Groovy can still be a dynamic language in a Java based environment._
 
 == The origins of RelProxy
 
@@ -71,6 +71,7 @@ RelProxy is:
 to other normal Java files. Optionally .class can be saved in a cache to provide *the fastest "scripting" language* of the world.
 . Execution of Java code snippets in command line (no need of packaging into an archive).
 . A simple shell to code, edit and execute code snippets in Java interactively.
+. JSR 223 Scripting API implementation for Java.
 
 == Requisites and installation
 
@@ -740,6 +741,21 @@ jproxysh -c 'System.out.print("This code snippet says: ");' \
 
 You can execute a single code block (into a string parameter) or several blocks in several lines separated with "\", every block can contain several Java sentences.
 
+Alternatively you can execute a complete class with a standard +main+ method, RelProxy detects when you are specifying a sentence block or a complete class, because there is no file holding the 
+code the class name must be known by default and must be +_jproxyMainClass_+. For instance:
+
+[source,sh]
+----
+jproxysh -c 'public class _jproxyMainClass_ { '  \
+            ' public static void main(String[] args) { ' \
+            '    System.out.print("This code snippet says: ");' \
+            '    System.out.println("Hello World!!");' \
+            '  }' \
+            '}'
+----
+
+
+
 === The interactive Java shell
 
 When you need something more interactive, just like the Groovy shell, RelProxy provides a simple interactive shell. 
@@ -753,6 +769,8 @@ jproxysh
 
 A message info is shown and a prompt is shown waiting for your commands and or code. Write 'help' to know the shell options, if the text written is not recognized like a command
 it is interpreted as Java code and saved in a buffer to be executed when you want writting the 'exec' command.
+
+The interactive Java shell accepts a block of sentences or a complete class with a standard +main+ method and name +_jproxyMainClass_+.
 
 === How to use RelProxy shell scripting in Windows
 
@@ -816,7 +834,7 @@ code.append( " bindings = context.getBindings(javax.script.ScriptContext.GLOBAL_
 code.append( " msg = (String)bindings.get(\"msg\"); \n");
 code.append( " System.out.println(msg); \n");            
 code.append( " example.javashellex.JProxyShellExample.exec(engine); \n");
-code.append( " return \"SUCESS\";");
+code.append( " return \"SUCCESS\";");
 
 String result = (String)engine.eval( code.toString() , bindings);
 System.out.println("RETURNED: " + result);
@@ -825,7 +843,11 @@ System.out.println("RETURNED: " + result);
 ----
 
 As you can see initialization code is the same as in +JProxy+ examples, the main difference between +JProxy+ and +ScriptEngine+ is that +JProxy+ is like a singleton and
-you get a new +ScriptEngine+ instance every time you call +manager.getEngineByName("Java")+.
+you get a new +ScriptEngine+ instance every time you call +manager.getEngineByName("Java")+. In spite a new +ScriptEngine+ instance is ever created only one instance
+is recommended because for instance you have the option of saving .class files as cache, some concurrent conflicting saving can happen when competing
+two +ScriptEngine+ (with the same configuration).
+
+Inside the +eval+ method, compilation phase is thread safe but not code execution, you can use several threads to call +eval+ and execute concurrent lenghtly tasks without execution blocking.
 
 The last line:
 
@@ -834,7 +856,7 @@ The last line:
 ((JProxyScriptEngine)engine).stop(); // Necessary if scanPeriod > 0 was defined
 ----
 
-shows that returned +ScriptEngine+ implements +JProxyScriptEngine+, this interface defines the same methods you are going to find in +JProxy+, for instance
+Shows that returned +ScriptEngine+ implements +JProxyScriptEngine+, this interface defines the same methods you are going to find in +JProxy+, for instance
 the +stop()+ method is necessary whether you define a +scanPeriod+ and you want to dispose the +ScriptEngine+ (otherwise the +ScriptEngine+ is looking for
 source changes forever). 
 
@@ -842,22 +864,36 @@ As said before two +ScriptEngine+ objects created using the same factory, just s
 the +stop()+ method just affect to the concrete instance used to call.
 
 You can directly call the +JProxyScriptEngineFactory.getScriptEngine()+ method without registering on a +ScriptEngineManager+, in this case avoid calling 
-+ServiceContext.getBindings(javax.script.ScriptContext.GLOBAL_SCOPE)+ use because the default global scope +Bindings+ object is not defined.
++ServiceContext.getBindings(javax.script.ScriptContext.GLOBAL_SCOPE)+ use because the default global scope +Bindings+ object is not defined. In fact the method
++ScriptEngineManager.getEngineByName(String)+ calls +JProxyScriptEngineFactory.getScriptEngine()+ and may return null if the +JProxyScriptEngineFactory.getScriptEngine()+ method throws an exception for instance when
+some configuration data is wrong, because there is no log info of this exception you have no way to know what is happening, in this case directly call 
++JProxyScriptEngineFactory.getScriptEngine()+ to know what is happening.
 
 If you need two or more different configurations, create one +JProxyScriptEngineFactory+ per configuration, use them standalone or create several +ScriptEngineManager+ instances.
 
-The scripting code can be the content of a main method with this signature:
+The scripting code can be the content of a +main+ method with this signature:
 
 [source,java]
 ----
-public static Object main(ScriptEngine engine,javax.script.ServiceContext context)
+public static Object main(javax.script.ScriptEngine engine,javax.script.ScriptContext context)
 ----
 
-Or optionally you can define a complete Java class containing the previous method.
+Or optionally you can define a complete Java class containing the previous +main+ method and name +_jproxyMainClass_+, for instance:
 
-Finally, because you have access to the +ScriptEngine+ you can define a hot reloadable server in a similar form to using static +JProxy+: 
+[source,java]
+----
+public class _jproxyMainClass_ {
+  public static Object main(javax.script.ScriptEngine engine,javax.script.ScriptContext context) {
+    javax.script.Bindings bindings = context.getBindings(javax.script.ScriptContext.ENGINE_SCOPE);
+    // ...
+  }
+}
+----
+
+Because you have access to the +ScriptEngine+ inside your code, you can define a hot reloadable server using RelProxy in a similar form to using the static +JProxy+ class: 
 
 [source,java]
 ----
 JProxyShellExampleListener listener = ((JProxyScriptEngine)engine).create(new JProxyShellExampleListenerImpl(), JProxyShellExampleListener.class);
 ----
+

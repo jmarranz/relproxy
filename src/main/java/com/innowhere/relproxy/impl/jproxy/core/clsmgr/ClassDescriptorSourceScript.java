@@ -160,12 +160,17 @@ public class ClassDescriptorSourceScript extends ClassDescriptorSourceUnit
         catch (IllegalArgumentException ex) { throw new RelProxyException(ex); }  
         catch (InvocationTargetException ex) { throw ex.getCause(); } // Los errores de ejecución se envuelven en un InvocationTargetException        
     }     
-           
+       
     public Object callMainMethod(ScriptEngine engine,ScriptContext context) throws Throwable 
+    {       
+        Class scriptClass = getLastLoadedClass();          
+        return callMainMethod(scriptClass,engine,context);
+    }
+    
+    public static Object callMainMethod(Class scriptClass,ScriptEngine engine,ScriptContext context) throws Throwable 
     {       
         try
         {
-            Class scriptClass = getLastLoadedClass();            
             Method method = scriptClass.getDeclaredMethod("main",new Class[]{ ScriptEngine.class,ScriptContext.class });
             return method.invoke(null, new Object[]{ engine, context });
         }
