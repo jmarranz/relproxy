@@ -24,7 +24,7 @@ public class JProxyShellProcessor
     protected JProxyShellInteractiveImpl parent;
     protected Charset encoding = Charset.defaultCharset();
     protected ArrayList<String> codeBuffer = new ArrayList<String>(20);   
-    protected WindowUnicodeKeyboard keyboard = new WindowUnicodeKeyboard(encoding);
+    protected Keyboard keyboard = Keyboard.create(encoding);
     protected int lastLine = -1; // Indice respecto a codeBuffer
     protected int lineEditing = -1;  // Indice respecto a codeBuffer
     protected long codeBufferModTimestamp = 0;     
@@ -35,7 +35,7 @@ public class JProxyShellProcessor
         this.parent = parent;
     }
     
-    public WindowUnicodeKeyboard getWindowUnicodeKeyboard()
+    public Keyboard getKeyboard()
     {
         return keyboard;
     }

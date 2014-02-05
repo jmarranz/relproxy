@@ -30,11 +30,10 @@
 
         <delete dir="${distribution_project}/tmp" />        
         
-        <property name="distribution_file" value="${distribution_project}/../RelProxy_bin_${program.version}.tar.gz" />        
+        <property name="distribution_file" value="${distribution_project}/../RelProxy_bin_${program.version}.zip" />        
         <delete file="${distribution_file}" />
-        <!--<zip basedir="${distribution_project}" destfile="${distribution_file}" />-->
-        
-        <tar basedir="${distribution_project}" destfile="${distribution_file}" compression="gzip" />      
+        <zip basedir="${distribution_project}" destfile="${distribution_file}" />        
+        <!--<tar basedir="${distribution_project}" destfile="${distribution_file}" compression="gzip" />-->      
     </target>
 
     <target name="deploy_binaries_and_manual">  <!-- ,deploy_manual -->
@@ -60,6 +59,8 @@
                 <attribute name="Implementation-Vendor" value="Jose Maria Arranz Santamaria" />
                 <attribute name="Implementation-Version" value="${program.version}" />
             </manifest>
+            <service type="javax.script.ScriptEngineFactory"
+                     provider="org.acme.PinkyLanguage"/>            
         </jar>
 
         <property name="distribution_project_bin" value="${distribution_project}/bin" />

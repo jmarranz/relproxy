@@ -64,7 +64,7 @@ public class CommandEdit extends CommandCodeChangerBase
     @Override
     public void runPostCommand()
     {
-        parent.getWindowUnicodeKeyboard().type(codeLine);
+        parent.getKeyboard().type(codeLine);
         parent.setLineEditing(line);
     }
 }
