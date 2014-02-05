@@ -30,9 +30,11 @@
 
         <delete dir="${distribution_project}/tmp" />        
         
-        <property name="distribution_file" value="${distribution_project}/../RelProxy_bin_${program.version}.zip" />        
+        <property name="distribution_file" value="${distribution_project}/../RelProxy_bin_${program.version}.tar.gz" />        
         <delete file="${distribution_file}" />
-        <zip basedir="${distribution_project}" destfile="${distribution_file}" />
+        <!--<zip basedir="${distribution_project}" destfile="${distribution_file}" />-->
+        
+        <tar basedir="${distribution_project}" destfile="${distribution_file}" compression="gzip" />      
     </target>
 
     <target name="deploy_binaries_and_manual">  <!-- ,deploy_manual -->
