@@ -5,7 +5,7 @@ import javax.script.ScriptEngineFactory;
 
 /**
  *
- * @author jmarranz
+ * @author Jose Maria Arranz Santamaria
  */
 public abstract class JProxyScriptEngineFactory implements ScriptEngineFactory
 {

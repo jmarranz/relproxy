@@ -4,7 +4,7 @@ import javax.script.ScriptEngine;
 
 /**
  *
- * @author jmarranz
+ * @author Jose Maria Arranz Santamaria
  */
 public interface JProxyScriptEngine extends ScriptEngine
 {  

@@ -6,7 +6,7 @@ import com.innowhere.relproxy.impl.jproxy.JProxyDefaultImpl;
 
 /**
  *
- * @author jmarranz
+ * @author Jose Maria Arranz Santamaria
  */
 public class JProxy 
 {

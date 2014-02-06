@@ -2,7 +2,7 @@ package com.innowhere.relproxy;
 
 /**
  *
- * @author jmarranz
+ * @author Jose Maria Arranz Santamaria
  */
 public class RelProxyException extends RuntimeException
 {

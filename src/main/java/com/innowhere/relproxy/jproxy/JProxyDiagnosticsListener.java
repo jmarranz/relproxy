@@ -5,7 +5,7 @@ import javax.tools.JavaFileObject;
 
 /**
  *
- * @author jmarranz
+ * @author Jose Maria Arranz Santamaria
  */
 public interface JProxyDiagnosticsListener
 {

@@ -4,7 +4,7 @@ import java.lang.reflect.Method;
 
 /**
  *
- * @author jmarranz
+ * @author Jose Maria Arranz Santamaria
  */
 public interface RelProxyOnReloadListener
 {

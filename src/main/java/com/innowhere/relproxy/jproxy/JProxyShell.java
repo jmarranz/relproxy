@@ -4,7 +4,7 @@ import com.innowhere.relproxy.impl.jproxy.shell.JProxyShellImpl;
 
 /**
  *
- * @author jmarranz
+ * @author Jose Maria Arranz Santamaria
  */
 public class JProxyShell
 {

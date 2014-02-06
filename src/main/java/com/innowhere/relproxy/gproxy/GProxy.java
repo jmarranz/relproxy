@@ -6,7 +6,7 @@ import com.innowhere.relproxy.impl.gproxy.GProxyDefaultImpl;
 
 /**
  *
- * @author jmarranz
+ * @author Jose Maria Arranz Santamaria
  */
 public class GProxy 
 {

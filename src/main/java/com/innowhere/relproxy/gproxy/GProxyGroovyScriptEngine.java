@@ -2,7 +2,7 @@ package com.innowhere.relproxy.gproxy;
 
 /**
  *
- * @author jmarranz
+ * @author Jose Maria Arranz Santamaria
  */
 public interface GProxyGroovyScriptEngine 
 {

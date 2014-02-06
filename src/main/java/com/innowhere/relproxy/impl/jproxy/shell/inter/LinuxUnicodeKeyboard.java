@@ -39,7 +39,7 @@ public class LinuxUnicodeKeyboard extends Keyboard
         robot.keyPress(VK_CONTROL);        
         robot.keyPress(VK_SHIFT);
         
-        type('u');
+        type('u'); // Indica que después viene un valor unicode hexadecimal
             
         // Pero dejamos pulsadas CTRL y SHIFT mientras 
         try

@@ -71,16 +71,21 @@ RelProxy is:
 to other normal Java files. Optionally .class can be saved in a cache to provide *the fastest "scripting" language* of the world.
 . Execution of Java code snippets in command line (no need of packaging into an archive).
 . A simple shell to code, edit and execute code snippets in Java interactively.
-. JSR 223 Scripting API implementation for Java.
+. JSR 223 Scripting API implementation for "Java" as the target scripting language.
 
 == Requisites and installation
 
 RelProxy requires JDK 1.6 or upper, RelProxy have been tested on Oracle JDK 1.6 and OpenJDK 1.7.
 
-RelProxy distribution file has two important files:
+Just uncompress the RelProxy distribution file.
+
+The distribution file has two important files:
 
 . relproxy-X.X.jar : needed in classpath to use RelProxy in any form. 
-. jproxysh : whether command line scripting capabilities are going to be used.
+. jproxysh : needed whether command line scripting capabilities in Java are going to be used.
+
+The distribution file includes some example scripts into the folder +cmd_examples+ to test the shell capabilities or RelProxy Java, is recommended executing before the script
++sh fixesforunix.sh+ to define the appropriated executable permissions and define the environment variable +JAVA_HOME+ with the location of your 1.6+ JDK installation.
 
 
 == GProxy or how to be able to reload Groovy classes on Java environment

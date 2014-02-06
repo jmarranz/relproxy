@@ -5,7 +5,7 @@ import com.innowhere.relproxy.RelProxyOnReloadListener;
 
 /**
  *
- * @author jmarranz
+ * @author Jose Maria Arranz Santamaria
  */
 public interface JProxyConfig
 {
