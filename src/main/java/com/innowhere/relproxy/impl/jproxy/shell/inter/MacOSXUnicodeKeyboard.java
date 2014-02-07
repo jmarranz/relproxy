@@ -1,21 +1,20 @@
 package com.innowhere.relproxy.impl.jproxy.shell.inter;
 
-import static java.awt.event.KeyEvent.VK_CONTROL;
-import static java.awt.event.KeyEvent.VK_SHIFT;
-import static java.awt.event.KeyEvent.VK_U;
+import static java.awt.Event.ALT_MASK;
 import java.nio.charset.Charset;
 
 /**
  * 
- * http://superuser.com/questions/59418/how-to-type-special-characters-in-linux
+ * https://discussions.apple.com/thread/1899290
+ * http://controlyourmac.com/2012/05/understanding-mac-keyboard.html
  * 
  * @author jmarranz
  */
-public class LinuxUnicodeKeyboard extends Keyboard
+public class MacOSXUnicodeKeyboard extends Keyboard
 {
     protected Charset cs;
     
-    public LinuxUnicodeKeyboard(Charset cs)
+    public MacOSXUnicodeKeyboard(Charset cs)
     {
         this.cs = cs;
     }
@@ -30,12 +29,8 @@ public class LinuxUnicodeKeyboard extends Keyboard
 
         String unicodeDigits = Integer.toString(bi,16); // En hexadecimal
 
-        robot.keyPress(VK_CONTROL);        
-        robot.keyPress(VK_SHIFT);
-        
-        doType(VK_U); // 'u' indica que después viene un valor unicode hexadecimal
+        robot.keyPress(ALT_MASK);  // "Since the ALT_MASK modifier is the Option key in OS X" https://developer.apple.com/library/mac/documentation/java/conceptual/java14development/07-NativePlatformIntegration/NativePlatformIntegration.html     
             
-        // Pero dejamos pulsadas CTRL y SHIFT mientras 
         try
         {
             for (int i = 0; i < unicodeDigits.length(); i++) {
@@ -44,8 +39,7 @@ public class LinuxUnicodeKeyboard extends Keyboard
         }
         finally
         {
-            robot.keyRelease(VK_CONTROL);             
-            robot.keyRelease(VK_SHIFT);            
+            robot.keyRelease(ALT_MASK);                         
         }
         
         return true;

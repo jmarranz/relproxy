@@ -1,4 +1,4 @@
-package com.innowhere.relproxy.impl.gproxy;
+package com.innowhere.relproxy.impl.gproxy.core;
 
 import com.innowhere.relproxy.impl.GenericProxyInvocationHandler;
 

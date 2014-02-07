@@ -1,5 +1,6 @@
-package com.innowhere.relproxy.impl.gproxy;
+package com.innowhere.relproxy.impl.gproxy.core;
 
+import com.innowhere.relproxy.impl.gproxy.GProxyConfigImpl;
 import com.innowhere.relproxy.gproxy.GProxyGroovyScriptEngine;
 import com.innowhere.relproxy.RelProxyOnReloadListener;
 import com.innowhere.relproxy.impl.GenericProxyImpl;

@@ -11,7 +11,6 @@ import static java.awt.event.KeyEvent.VK_NUMPAD6;
 import static java.awt.event.KeyEvent.VK_NUMPAD7;
 import static java.awt.event.KeyEvent.VK_NUMPAD8;
 import static java.awt.event.KeyEvent.VK_NUMPAD9;
-import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 
 /**
@@ -36,11 +35,7 @@ public class WindowUnicodeKeyboard extends Keyboard
 
         // En Windows usar mintty porque usando la consola de MSYS por sí misma, que es realmente la de Windows, hay problemas con el set de caracteres, pues sería Cp1252 para Java pero Cp850 para la consola y salen mal por tanto los caracteres no ASCII
 
-        ByteBuffer buffer = cs.encode("" + character);
-
-        byte b = buffer.get();
-        int bi = b & 0x000000FF;
-
+        int bi = getUnicodeInt(cs,character);
 
         String unicodeDigits = String.valueOf(bi);         
         robot.keyPress(VK_ALT);

@@ -1,6 +1,7 @@
 package com.innowhere.relproxy.impl.gproxy;
 
 import com.innowhere.relproxy.gproxy.GProxyConfig;
+import com.innowhere.relproxy.impl.gproxy.core.GProxyImpl;
 
 /**
  *

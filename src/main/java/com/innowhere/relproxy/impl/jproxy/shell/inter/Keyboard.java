@@ -42,10 +42,12 @@ import static java.awt.event.KeyEvent.VK_W;
 import static java.awt.event.KeyEvent.VK_X;
 import static java.awt.event.KeyEvent.VK_Y;
 import static java.awt.event.KeyEvent.VK_Z;
+import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 
 /**
  * http://stackoverflow.com/questions/1248510/convert-string-to-keyevents
+ * http://en.wikipedia.org/wiki/Unicode_input#Hexadecimal_code_input
  * 
  * @author jmarranz
  */
@@ -69,6 +71,7 @@ public abstract class Keyboard
     {
         String osName = System.getProperty("os.name").toLowerCase();
         if (osName.contains("windows")) return new WindowUnicodeKeyboard(cs);
+        else if (osName.contains("os x")) return new MacOSXUnicodeKeyboard(cs);// https://developer.apple.com/library/mac/technotes/tn2002/tn2110.html
         else return new LinuxUnicodeKeyboard(cs);
     }    
 
@@ -201,8 +204,7 @@ public abstract class Keyboard
         int length = keyCodes.length;
         if (length == 1)
         {
-            robot.keyPress(keyCodes[0]);
-            robot.keyRelease(keyCodes[0]);            
+            doType(keyCodes[0]);            
         }        
         else // 2   
         {
@@ -213,5 +215,19 @@ public abstract class Keyboard
             robot.keyRelease(keyCodes[0]);
         }
     }
+    
+    protected void doType(int keyCode) 
+    {
+        robot.keyPress(keyCode);
+        robot.keyRelease(keyCode);           
+    }    
+    
+    public static int getUnicodeInt(Charset cs,char character)
+    {
+        ByteBuffer buffer = cs.encode("" + character);
 
+        byte b = buffer.get();
+        int bi = b & 0x000000FF;    
+        return bi;
+    }
 }
