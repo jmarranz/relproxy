@@ -160,7 +160,7 @@ def gproxyGroovyEngine = {
         } as GProxyGroovyScriptEngine;
 ----
 
-Defines a listener needed by GProxy to indirectly call the +groovy.util.GroovyScriptEngine+ to load classes, take a look to the signature of +GProxyGroovyScriptEngine+ there is no dependency
+Defines a listener needed by +GProxy+ to indirectly call the +groovy.util.GroovyScriptEngine+ to load classes, take a look to the signature of +GProxyGroovyScriptEngine+ there is no dependency
 with +groovy.*+ packages, this is why you can use RelProxy in pure Java projects with no Groovy dependency in spite of Groovy support.
 
 
@@ -172,7 +172,15 @@ def reloadListener = {
       } as RelProxyOnReloadListener;
 ----
 
-Defines an optional listener to be called when a Groovy class is reloaded, the listener receives the old and new object cause of reloading because a proxied method was called.
+Defines an optional listener to be called when Groovy classes have been reloaded because some change has happened in the source code managed by RelProxy.
+
+An object implementing this interface can optionally be registered on RelProxy to listen when the method of a proxy object has been called
+and the class of the original object associated has been reloaded (and a new "original" object based on the new class was created to replace it).
+  
+When you perform a source code change in source code managed by RelProxy the first time this method is called is the signal that changes has been detected and reloaded 
+accordingly.
+
+This interface and behavior is not +GProxy+ specific and will be also used in +JProxy+ for Java. 
 
 [source,groovy]
 ----
@@ -187,7 +195,7 @@ GProxy.init(gpConfig);
 Configures +GProxy+, now it is ready to proxy Groovy objects.
 
 Take a look to the optional +setEnabled(true)+ configuration call, +GProxy+ is enabled by default, this means proxied Groovy objects are instrumented for hot reload. 
-Calling +setEnabled(false)+ tells +GProxy+ to ignore any other configuration, +GProxy+ is disabled and no proxy is created, the original Groovy objects will be returned with absolute no performance penalty,
+Calling +setEnabled(false)+ tells +GProxy+ to ignore any other configuration, +GProxy+ is disabled and no proxy is created calling +GProxy.create+, the original Groovy objects will be returned with absolute no performance penalty,
 this is the preferred configuration in production whether you do not want hot class reload in production.
 
 The final code:

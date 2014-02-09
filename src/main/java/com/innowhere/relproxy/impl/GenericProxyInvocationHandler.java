@@ -7,6 +7,7 @@ import java.lang.reflect.Method;
 /**
  *
  * @author jmarranz
+ * @param <T>
  */
 public abstract class GenericProxyInvocationHandler<T> implements InvocationHandler
 {
@@ -18,6 +19,7 @@ public abstract class GenericProxyInvocationHandler<T> implements InvocationHand
         this.root = root;
     }    
     
+    @Override
     public synchronized Object invoke(Object proxy, Method method, Object[] args) throws Throwable 
     {
         T oldObj = verObj.getCurrent();

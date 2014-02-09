@@ -6,6 +6,7 @@ import java.nio.charset.Charset;
 /**
  * 
  * https://discussions.apple.com/thread/1899290
+ * http://superuser.com/questions/13086/how-do-you-type-unicode-characters-using-hexadecimal-codes  (buscar OS X)
  * http://controlyourmac.com/2012/05/understanding-mac-keyboard.html
  * 
  * @author jmarranz

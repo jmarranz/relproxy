@@ -37,7 +37,7 @@ public abstract class GenericProxyImpl
     public RelProxyOnReloadListener getRelProxyOnReloadListener()
     {
         return reloadListener;
-    }    
+    }
     
     public <T> T create(T obj,Class<T> clasz)
     {       
@@ -47,7 +47,7 @@ public abstract class GenericProxyImpl
         
         T proxy = (T)Proxy.newProxyInstance(obj.getClass().getClassLoader(),new Class[] { clasz }, handler);   
         return proxy;
-    }        
-  
+    }
+
     public abstract <T> GenericProxyInvocationHandler<T> createGenericProxyInvocationHandler(T obj);    
 }
