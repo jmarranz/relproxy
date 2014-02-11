@@ -1,6 +1,6 @@
 
  RELEASE CHANGES
 
-* 0.8 First beta
+* 0.8 First release
 
 

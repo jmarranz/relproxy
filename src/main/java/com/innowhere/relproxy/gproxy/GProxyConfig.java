@@ -16,7 +16,7 @@ public interface GProxyConfig
      * Sets whether automatic detection of source code changes is enabled.
      * 
      * <p>If set to false other configuration parameters are ignored, there is no automatic source code change detection/reload and original objects are returned
-     * instead of proxies, performance penalty is zero. Setting to false is recommended in production whether source code change detection/reload is nor required.</p>
+     * instead of proxies, performance penalty is zero. Setting to false is recommended in production whether source code change detection/reload is not required.</p>
      * 
      * @param enabled whether automatic source code change detection and reload is enabled. By default is true.
      * @return this object for flow API use.

@@ -53,6 +53,8 @@ public class CommandEdit extends CommandCodeChangerBase
                 case ERROR_OUT_OF_RANGE:
                     System.out.println("Command error: line number out of range");                  
                     break; 
+                default:
+                    // Para que se calle el FindBugs
             }
             return null;
         }        

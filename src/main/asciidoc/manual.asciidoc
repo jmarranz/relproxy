@@ -254,7 +254,7 @@ When RelProxy (through +groovy.util.GroovyScriptEngine+) detects the source code
 changed, all classes with associated hot reloadable source, are reloaded and a new +ClassLoader+ is created for them, next calls to +GroovyExampleLoadListener+ proxy will use the new loaded class and the same
 with dependent classes.
 
-However a concrete +GroovyExampleLoadListener+ object was used to register, how can we reload a class with one alive object already created?
+However a concrete +GroovyExampleLoadListener+ object was used to register, how can we reload a class with one live object already created?
 
 The +GroovyExampleLoadListener+ object was the one proxied, the class of this object is reloaded when a source change is detected (or any related class) because this is the objective of RelProxy, 
 but this object can have fields pointing to objects usually loaded _before_ registering/proxying the +GroovyExampleLoadListener+ object. The classes of these attribute
@@ -274,7 +274,7 @@ Other classes and interfaces like +ItsNatServletRequest+ or +ItsNatServletRespon
 present in Groovy environment. +FalseDB+ class could be reloaded but reloading will fail because the proxied object (+GroovyExampleLoadListener+) holds an attribute +db+ of this class, RelProxy 
 will say you the reloading process has been failed and a redeploy is recommended to effectively use the new version of the class.
 
-In summary, in this ItsNat example, when source code of +GroovyExampleLoadListener+ or dependent classes with source code controlled by RelProxy changes, all of these classes are reloaded.
+In summary, in this ItsNat example, when source code of +GroovyExampleLoadListener+ or dependent classes with source code controlled by RelProxy change, all of these classes are reloaded.
 When the +processRequest+ method of the proxied +GroovyExampleLoadListener+ object is called because an end user is reloading the related web page, RelProxy detects this class has been reloaded and 
 recreates the +GroovyExampleLoadListener+ object with the new class re-setting the fields and finally the +processRequest+ method is called and method processing is done
 using the new version of dependent classes.
@@ -452,9 +452,9 @@ You can reduce to zero the footprint of RelProxy in production setting +setEnabl
 in production... +JProxy.start()+ and +JProxy.stop()+ methods are for you.
 
 Remember we must to define the period between source files checking for changes calling +setScanPeriod(scanPeriod)+, RelProxy defines behind the scene a +java.util.Timer+ for this task,
-of course every time source code is checked needs some time, because there are synchronizations between source code cheking and proxies use a very small performance penalty happen
+of course every time source code is checked needs some time, because there are synchronizations between source code checking and proxies use a very small performance penalty happen
 when checking source code. This is why we can +stop+ source code checking if we are not able to make source code changes reducing performance penalty to minimum, and we can call 
-+start+ before performing some change.
++start+ again to detect any source change.
 
 You can call several times to +JProxy.start()+ and +JProxy.stop()+ methods, if nothing is going to be done nothing is done without errors (both methods return true
 when a state change was effective), and they are thread safe.
@@ -564,7 +564,7 @@ No, it is possible, RelProxy includes a tool named *+jproxysh+* to make possible
 The principle is simple and is very similar to Groovy scripting, Groovy compiles on the fly Groovy code saving in memory the compiled bytecode, by this way developers
 think Groovy script is interpreted and is not, the same approach is applied to Java through RelProxy. In the case of RelProxy, bytecode can be optionally saved as .class
 files to avoid compiling on the fly every time the script is executed. When the JVM is able to load .class files instead of compiling execution maybe extremely faster
-than conventional scripting languages interpreted line by line from sources, this is why the affirmation of Java as the fastest scripting language of the world is accurated.
+than conventional scripting languages interpreted line by line from sources, this is why the affirmation of Java as the fastest scripting language of the world is accurate.
 
 === Defining a Java based shell scripting file
 
@@ -609,17 +609,17 @@ The hierarchy is:
 Yes, you are right, mentally adding the .java extension to +example_java_shell+ you get the typical file hierarchy of a JavaSE program. 
 
 
-The first requisite is that +jproxysh+ must be accesible by the environment variable +PATH+, anyway executing this script is not direct, it requires some previous configuration:
+The first requisite is that +jproxysh+ must be accessible by the environment variable +PATH+, anyway executing this script is not direct, it requires some previous configuration:
 
 * First of all the +JAVA_HOME+ environment variable is required. 
-* The +CLASSPATH+ environment variable must locate the +relproxy-X.X.jar+ file and other folders and hards required by your Java application, conventions are the same than a typical JavaSE program.
+* The +CLASSPATH+ environment variable must locate the +relproxy-X.X.jar+ file and other folders and jars required by your Java application, conventions are the same than a typical JavaSE program.
 * Optionally you may specify +JAVA_OPTS+ to provide options for the JVM.
 
 There are other _optional_ environment variables in this case RelProxy specific:
 
 * JPROXYSH_SCAN_PERIOD : defines the milliseconds between source code change checking, by default is -1 (no check) but a positive value is interesting when the script loads a server and JProxy (already configured) is used inside.
 * JPROXYSH_CACHE_CLASS_FOLDER : defines where to save the .class files resulting of compiling on the fly the scripting code, this folder is automatically added to the class path, 
-so when the script is loaded the second time the .class are used instead of source code acording to the typical source-binary timestamp rules (if source code is more recent the class is ignored and replaced with a new file).
+so when the script is loaded the second time the .class are used instead of source code according to the typical source-binary timestamp rules (if source code is more recent the class is ignored and replaced with a new file).
 * JPROXYSH_COMPILATION_OPTIONS : compilations passed to the JDK compiler, the format is the same as the command line +javac+.
 
 The following is an example of shell code (into a script file) to execute the previous +example_java_shell+, this example is included in RelProxy distribution:
@@ -703,7 +703,7 @@ You can execute this script by the same ways we executed +example_java_shell+, d
 
 === Scripting conventional JavaSE source code
 
-The differences between a the +example_java_shell_complete_class+ script and a conventional Java source file are just the extension (missing) and the hash bang to execute jproxysh.
+The differences between the +example_java_shell_complete_class+ script and a conventional Java source file are just the extension (missing) and the hash bang to execute jproxysh.
 
 We can remove the hashbang and set a +.java+ extension to the main scripting file, in this scenario the source code is the same as a conventional JavaSE application.
 Instead of compiling with +javac+ and executing with +java+ command, you just must execute it with +jproxysh+
@@ -781,7 +781,7 @@ jproxysh
 ----
 
 A message info is shown and a prompt is shown waiting for your commands and or code. Write 'help' to know the shell options, if the text written is not recognized like a command
-it is interpreted as Java code and saved in a buffer to be executed when you want writting the 'exec' command.
+it is interpreted as Java code and saved in a buffer to be executed when you want writing the 'exec' command.
 
 The interactive Java shell accepts a block of sentences or a complete class with a standard +main+ method and name +_jproxyMainClass_+.
 
@@ -860,7 +860,7 @@ you get a new +ScriptEngine+ instance every time you call +manager.getEngineByNa
 is recommended because for instance you have the option of saving .class files as cache, some concurrent conflicting saving can happen when competing
 two +ScriptEngine+ (with the same configuration).
 
-Inside the +eval+ method, compilation phase is thread safe but not code execution, you can use several threads to call +eval+ and execute concurrent lenghtly tasks without execution blocking.
+Inside the +eval+ method, compilation phase is thread safe but not code execution, you can use several threads to call +eval+ and execute concurrent lengthy tasks without execution blocking.
 
 The last line:
 

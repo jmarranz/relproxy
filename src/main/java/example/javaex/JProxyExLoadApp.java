@@ -31,6 +31,7 @@ public class JProxyExLoadApp
         long scanPeriod = 200;
         
         RelProxyOnReloadListener proxyListener = new RelProxyOnReloadListener() {
+            @Override
             public void onReload(Object objOld, Object objNew, Object proxy, Method method, Object[] args) {
                 System.out.println("Reloaded " + objNew + " Calling method: " + method);
             }        
@@ -38,6 +39,7 @@ public class JProxyExLoadApp
         
         JProxyDiagnosticsListener diagnosticsListener = new JProxyDiagnosticsListener()
         {
+            @Override
             public void onDiagnostics(DiagnosticCollector<JavaFileObject> diagnostics)
             {
                 List<Diagnostic<? extends JavaFileObject>> diagList = diagnostics.getDiagnostics();                

@@ -19,7 +19,7 @@ import java.util.Scanner;
  */
 public class JProxyShellProcessor
 {
-    public static int LINE_OFFSET = 2; // El índice en codeBuffer + este valor = al valor de la línea que se muestra al usuario, hay que tener en cuenta que contamos desde uno y la primera línea es siempre vacía
+    public static final int LINE_OFFSET = 2; // El índice en codeBuffer + este valor = al valor de la línea que se muestra al usuario, hay que tener en cuenta que contamos desde uno y la primera línea es siempre vacía
     
     protected JProxyShellInteractiveImpl parent;
     protected Charset encoding = Charset.defaultCharset();

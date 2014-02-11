@@ -19,7 +19,7 @@ import static org.junit.Assert.*;
  */
 public class JProxyCodeSnippetTest
 {
-    public static boolean RESULT;
+    private static boolean RESULT;
     
     public JProxyCodeSnippetTest()
     {

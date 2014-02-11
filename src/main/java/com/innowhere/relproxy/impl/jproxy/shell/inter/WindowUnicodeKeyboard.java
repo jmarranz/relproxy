@@ -76,6 +76,7 @@ public class WindowUnicodeKeyboard extends Keyboard
         case 7: doType(VK_NUMPAD7); break;
         case 8: doType(VK_NUMPAD8); break;
         case 9: doType(VK_NUMPAD9); break;
+        default:  // Para que se calle el FindBugs
         }
     }
 
