@@ -6,6 +6,14 @@ News
 
 - 2014-02-11 v0.8 Released! First release.
 
+Download Binaries and Docs
+------
+
+Last version: v0.8
+
+[Download](https://sourceforge.net/projects/relproxy/files/)
+
+Distribution file includes binaries, manual and javadocs.
 
 Overview
 ------
@@ -35,14 +43,29 @@ Finally RelProxy implements the official JSR-223 [Java Scripting API](http://doc
 
 Yes, Java is also a dynamic and scripting language with no need of manual compilation and extremely fast and robust.
 
-Latest Doc
+Online Docs Last Version
 ------
 
-You can read the [latest documentation here](https://github.com/jmarranz/relproxy/blob/master/src/main/asciidoc/manual.asciidoc)
+[Manual](http://relproxy.sourceforge.net/docs/manual.html)
+
+[JavaDocs](http://relproxy.sourceforge.net/docs/javadoc/)
 
 
-Questions and discussions here
+
+Questions and discussions
 ------
 
 There is a [Google Group](https://groups.google.com/forum/#!forum/relproxy) for RelProxy.
+
+Bug Reporting
+------
+
+Use this GitHub project.
+
+
+Latest Doc
+------
+
+You can read the [in progress latest documentation here](https://github.com/jmarranz/relproxy/blob/master/src/main/asciidoc/manual.asciidoc)
+
 
