@@ -1,6 +1,13 @@
 
  RELEASE CHANGES
 
+* 0.8.1
+
+    - Fixed a problem with class localization and loading of javax.* classes not included in Java core (ex javax.servlet classes)
+    - Support of multiple input folder roots for sources: JProxyConfig.setInputPaths(String[] inputPaths) and excluding listener 
+      JProxyConfig.setRelProxyOnReloadListener(RelProxyOnReloadListener)
+    - Added "Developing a web project based on a Maven POM in NetBeans to use JProxy or GProxy" entry to manual
+
 * 0.8 First release
 
 

@@ -35,15 +35,47 @@ public interface JProxyConfig
      * Defines the folder root to locate source code Java files.
      * 
      * <p>Structure of the source tree must be the same as a JavaSE application, the only difference is shell scripts, shell scripts must be
-     * located on the top level of the source tree (default package).</p> 
+     * located on the top level of the source tree (default package) and file extension is not required .</p> 
      * 
-     * <p>This setting is required.</p>
+     * <p>Setting some input path is required.</p>
      * 
      * @param inputPath the folder root to locate source code Java files.
      * @return this object for flow API use.
+     * @see #setInputPaths(java.lang.String[])       
      */
     public JProxyConfig setInputPath(String inputPath);
-
+  
+    /**
+     * Defines the folder roots to locate source code Java files.
+     * 
+     * <p>Structure of the source tree must be the same as a JavaSE application, the only difference is shell scripts, shell scripts must be
+     * located on the top level of the source tree (default package).</p> 
+     * 
+     * <p>Setting some input path is required.</p>
+     * 
+     * @param inputPaths the folder roots to locate source code Java files.
+     * @return this object for flow API use.
+     * @see #setJProxyInputSourceFileExcludedListener(JProxyInputSourceFileExcludedListener)       
+     */
+    public JProxyConfig setInputPaths(String[] inputPaths);    
+    
+    /**
+     * Registers the listener implementing excluding rules to filter source files not to be part of the hot reloading system in spite of included in input paths.
+     * 
+     * @param listener the listener. By default is null.
+     * @return this object for flow API use.
+     */        
+    public JProxyConfig setJProxyInputSourceFileExcludedListener(JProxyInputSourceFileExcludedListener listener);    
+    
+    /**
+     * Registers the listener for monitoring files being compiled.
+     * 
+     * @param listener the listener. By default is null.
+     * @return this object for flow API use.
+     */        
+    public JProxyConfig setJProxyCompilerListener(JProxyCompilerListener  listener);     
+    
+        
     /**
      * Sets the folder where to save .class files result of recompiling source code changed.
      * 

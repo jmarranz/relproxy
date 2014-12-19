@@ -7,11 +7,11 @@ import java.io.File;
  *
  * @author jmarranz
  */
-public class SourceScriptFileJavaExt extends SourceScriptFile
+public class SourceScriptRootFileJavaExt extends SourceScriptRootFile
 {
-    public SourceScriptFileJavaExt(File sourceFile)
+    public SourceScriptRootFileJavaExt(File sourceFile,FolderSourceList folderSourceList)
     {
-        super(sourceFile);
+        super(sourceFile,folderSourceList);
     }   
     
     @Override

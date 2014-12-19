@@ -3,8 +3,10 @@ package com.innowhere.relproxy.impl.jproxy.shell;
 import com.innowhere.relproxy.RelProxyException;
 import com.innowhere.relproxy.impl.jproxy.JProxyConfigImpl;
 import com.innowhere.relproxy.impl.jproxy.core.clsmgr.ClassDescriptorSourceScript;
-import com.innowhere.relproxy.impl.jproxy.core.clsmgr.SourceScript;
-import com.innowhere.relproxy.impl.jproxy.core.clsmgr.SourceScriptInMemory;
+import com.innowhere.relproxy.impl.jproxy.core.clsmgr.FolderSourceList;
+import com.innowhere.relproxy.impl.jproxy.core.clsmgr.SourceScriptRoot;
+import com.innowhere.relproxy.impl.jproxy.core.clsmgr.SourceScriptRootInMemory;
+import java.io.File;
 import java.util.LinkedList;
 
 /**
@@ -45,13 +47,13 @@ public class JProxyShellCodeSnippetImpl extends JProxyShellImpl
     }        
     
     @Override    
-    protected SourceScript getSourceScript(String[] args,LinkedList<String> argsToScript) 
+    protected SourceScriptRoot createSourceScriptRoot(String[] args,LinkedList<String> argsToScript,FolderSourceList folderSourceList) 
     {
         // En argsToScript no está el args[0] ni falta que hace porque es el flag "-c" 
         StringBuilder code = new StringBuilder();
         for(String chunk : argsToScript)
             code.append(chunk);
-        return SourceScriptInMemory.createSourceScriptInMemory(code.toString());
+        return SourceScriptRootInMemory.createSourceScriptInMemory(code.toString());
     }    
    
     @Override    

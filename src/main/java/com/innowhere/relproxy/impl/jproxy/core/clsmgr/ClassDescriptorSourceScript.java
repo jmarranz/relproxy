@@ -17,7 +17,7 @@ public class ClassDescriptorSourceScript extends ClassDescriptorSourceUnit
 {
     protected String source;  
     
-    public ClassDescriptorSourceScript(JProxyEngine engine,String className,SourceScript sourceFile,long timestamp)
+    public ClassDescriptorSourceScript(JProxyEngine engine,String className,SourceScriptRoot sourceFile,long timestamp)
     {
         super(engine,className, sourceFile, timestamp);
 
@@ -25,9 +25,9 @@ public class ClassDescriptorSourceScript extends ClassDescriptorSourceUnit
     }
 
     
-    public SourceScript getSourceScript()
+    public SourceScriptRoot getSourceScript()
     {
-        return (SourceScript)sourceFile;
+        return (SourceScriptRoot)sourceUnit;
     }
     
     private void generateSourceCode()

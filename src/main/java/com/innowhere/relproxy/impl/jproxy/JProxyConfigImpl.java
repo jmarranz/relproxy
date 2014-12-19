@@ -3,8 +3,12 @@ package com.innowhere.relproxy.impl.jproxy;
 import com.innowhere.relproxy.RelProxyException;
 import com.innowhere.relproxy.RelProxyOnReloadListener;
 import com.innowhere.relproxy.impl.GenericProxyConfigBaseImpl;
+import com.innowhere.relproxy.impl.jproxy.core.clsmgr.FolderSourceList;
+import com.innowhere.relproxy.jproxy.JProxyCompilerListener;
 import com.innowhere.relproxy.jproxy.JProxyConfig;
 import com.innowhere.relproxy.jproxy.JProxyDiagnosticsListener;
+import com.innowhere.relproxy.jproxy.JProxyInputSourceFileExcludedListener;
+import java.io.File;
 
 /**
  *
@@ -12,7 +16,10 @@ import com.innowhere.relproxy.jproxy.JProxyDiagnosticsListener;
  */
 public class JProxyConfigImpl extends GenericProxyConfigBaseImpl implements JProxyConfig
 {
-    protected String inputPath;
+    protected File folderSources; 
+    protected FolderSourceList folderSourceList;
+    protected JProxyInputSourceFileExcludedListener excludedListener;
+    protected JProxyCompilerListener compilerListener;
     protected String classFolder;
     protected long scanPeriod = -1;
     protected Iterable<String> compilationOptions;
@@ -36,10 +43,31 @@ public class JProxyConfigImpl extends GenericProxyConfigBaseImpl implements JPro
     @Override
     public JProxyConfig setInputPath(String inputPath)
     {
-        this.inputPath = inputPath;   
+        setInputPaths(inputPath != null ? new String[]{inputPath} : null); // inputPath es null en el caso de shell interactive
         return this;
     }
 
+    @Override
+    public JProxyConfig setInputPaths(String[] inputPaths)
+    {
+        this.folderSourceList = new FolderSourceList(inputPaths); // inputPaths es null en el caso de shell interactive
+        return this;
+    }    
+
+    @Override    
+    public JProxyConfig setJProxyInputSourceFileExcludedListener(JProxyInputSourceFileExcludedListener excludedListener)    
+    {
+        this.excludedListener = excludedListener;
+        return this;
+    }
+    
+    @Override    
+    public JProxyConfig setJProxyCompilerListener(JProxyCompilerListener compilerListener)    
+    {
+        this.compilerListener = compilerListener;
+        return this;
+    }    
+    
     @Override
     public JProxyConfig setClassFolder(String classFolder)
     {
@@ -68,12 +96,22 @@ public class JProxyConfigImpl extends GenericProxyConfigBaseImpl implements JPro
         this.diagnosticsListener = diagnosticsListener;
         return this;        
     }    
-
-    public String getInputPath()
+   
+    public FolderSourceList getFolderSourceList()
     {
-        return inputPath;
+        return folderSourceList;
     }
-
+    
+    public JProxyInputSourceFileExcludedListener getJProxyInputSourceFileExcludedListener()
+    {
+        return excludedListener;
+    }            
+    
+    public JProxyCompilerListener getJProxyCompilerListener()
+    {
+        return compilerListener;
+    }
+    
     public String getClassFolder()
     {
         return classFolder;

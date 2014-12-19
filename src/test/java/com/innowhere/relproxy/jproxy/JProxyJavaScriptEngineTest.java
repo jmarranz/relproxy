@@ -31,8 +31,6 @@ import org.junit.Test;
 public class JProxyJavaScriptEngineTest
 {
    
-     
-    
     public JProxyJavaScriptEngineTest()
     {
     }
@@ -81,6 +79,20 @@ public class JProxyJavaScriptEngineTest
             }
         };
 
+        JProxyCompilerListener compilerListener = new JProxyCompilerListener(){
+            @Override
+            public void beforeCompile(File file)
+            {
+                System.out.println("Before compile: " + file);
+            }
+
+            @Override
+            public void afterCompile(File file)
+            {
+                System.out.println("After compile: " + file);
+            } 
+        };           
+        
         JProxyDiagnosticsListener diagnosticsListener = new JProxyDiagnosticsListener()
         {
             @Override
@@ -109,6 +121,8 @@ public class JProxyJavaScriptEngineTest
         jpConfig.setEnabled(true)
                 .setRelProxyOnReloadListener(proxyListener)
                 .setInputPath(inputPath)
+                .setJProxyInputSourceFileExcludedListener(null)
+                .setJProxyCompilerListener(compilerListener)
                 .setScanPeriod(scanPeriod)
                 .setClassFolder(classFolder)
                 .setCompilationOptions(compilationOptions)

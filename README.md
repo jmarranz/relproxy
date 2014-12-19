@@ -71,7 +71,9 @@ You can read the [in progress latest documentation here](https://github.com/jmar
 Articles/Presentations
 ------
 
+[v0.8 announce at JavaLobby](http://java.dzone.com/articles/presenting-relproxy-hot-class)
+
 [v0.8 announce at JavaHispano](http://www.javahispano.org/portada/2014/2/12/publicado-relproxy-v08-hot-class-reloader-y-scripting-para-j.html)
 
-[v0.8 announce at JavaLobby](http://java.dzone.com/articles/presenting-relproxy-hot-class)
+
 

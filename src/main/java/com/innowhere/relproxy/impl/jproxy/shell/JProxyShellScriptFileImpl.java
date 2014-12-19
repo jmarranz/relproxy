@@ -4,8 +4,9 @@ import com.innowhere.relproxy.RelProxyException;
 import com.innowhere.relproxy.impl.jproxy.JProxyConfigImpl;
 import com.innowhere.relproxy.impl.jproxy.JProxyUtil;
 import com.innowhere.relproxy.impl.jproxy.core.clsmgr.ClassDescriptorSourceScript;
-import com.innowhere.relproxy.impl.jproxy.core.clsmgr.SourceScript;
-import com.innowhere.relproxy.impl.jproxy.core.clsmgr.SourceScriptFile;
+import com.innowhere.relproxy.impl.jproxy.core.clsmgr.FolderSourceList;
+import com.innowhere.relproxy.impl.jproxy.core.clsmgr.SourceScriptRoot;
+import com.innowhere.relproxy.impl.jproxy.core.clsmgr.SourceScriptRootFile;
 import java.io.File;
 import java.util.LinkedList;
 
@@ -46,9 +47,9 @@ public class JProxyShellScriptFileImpl extends JProxyShellImpl
     }
     
     @Override    
-    protected SourceScript getSourceScript(String[] args,LinkedList<String> argsToScript) 
+    protected SourceScriptRoot createSourceScriptRoot(String[] args,LinkedList<String> argsToScript,FolderSourceList folderSourceList) 
     {
-        return SourceScriptFile.createSourceScriptFile(scriptFile);
+        return SourceScriptRootFile.createSourceScriptRootFile(scriptFile,folderSourceList);
     }    
     
     @Override    

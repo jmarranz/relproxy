@@ -18,7 +18,8 @@ _Because Java is also a dynamic language and Groovy can still be a dynamic langu
 
 == The origins of RelProxy
 
-RelProxy was born as the result of the intent of providing a way to hot class reloading for the http://www.itsnat.org[ItsNat] Java web framework. 
+RelProxy was born as the result of the intent of providing a way to hot class reloading for the http://www.itsnat.org[ItsNat] Java web framework in development and
+production time. 
 
 ItsNat templates are pure X/HTML/SVG files with no logic executed in server, when a template is changed ItsNat automatically reloads the file and the new version is used 
 in the next attempt of using the template. View logic is coded in Java by using Java W3C DOM APIs modifying ItsNat templates and finally generating the required markup in load
@@ -87,6 +88,111 @@ The distribution file has two important files:
 The distribution file includes some example scripts into the folder +cmd_examples+ to test the shell capabilities or RelProxy Java, is recommended executing before the script
 +sh fixesforunix.sh+ to define the appropriated executable permissions and define the environment variable +JAVA_HOME+ with the location of your 1.6+ JDK installation.
 
+== Configuring your Maven POM in a web project to use JProxy or GProxy
+
+Probably JProxy and GProxy are going to be used frequently in web projects to avoid many tedious redeploys. In the case of ItsNat it can drastically reduce redeployments
+regarding to markup design and view logic, just reloading the page ItsNat automatically reloads pure HTML templates involved when changed, with JProxy or GProxy view logic code 
+is also reloaded without redeploying.
+
+Because the web application needs to load the source code hot reloadable, this source code must be also distributed into the war file, that is, in some place below +WEB-INF/+ 
+if you want to keep this code private, this folder or folders must be declared in POM to be copied to the war file by Maven.
+
+At the time of writing RelProxy is not in a Maven repository, you must manually include in your dependencies.
+
+The following POM is a simple example of a RelProxy (v0.8) ready web application including a public folder, +src/main/webapp/WEB-INF/code+, able to contain reloadable source code:
+
+[source,xml]
+.pom.xml
+----
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>com.mycompany</groupId>
+  <artifactId>relproxyexample</artifactId>
+  <packaging>war</packaging>
+  <version>1.0-SNAPSHOT</version>
+
+  <name>relproxyexample</name>
+  <url>http://maven.apache.org</url>
+
+  <dependencies>
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>servlet-api</artifactId>
+      <version>2.5</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>javax.servlet.jsp</groupId>
+      <artifactId>jsp-api</artifactId>
+      <version>2.1</version>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+        <groupId>relproxy</groupId>
+        <artifactId>relproxy-jar</artifactId>
+        <version>0.8</version>
+        <scope>system</scope>
+        <systemPath>${basedir}/src/main/webapp/WEB-INF/lib/relproxy-0.8.jar</systemPath>
+    </dependency>
+
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>2.0.2</version>
+        <configuration>
+          <source>1.6</source>
+          <target>1.6</target>          
+        </configuration>
+      </plugin>
+    </plugins>
+    <resources>  
+       <resource>
+         <directory>src/main/webapp/WEB-INF/code</directory>         
+       </resource>        
+    </resources>     
+  </build>
+
+  
+</project>
+----
+
+== Developing a web project based on a Maven POM in NetBeans to use JProxy or GProxy
+
+Because the nature of Maven, on development time when deploying a web application Maven deploys below the +target/projectname+ folder 
+and in +projectname.war+ file the final web application. Changing files below +src/webapp+ are not detected by RelProxy because the real files being used
+are really below +target/projectname+. 
+
+For this reason RelProxy apparently is not going to help you in development time to reduce the number of redeploys because any change in +target/projectname+ is going to be
+rewritten in the next redeploy. 
+
+There are several solutions in NetBeans:
+
+. Add some special Maven or Ant task to syncronize the source files to the same files in +target/projectname+. Call this task after hot source code modification.
+. Enable in NetBeans: Properties / Build / Compile / Compile on Save. This NetBeans feature tries to fast reload the web app synchronizing before any modified web application archive,
+this is not enough to hot reload modified classes with a simple page reload, JProxy helps you to satisfy your need. In case of GProxy NetBeans's Compile on Save is enough (GProxy is not required you can disable it in development time).   
+
+
+== Configuring Ant in NetBeans in a web project to use JProxy or GProxy
+
+When creating a standard web project in NetBeans, the generated Ant files filter .java files when deploying, to avoid this filtering just add to the build.xml:
+
+[source,xml]
+.build.xml
+----
+    <target name="-pre-dist"> 
+        <copy todir="${build.web.dir}/WEB-INF" preservelastmodified="true">
+            <fileset dir="${webinf.dir}" /> 
+        </copy>
+    </target>     
+----
 
 == GProxy or how to be able to reload Groovy classes on Java environment
 
@@ -384,7 +490,8 @@ This is an example of JProxy configuration.
 
 * +setRelProxyOnReloadListener(proxyListener)+ is the same as +GProxy+ in fact the same interface +RelProxyOnReloadListener+ is shared between +GProxy+ and +JProxy+.
 
-* +setInputPath(inputPath)+ defines where the source code files of hot reloadable classes is.
+* +setInputPath(inputPath)+ defines where the source code files of hot reloadable classes is. The variant method +setInputPaths(String[])+ allows registering 
+several root folders and +setJProxyInputSourceFileExcludedListener(JProxyInputSourceFileExcludedListener)+ allows excluding concrete files.
 
 * +setScanPeriod(scanPeriod)+ defines the period (in ms) between checks of timestamps of source code files to detect changes.
 
@@ -459,96 +566,6 @@ when checking source code. This is why we can +stop+ source code checking if we 
 You can call several times to +JProxy.start()+ and +JProxy.stop()+ methods, if nothing is going to be done nothing is done without errors (both methods return true
 when a state change was effective), and they are thread safe.
 
-
-== Configuring your Maven POM in a web project to use JProxy or GProxy
-
-Probably JProxy and GProxy are going to be used frequently in web projects to avoid many tedious redeploys. In the case of ItsNat it can drastically reduce redeployments
-regarding to markup design and view logic, just reloading the page ItsNat automatically reloads pure HTML templates involved when changed, with JProxy or GProxy view logic code 
-is also reloaded without redeploying.
-
-Because the web application needs to load the source code hot reloadable, this source code must be also distributed into the war file, that is, in some place below +WEB-INF/+ 
-if you want to keep this code private, this folder or folders must be declared in POM to be copied to the war file by Maven.
-
-At the time of writing RelProxy is not in a Maven repository, you must manually include in your dependencies.
-
-The following POM is a simple example of a RelProxy (v0.8) ready web application including a public folder, +src/main/webapp/WEB-INF/code+, able to contain reloadable source code:
-
-[source,xml]
-.pom.xml
-----
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    
-  <modelVersion>4.0.0</modelVersion>
-
-  <groupId>com.mycompany</groupId>
-  <artifactId>relproxyexample</artifactId>
-  <packaging>war</packaging>
-  <version>1.0-SNAPSHOT</version>
-
-  <name>relproxyexample</name>
-  <url>http://maven.apache.org</url>
-
-  <dependencies>
-    <dependency>
-      <groupId>javax.servlet</groupId>
-      <artifactId>servlet-api</artifactId>
-      <version>2.5</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>javax.servlet.jsp</groupId>
-      <artifactId>jsp-api</artifactId>
-      <version>2.1</version>
-      <scope>provided</scope>
-    </dependency>
-
-    <dependency>
-        <groupId>relproxy</groupId>
-        <artifactId>relproxy-jar</artifactId>
-        <version>0.8</version>
-        <scope>system</scope>
-        <systemPath>${basedir}/src/main/webapp/WEB-INF/lib/relproxy-0.8.jar</systemPath>
-    </dependency>
-
-  </dependencies>
-
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <version>2.0.2</version>
-        <configuration>
-          <source>1.6</source>
-          <target>1.6</target>          
-        </configuration>
-      </plugin>
-    </plugins>
-    <resources>  
-       <resource>
-         <directory>src/main/webapp/WEB-INF/code</directory>         
-       </resource>        
-    </resources>     
-  </build>
-
-  
-</project>
-----
-
-== Configuring Ant in NetBeans in a web project to use JProxy or GProxy
-
-When creating a standard web project in NetBeans, the generated Ant files filter .java files when deploying, to avoid this filtering just add to the build.xml:
-
-[source,xml]
-.build.xml
-----
-    <target name="-pre-dist"> 
-        <copy todir="${build.web.dir}/WEB-INF" preservelastmodified="true">
-            <fileset dir="${webinf.dir}" /> 
-        </copy>
-    </target>     
-----
 
 == A new shell scripting language named Java
 

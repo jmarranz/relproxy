@@ -30,7 +30,7 @@ public class JProxyDefaultImpl extends JProxyImpl
         
         checkSingletonNull(SINGLETON);
         SINGLETON = new JProxyDefaultImpl();
-        SINGLETON.init(config,null,null);
+        SINGLETON.init(config);
     }    
     
     public static <T> T createStatic(T obj,Class<T> clasz)

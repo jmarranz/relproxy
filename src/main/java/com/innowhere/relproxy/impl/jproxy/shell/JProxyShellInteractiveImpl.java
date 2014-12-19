@@ -3,9 +3,11 @@ package com.innowhere.relproxy.impl.jproxy.shell;
 import com.innowhere.relproxy.RelProxyException;
 import com.innowhere.relproxy.impl.jproxy.JProxyConfigImpl;
 import com.innowhere.relproxy.impl.jproxy.core.clsmgr.ClassDescriptorSourceScript;
-import com.innowhere.relproxy.impl.jproxy.core.clsmgr.SourceScript;
-import com.innowhere.relproxy.impl.jproxy.core.clsmgr.SourceScriptInMemory;
+import com.innowhere.relproxy.impl.jproxy.core.clsmgr.FolderSourceList;
+import com.innowhere.relproxy.impl.jproxy.core.clsmgr.SourceScriptRoot;
+import com.innowhere.relproxy.impl.jproxy.core.clsmgr.SourceScriptRootInMemory;
 import com.innowhere.relproxy.impl.jproxy.shell.inter.JProxyShellProcessor;
+import java.io.File;
 import java.util.LinkedList;
 
 /**
@@ -37,15 +39,15 @@ public class JProxyShellInteractiveImpl extends JProxyShellImpl
         return classDescSourceScript;
     }
     
-    public SourceScriptInMemory getSourceScriptInMemory()
+    public SourceScriptRootInMemory getSourceScriptInMemory()
     {
-        return (SourceScriptInMemory)classDescSourceScript.getSourceScript();
+        return (SourceScriptRootInMemory)classDescSourceScript.getSourceScript();
     }
     
     @Override
-    public ClassDescriptorSourceScript init(JProxyConfigImpl config,SourceScript scriptFile,ClassLoader classLoader)
+    public ClassDescriptorSourceScript init(JProxyConfigImpl config,SourceScriptRoot scriptFile,ClassLoader classLoader)
     {    
-        ClassDescriptorSourceScript script = super.init(config, scriptFile, classLoader);
+        ClassDescriptorSourceScript script = super.init(config,scriptFile, classLoader);
         
         this.test = config.isTest();
         
@@ -72,9 +74,9 @@ public class JProxyShellInteractiveImpl extends JProxyShellImpl
     }    
 
     @Override    
-    protected SourceScript getSourceScript(String[] args,LinkedList<String> argsToScript) 
+    protected SourceScriptRoot createSourceScriptRoot(String[] args,LinkedList<String> argsToScript,FolderSourceList folderSourceList) 
     {
-        return SourceScriptInMemory.createSourceScriptInMemory(""); // La primera vez no hace nada, sirve para "calentar" la app
+        return SourceScriptRootInMemory.createSourceScriptInMemory(""); // La primera vez no hace nada, sirve para "calentar" la app
     }    
     
     @Override    

@@ -1,28 +1,25 @@
 package com.innowhere.relproxy.impl.jproxy.core.clsmgr;
 
-import java.io.File;
-
 /**
  *
  * @author jmarranz
  */
-public class SourceScriptInMemory extends SourceScript
+public class SourceScriptRootInMemory extends SourceScriptRoot
 {
     public static final String DEFAULT_CLASS_NAME = "_jproxyMainClass_";  // OJO NO CAMBIAR, está ya documentada
     
-    protected String className;
     protected String code;
     protected long timestamp;
             
-    private SourceScriptInMemory(String className,String code)
+    private SourceScriptRootInMemory(String className,String code)
     {
-        this.className = className;
+        super(className);
         setScriptCode(code,System.currentTimeMillis());
     }
     
-    public static SourceScriptInMemory createSourceScriptInMemory(String code)
+    public static SourceScriptRootInMemory createSourceScriptInMemory(String code)
     {
-        return new SourceScriptInMemory(DEFAULT_CLASS_NAME,code); 
+        return new SourceScriptRootInMemory(DEFAULT_CLASS_NAME,code); 
     }
     
     @Override
@@ -48,10 +45,4 @@ public class SourceScriptInMemory extends SourceScript
         this.code = code;
         this.timestamp = timestamp;
     }    
-    
-    @Override
-    public String getClassNameFromSourceFileScriptAbsPath(File rootPathOfSourcesFile)
-    {
-        return className;
-    }
 }

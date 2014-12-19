@@ -4,7 +4,9 @@ import com.innowhere.relproxy.impl.jproxy.JProxyUtil;
 import com.innowhere.relproxy.impl.jproxy.core.JProxyImpl;
 import com.innowhere.relproxy.impl.jproxy.core.clsmgr.comp.JProxyCompilerContext;
 import com.innowhere.relproxy.impl.jproxy.core.clsmgr.comp.JProxyCompilerInMemory;
+import com.innowhere.relproxy.jproxy.JProxyCompilerListener;
 import com.innowhere.relproxy.jproxy.JProxyDiagnosticsListener;
+import com.innowhere.relproxy.jproxy.JProxyInputSourceFileExcludedListener;
 import java.io.File;
 import java.util.LinkedList;
 import java.util.Timer;
@@ -18,9 +20,11 @@ public class JProxyEngine
 {
     protected JProxyImpl parent;
     protected JProxyCompilerInMemory compiler;    
-    protected SourceScript scriptFile; // Puede ser nulo
+    protected SourceScriptRoot scriptFile; // Puede ser nulo
     protected ClassLoader rootClassLoader;
-    protected File folderSources;
+    protected FolderSourceList folderSourceList;
+    protected JProxyInputSourceFileExcludedListener excludedListener;
+    protected JProxyCompilerListener compilerListener;
     protected JProxyClassLoader customClassLoader;
     protected JavaSourcesSearch sourcesSearch;
     protected String folderClasses; // Puede ser nulo (es decir NO salvar como .class los cambios)
@@ -30,12 +34,15 @@ public class JProxyEngine
     public volatile boolean stop = false;
     protected TimerTask task;
     
-    public JProxyEngine(JProxyImpl parent,SourceScript scriptFile,ClassLoader rootClassLoader,String pathSources,String classFolder,long scanPeriod,Iterable<String> compilationOptions,JProxyDiagnosticsListener diagnosticsListener)
+    public JProxyEngine(JProxyImpl parent,SourceScriptRoot scriptFile,ClassLoader rootClassLoader,FolderSourceList folderSourceList,JProxyInputSourceFileExcludedListener excludedListener,
+                JProxyCompilerListener compilerListener,String classFolder,long scanPeriod,Iterable<String> compilationOptions,JProxyDiagnosticsListener diagnosticsListener)
     {
         this.parent = parent;
         this.scriptFile = scriptFile;
         this.rootClassLoader = rootClassLoader;
-        this.folderSources = pathSources != null ? new File(pathSources) : null; // El File es para normalizar
+        this.folderSourceList = folderSourceList; 
+        this.excludedListener = excludedListener;
+        this.compilerListener = compilerListener;
         this.folderClasses = classFolder;
         this.scanPeriod = scanPeriod;
         this.compiler = new JProxyCompilerInMemory(this,compilationOptions,diagnosticsListener);        
@@ -94,9 +101,19 @@ public class JProxyEngine
     }
    
     
-    public File getFolderSources()
+    public FolderSourceList getFolderSourceList()
     {
-        return folderSources;
+        return folderSourceList;
+    }
+    
+    public JProxyInputSourceFileExcludedListener getJProxyInputSourceFileExcludedListener()
+    {
+        return excludedListener;
+    }
+    
+    public JProxyCompilerListener getJProxyCompilerListener()
+    {
+        return compilerListener;
     }
     
     public ClassLoader getRootClassLoader()
@@ -305,11 +322,34 @@ public class JProxyEngine
                 for(ClassDescriptorSourceUnit sourceFile : sourceFilesToRecompile)            
                     cleanBeforeCompile(sourceFile);   
                 
+           
                 JProxyCompilerContext context = compiler.createJProxyCompilerContext();
+                JProxyCompilerListener compilerListener = getJProxyCompilerListener();
                 try
-                {
+                {            
+                    
                     for(ClassDescriptorSourceUnit sourceFile : sourceFilesToRecompile)            
+                    {
+                        File file = null;
+                        if (compilerListener != null)
+                        {                           
+                            SourceUnit srcUnit = sourceFile.getSourceUnit();
+                            if (srcUnit instanceof SourceFileJavaNormal)
+                                file = ((SourceFileJavaNormal)srcUnit).getFile();
+                            else if (srcUnit instanceof SourceScriptRootFile)
+                                file = ((SourceScriptRootFile)srcUnit).getFile();
+                            else if (srcUnit instanceof SourceScriptRootInMemory) // Caso de shell interactive y code snippet, en ese caso NO hay listener porque no hay forma de definirlo
+                                file = null;
+                        }
+                        
+                        if (file != null)
+                            compilerListener.beforeCompile(file);                        
+                        
                         compile(sourceFile,context);        
+                        
+                        if (file != null)
+                            compilerListener.afterCompile(file);                        
+                    }
                 }
                 finally
                 {
@@ -324,6 +364,7 @@ public class JProxyEngine
                 for(ClassDescriptorSourceUnit sourceFile : deletedSourceFiles)
                     deleteClasses(sourceFile);                     
             
+            deletedSourceFiles = null;
             
             for(ClassDescriptorSourceUnit sourceFile : sourceRegistry.getClassDescriptorSourceFileColl())
             {

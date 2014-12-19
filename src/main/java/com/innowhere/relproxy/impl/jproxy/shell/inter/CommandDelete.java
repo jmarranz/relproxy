@@ -1,7 +1,7 @@
 package com.innowhere.relproxy.impl.jproxy.shell.inter;
 
 import com.innowhere.relproxy.impl.jproxy.core.clsmgr.ClassDescriptorSourceScript;
-import com.innowhere.relproxy.impl.jproxy.core.clsmgr.SourceScriptInMemory;
+import com.innowhere.relproxy.impl.jproxy.core.clsmgr.SourceScriptRootInMemory;
 import static com.innowhere.relproxy.impl.jproxy.shell.inter.Command.getParameter;
 
 

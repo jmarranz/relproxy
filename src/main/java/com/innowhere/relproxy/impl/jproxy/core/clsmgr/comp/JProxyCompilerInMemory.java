@@ -83,12 +83,19 @@ public class JProxyCompilerInMemory
                     }
                     else
                     {
-                        // Seguramente es debido a que el archivo java tiene una clase privada autónoma declarada en el mismo archivo .java, no permitimos estas clases porque sólo podemos
+                        // Seguramente es debido a que el archivo java tiene una clase privada autónoma declarada en el mismo archivo .java (las que se ponen después de la clase principal pública normal), no permitimos estas clases porque sólo podemos
                         // detectarlas cuando cambiamos el código fuente, pero no si el código fuente no se ha tocado, por ejemplo no tenemos
                         // forma de conseguir que se recarguen de forma determinista y si posteriormente se cargara via ClassLoader al usarse no podemos reconocer que es una clase
                         // "hot reloadable" (quizás a través del package respecto a las demás clases hot pero no es muy determinista pues nada impide la mezcla de hot y no hot en el mismo package)
                         // Es una limitación mínima.
-                        throw new RelProxyException("Unexpected class when compiling: " + currClassName + " maybe it is an autonomous private class declared in the same java file of the principal class, this kind of classes are not supported in hot reload");
+                        
+                        // También puede ser un caso de clase excluida por el listener de exclusión, no debería ocurrir, tengo un caso de test en donde ocurre a posta 
+                        // (caso de JProxyExampleAuxIgnored cuando se cambia la JProxyExampleDocument que la usa) pero en programación normal no.
+
+                        if (engine.getJProxyInputSourceFileExcludedListener() == null)
+                            throw new RelProxyException("Unexpected class when compiling: " + currClassName + " maybe it is an autonomous private class declared in the same java file of the principal class, this kind of classes are not supported in hot reload");
+                        else
+                            System.out.println("Unexpected class when compiling: " + currClassName + " maybe it is an excluded class or is an autonomous private class declared in the same java file of the principal class, this kind of classes are not supported in hot reload");
                     }
                 }
             }
@@ -153,11 +160,19 @@ public class JProxyCompilerInMemory
         if (compilationOptions != null)        
             for(String option : compilationOptions) finalCompilationOptions.add(option);
         
-        File folderSources = engine.getFolderSources();
-        if (folderSources != null)
+        File[] folderSourceList = engine.getFolderSourceList().getArray();
+        if (folderSourceList != null)
         {
             finalCompilationOptions.add("-classpath");
-            finalCompilationOptions.add(engine.getFolderSources().getAbsolutePath());        
+            StringBuilder classPath = new StringBuilder();
+            for(int i = 0; i < folderSourceList.length; i++)
+            {
+                File folderSources = folderSourceList[i];
+                classPath.append(folderSources.getAbsolutePath());
+                if (i < folderSourceList.length - 1)
+                    classPath.append(File.pathSeparatorChar);       
+            }
+            finalCompilationOptions.add(classPath.toString());               
         }
         
         DiagnosticCollector<JavaFileObject> diagnostics = context.getDiagnosticCollector();

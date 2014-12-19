@@ -5,7 +5,10 @@ import com.innowhere.relproxy.RelProxyOnReloadListener;
 import com.innowhere.relproxy.impl.jproxy.JProxyConfigImpl;
 import com.innowhere.relproxy.impl.jproxy.core.JProxyImpl;
 import com.innowhere.relproxy.impl.jproxy.core.clsmgr.ClassDescriptorSourceScript;
-import com.innowhere.relproxy.impl.jproxy.core.clsmgr.SourceScript;
+import com.innowhere.relproxy.impl.jproxy.core.clsmgr.FolderSourceList;
+import com.innowhere.relproxy.impl.jproxy.core.clsmgr.SourceScriptRoot;
+import com.innowhere.relproxy.jproxy.JProxyCompilerListener;
+import java.io.File;
 import java.lang.reflect.Method;
 import java.util.LinkedList;
 
@@ -55,12 +58,14 @@ public abstract class JProxyShellImpl extends JProxyImpl
         config.setEnabled(true);
         config.setRelProxyOnReloadListener(proxyListener);
         config.setInputPath(inputPath);
+        config.setJProxyInputSourceFileExcludedListener(null);        
+        config.setJProxyCompilerListener(null);
         config.setJProxyDiagnosticsListener(null); // Nos vale el log por defecto y no hay manera de espeficar otra cosa via comando
 
         LinkedList<String> argsToScript = new LinkedList<String>();
         processConfigParams(args,argsToScript,config);
-
-        SourceScript sourceFileScript = getSourceScript(args,argsToScript);
+        
+        SourceScriptRoot sourceFileScript = createSourceScriptRoot(args,argsToScript,config.getFolderSourceList());
 
         JProxyShellClassLoader classLoader = getJProxyShellClassLoader(config);
 
@@ -78,7 +83,7 @@ public abstract class JProxyShellImpl extends JProxyImpl
     }
     
     
-    protected abstract SourceScript getSourceScript(String[] args,LinkedList<String> argsToScript);
+    protected abstract SourceScriptRoot createSourceScriptRoot(String[] args,LinkedList<String> argsToScript,FolderSourceList folderSourceList);
     protected abstract JProxyShellClassLoader getJProxyShellClassLoader(JProxyConfigImpl config);    
     protected abstract void executeFirstTime(ClassDescriptorSourceScript scriptFileDesc,LinkedList<String> argsToScript,JProxyShellClassLoader classLoader);    
     

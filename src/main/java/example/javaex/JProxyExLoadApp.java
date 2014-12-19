@@ -2,8 +2,11 @@ package example.javaex;
 
 import com.innowhere.relproxy.RelProxyOnReloadListener;
 import com.innowhere.relproxy.jproxy.JProxy;
+import com.innowhere.relproxy.jproxy.JProxyCompilerListener;
 import com.innowhere.relproxy.jproxy.JProxyConfig;
 import com.innowhere.relproxy.jproxy.JProxyDiagnosticsListener;
+import com.innowhere.relproxy.jproxy.JProxyInputSourceFileExcludedListener;
+import java.io.File;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.List;
@@ -25,7 +28,18 @@ public class JProxyExLoadApp
     public static void init(ItsNatHttpServlet itsNatServlet,ServletConfig config)
     {    
         ServletContext context = itsNatServlet.getItsNatServletContext().getServletContext();
-        String inputPath = context.getRealPath("/") + "/WEB-INF/javaex/code/";           
+        String realPath = context.getRealPath("/");
+        String inputPath = realPath + "/WEB-INF/javaex/code/";           
+        JProxyInputSourceFileExcludedListener excludedListener = new JProxyInputSourceFileExcludedListener()
+        {
+            @Override
+            public boolean isExcluded(File file, File rootFolderOfSources)
+            {
+                String absPath = file.getAbsolutePath();
+                return absPath.endsWith("JProxyExampleAuxIgnored.java");
+            }            
+        };
+        
         String classFolder = null; // Optional: context.getRealPath("/") + "/WEB-INF/classes";
         Iterable<String> compilationOptions = Arrays.asList(new String[]{"-source","1.6","-target","1.6"});
         long scanPeriod = 200;
@@ -36,6 +50,20 @@ public class JProxyExLoadApp
                 System.out.println("Reloaded " + objNew + " Calling method: " + method);
             }        
         };
+        
+        JProxyCompilerListener compilerListener = new JProxyCompilerListener(){
+            @Override
+            public void beforeCompile(File file)
+            {
+                System.out.println("Before compile: " + file);
+            }
+
+            @Override
+            public void afterCompile(File file)
+            {
+                System.out.println("After compile: " + file);
+            } 
+        };   
         
         JProxyDiagnosticsListener diagnosticsListener = new JProxyDiagnosticsListener()
         {
@@ -65,6 +93,8 @@ public class JProxyExLoadApp
         jpConfig.setEnabled(true)
                 .setRelProxyOnReloadListener(proxyListener)
                 .setInputPath(inputPath)
+                .setJProxyInputSourceFileExcludedListener(excludedListener)
+                .setJProxyCompilerListener(compilerListener)
                 .setScanPeriod(scanPeriod)
                 .setClassFolder(classFolder)
                 .setCompilationOptions(compilationOptions)

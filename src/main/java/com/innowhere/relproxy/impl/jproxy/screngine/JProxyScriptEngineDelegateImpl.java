@@ -4,9 +4,10 @@ import com.innowhere.relproxy.RelProxyException;
 import com.innowhere.relproxy.impl.jproxy.JProxyConfigImpl;
 import com.innowhere.relproxy.impl.jproxy.core.JProxyImpl;
 import com.innowhere.relproxy.impl.jproxy.core.clsmgr.ClassDescriptorSourceScript;
+import com.innowhere.relproxy.impl.jproxy.core.clsmgr.FolderSourceList;
 import com.innowhere.relproxy.impl.jproxy.core.clsmgr.JProxyEngine;
-import com.innowhere.relproxy.impl.jproxy.core.clsmgr.SourceScript;
-import com.innowhere.relproxy.impl.jproxy.core.clsmgr.SourceScriptInMemory;
+import com.innowhere.relproxy.impl.jproxy.core.clsmgr.SourceScriptRoot;
+import com.innowhere.relproxy.impl.jproxy.core.clsmgr.SourceScriptRootInMemory;
 import com.innowhere.relproxy.impl.jproxy.core.clsmgr.comp.JProxyCompilationException;
 import com.innowhere.relproxy.impl.jproxy.shell.JProxyShellClassLoader;
 import java.io.File;
@@ -28,7 +29,7 @@ public class JProxyScriptEngineDelegateImpl extends JProxyImpl
     {
         this.parent = parent;
         
-        SourceScript sourceFileScript = SourceScriptInMemory.createSourceScriptInMemory("");
+        SourceScriptRoot sourceFileScript = SourceScriptRootInMemory.createSourceScriptInMemory("");
 
         JProxyShellClassLoader classLoader = null;
         String classFolder = config.getClassFolder();
@@ -44,9 +45,9 @@ public class JProxyScriptEngineDelegateImpl extends JProxyImpl
         return ScriptContext.class;
     }
     
-    private SourceScriptInMemory getSourceScriptInMemory()
+    private SourceScriptRootInMemory getSourceScriptInMemory()
     {
-        return (SourceScriptInMemory)classDescSourceScript.getSourceScript();
+        return (SourceScriptRootInMemory)classDescSourceScript.getSourceScript();
     }    
     
     public Object execute(String code,ScriptContext context) throws ScriptException

@@ -15,7 +15,7 @@ public class ClassDescriptorSourceFileJava extends ClassDescriptorSourceUnit
     
     public SourceFileJavaNormal getSourceFileJavaNormal()
     {
-        return (SourceFileJavaNormal)sourceFile;
+        return (SourceFileJavaNormal)sourceUnit;
     }
     
     public File getSourceFile()

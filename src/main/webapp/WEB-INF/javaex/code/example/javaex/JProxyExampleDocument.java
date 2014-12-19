@@ -20,7 +20,7 @@ public class JProxyExampleDocument extends JProxyExampleDocumentBase
     { 
         public static void log()
         {
-            System.out.println(AuxMember.class.getName() + ": 14 " + AuxMember.class.getClassLoader().hashCode());
+            System.out.println(AuxMember.class.getName() + ": 1 " + AuxMember.class.getClassLoader().hashCode());
         }        
     }
            
@@ -48,9 +48,10 @@ public class JProxyExampleDocument extends JProxyExampleDocumentBase
        EventListener listener = new EventListener()
        {    
             {
-                System.out.println("JProxyExampleDocument Anonymous Inner 21 " + this.getClass().getClassLoader().hashCode());
+                System.out.println("JProxyExampleDocument Anonymous Inner 1 " + this.getClass().getClassLoader().hashCode());
             }
            
+            @Override
             public void handleEvent(Event evt) 
             {
                 String text = textInput.getText(); 
@@ -67,5 +68,6 @@ public class JProxyExampleDocument extends JProxyExampleDocumentBase
         new AuxMemberInMethod().log();
         AuxMember.log();
         JProxyExampleAux.log();
+        JProxyExampleAuxIgnored.log();
     }
 }

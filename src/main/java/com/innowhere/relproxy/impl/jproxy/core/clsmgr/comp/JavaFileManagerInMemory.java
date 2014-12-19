@@ -20,6 +20,8 @@ import javax.tools.StandardLocation;
 /**
  * 
  * http://www.javablogging.com/dynamic-in-memory-compilation/
+ * http://atamur.blogspot.com.es/2009/10/using-built-in-javacompiler-with-custom.html
+ * http://grepcode.com/file/repo1.maven.org/maven2/org.st-js/generator/3.0.3/org/stjs/generator/javac/CustomClassloaderJavaFileManager.java
  * 
  * @author jmarranz
  */
@@ -57,7 +59,7 @@ public class JavaFileManagerInMemory extends ForwardingJavaFileManager
             return super.list(location, packageName, kinds, recurse);  // En este caso nunca (con PLATFORM_CLASS_PATH) va a encontrar nuestros sources ni .class
         else if (location == StandardLocation.CLASS_PATH && kinds.contains(JavaFileObject.Kind.CLASS)) 
         {
-            if (packageName.startsWith("java.") || packageName.startsWith("javax."))  // a hack to let standard manager handle locations like "java.lang" or "java.util". Estrictamente no es necesario pero derivamos la inmensa mayoría de las clases estándar al método por defecto
+            if (packageName.startsWith("java."))  // a hack to let standard manager handle locations like "java.lang" or "java.util", clases sólo cargables por el system class loader. Estrictamente no es necesario pero derivamos la inmensa mayoría de las clases estándar al método por defecto, NO añadimos "javax." pues hay extensiones tal y como el estándar servlet que no forma parte del Java core
                 return super.list(location, packageName, kinds, recurse);
             else
             {

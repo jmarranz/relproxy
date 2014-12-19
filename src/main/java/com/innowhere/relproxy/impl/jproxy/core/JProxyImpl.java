@@ -4,9 +4,12 @@ import com.innowhere.relproxy.impl.GenericProxyImpl;
 import com.innowhere.relproxy.impl.GenericProxyInvocationHandler;
 import com.innowhere.relproxy.impl.jproxy.JProxyConfigImpl;
 import com.innowhere.relproxy.impl.jproxy.core.clsmgr.ClassDescriptorSourceScript;
+import com.innowhere.relproxy.impl.jproxy.core.clsmgr.FolderSourceList;
 import com.innowhere.relproxy.impl.jproxy.core.clsmgr.JProxyEngine;
-import com.innowhere.relproxy.impl.jproxy.core.clsmgr.SourceScript;
+import com.innowhere.relproxy.impl.jproxy.core.clsmgr.SourceScriptRoot;
+import com.innowhere.relproxy.jproxy.JProxyCompilerListener;
 import com.innowhere.relproxy.jproxy.JProxyDiagnosticsListener;
+import com.innowhere.relproxy.jproxy.JProxyInputSourceFileExcludedListener;
 
 /**
  *
@@ -26,18 +29,25 @@ public abstract class JProxyImpl extends GenericProxyImpl
         return Thread.currentThread().getContextClassLoader();
     }
     
-    public ClassDescriptorSourceScript init(JProxyConfigImpl config,SourceScript scriptFile,ClassLoader classLoader)
+    public ClassDescriptorSourceScript init(JProxyConfigImpl config)
+    {    
+        return init(config,null,null);
+    }    
+    
+    public ClassDescriptorSourceScript init(JProxyConfigImpl config,SourceScriptRoot scriptFile,ClassLoader classLoader)
     {
         super.init(config);
         
-        String inputPath = config.getInputPath();
+        FolderSourceList folderSourceList = config.getFolderSourceList();
+        JProxyInputSourceFileExcludedListener excludedListener = config.getJProxyInputSourceFileExcludedListener();
+        JProxyCompilerListener compilerListener = config.getJProxyCompilerListener();
         String classFolder = config.getClassFolder();
         long scanPeriod = config.getScanPeriod();
         Iterable<String> compilationOptions = config.getCompilationOptions();
         JProxyDiagnosticsListener diagnosticsListener = config.getJProxyDiagnosticsListener();
         
         classLoader = classLoader != null ? classLoader : getDefaultClassLoader();      
-        this.engine = new JProxyEngine(this,scriptFile,classLoader,inputPath,classFolder,scanPeriod,compilationOptions,diagnosticsListener);          
+        this.engine = new JProxyEngine(this,scriptFile,classLoader,folderSourceList,excludedListener,compilerListener,classFolder,scanPeriod,compilationOptions,diagnosticsListener);          
         return engine.init();
     }    
    

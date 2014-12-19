@@ -10,25 +10,30 @@ public abstract class ClassDescriptorSourceUnit extends ClassDescriptor
 {
     protected JProxyEngine engine;
     protected long timestamp;
-    protected SourceUnit sourceFile; 
+    protected SourceUnit sourceUnit; 
     protected LinkedList<ClassDescriptorInner> innerClasses;
     
     public ClassDescriptorSourceUnit(JProxyEngine engine,String className,SourceUnit sourceFile, long timestamp) 
     {
         super(className);
         this.engine = engine;
-        this.sourceFile = sourceFile;
+        this.sourceUnit = sourceFile;
         this.timestamp = timestamp;
     }
 
     public static ClassDescriptorSourceUnit create(boolean script,JProxyEngine engine,String className,SourceUnit sourceFile, long timestamp)
     {
-        if (sourceFile instanceof SourceScript)
-            return new ClassDescriptorSourceScript(engine,className,(SourceScript)sourceFile,timestamp);  
+        if (sourceFile instanceof SourceScriptRoot)
+            return new ClassDescriptorSourceScript(engine,className,(SourceScriptRoot)sourceFile,timestamp);  
         else if (sourceFile instanceof SourceFileJavaNormal)
             return new ClassDescriptorSourceFileJava(engine,className,(SourceFileJavaNormal)sourceFile,timestamp);
         else
             return null; // WTF!!
+    }
+    
+    public SourceUnit getSourceUnit()
+    {
+        return sourceUnit;
     }
     
     public String getEncoding()
