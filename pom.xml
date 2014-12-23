@@ -111,7 +111,7 @@
         <plugin>
             <groupId>org.asciidoctor</groupId>
             <artifactId>asciidoctor-maven-plugin</artifactId>
-            <version>0.1.3.1</version><!-- 0.1.3.1 -->
+            <version>1.5.2</version>
             <executions>
                 <execution>
                     <id>output-html</id>
@@ -120,9 +120,10 @@
                         <goal>process-asciidoc</goal>
                     </goals>
                     <configuration>
-                        <!--<sourceHighlighter>highlightjs</sourceHighlighter> -->
+                        <sourceHighlighter>highlightjs</sourceHighlighter><!-- highlightjs prettify -->
                         <backend>html</backend>
                         <attributes>
+                            <!--<stylesheet>my-theme.css</stylesheet>-->
                             <!--<toc/> -->
                         </attributes>
                     </configuration>
@@ -132,8 +133,8 @@
                 <sourceDirectory>src/main/asciidoc/</sourceDirectory>
                 <!--<sourceDocumentName>src/main/asciidoc/prueba.adoc</sourceDocumentName>-->
                 <headerFooter>true</headerFooter>
-                <imagesDir>../resources/images</imagesDir>
-                <templateDir>src/main/asciidoc/styles/</templateDir>                  
+                <imagesDir>images/</imagesDir>
+                <!--<templateDir>src/main/asciidoc/styles/</templateDir> -->
             </configuration>
         </plugin>        
         
@@ -144,7 +145,10 @@
        </resource>  
        <resource>
          <directory>src/main/webapp/WEB-INF/javaex/code</directory>         
-       </resource>              
+       </resource>
+       <resource>
+         <directory>src/main/webapp/WEB-INF/javaex/code2</directory>         
+       </resource>                     
     </resources>    
   </build>
   

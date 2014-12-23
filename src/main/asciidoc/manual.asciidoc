@@ -7,16 +7,18 @@
 // :sectanchors: para mostrar un link de "posicionar" arriba cada título
 :sectanchors:
 :toc2:
-// usamos highlightjs o prettify porque coderay falla (aunque está incluido)
-:source-highlighter: prettify
+// usamos highlightjs o prettify porque coderay falla (aunque está incluido) 
+// NOTA: se configura en el POM
+// :source-highlighter: highlightjs
 
 = RelProxy
 (C) Jose María Arranz Santamaría
-v0.8
+v0.8.1
 
 _Because Java is also a dynamic language and Groovy can still be a dynamic language in a Java based environment._
 
 == The origins of RelProxy
+
 
 RelProxy was born as the result of the intent of providing a way to hot class reloading for the http://www.itsnat.org[ItsNat] Java web framework in development and
 production time. 
@@ -164,7 +166,7 @@ The following POM is a simple example of a RelProxy (v0.8) ready web application
 </project>
 ----
 
-== Developing a web project based on a Maven POM in NetBeans to use JProxy or GProxy
+== Setting up a web project based on a Maven POM in NetBeans to use JProxy or GProxy
 
 Because the nature of Maven, on development time when deploying a web application Maven deploys below the +target/projectname+ folder 
 and in +projectname.war+ file the final web application. Changing files below +src/webapp+ are not detected by RelProxy because the real files being used
@@ -565,6 +567,397 @@ when checking source code. This is why we can +stop+ source code checking if we 
 
 You can call several times to +JProxy.start()+ and +JProxy.stop()+ methods, if nothing is going to be done nothing is done without errors (both methods return true
 when a state change was effective), and they are thread safe.
+
+== How JProxy can help you only in development time (GWT example)
+
+In previous chapter we have added new source code folders below +WEB-INF/+ folder, this configuration is very useful in production to be able to hot change 
+your Java code, of course in production time you can remove these folders avoiding publishing source code before packaging to +war+ and with a simple call +setEnabled(false)+ 
+disable JProxy with zero performance penalty. In this "development only" use case of JProxy is not necessary to put the source code going to be reloaded below
++WEB-INF/+ you can modify Java source code and reload it located in conventional source code folders. Some IDE is needed because IDEs automatically syncronize and recompile
+changed source code with the final compiled construction (+/build+, +/target+, +/war+ depending of the IDE or build system like Maven being used), automatic syncronization
+of IDEs is needed but not enough for hot class reload with a simple page reload in your web browser (the objective of RelProxy).
+
+We are going to illustrate this capability with a GWT RPC example using Eclipse. Besides how to use JProxy in a GWT-RPC project, in this chapter we are going to learn
+how we can exclude source files from the hot class reload system of RelProxy/JProxy.
+
+In GWT, JProxy only can be used to reload Java code executed in server, this is why we are going to apply JProxy to a GWT-RPC project (that is a client-server web application).
+
+Install http://eclipse.org[Eclipse] (Eclipse 4.4 Luna was used fot this example), install the https://developers.google.com/eclipse/docs/download[Google Plugin for Eclipse], only install
+GWT dependencies if you want (there is no need of Google App Engine parts).
+
+Select in Eclipse the menu option +New/Other/Google/ Web Application Project+ to create a GWT-RPC sample project (Google App Engine is not needed).
+
+In this example we have create the project with name +relproxy_ex_gwt+ and package +com.innowhere.relproxyexgwt+, this is
+the structure of the generated source code:
+
+++++
+<pre>
+relproxy_ex_gwt    (root folder of project)
+  src
+    com
+      innowhere
+        relproxyexgwt
+          client
+            GreetingService.java
+            GreetingServiceAsync.java
+            Relproxy_ex_gwt.java
+          server
+            GreetingServiceImpl.java
+          shared
+            FieldVerifier.java
+          Relproxy_ex_gwt.gwt.xml
+</pre>
+++++
+
+
+We are only be able to reload executed in server classes, that is, classes below +server/+ folder. This why the class +GreetingServiceImpl.java+ is our focus,
+this is the code generated:
+
+[source,java]
+.GreetingServiceImpl.java
+----
+package com.innowhere.relproxyexgwt.server;
+
+import com.google.gwt.user.server.rpc.RemoteServiceServlet;
+import com.innowhere.relproxyexgwt.client.GreetingService;
+import com.innowhere.relproxyexgwt.shared.FieldVerifier;
+
+
+/**
+ * The server side implementation of the RPC service.
+ */
+@SuppressWarnings("serial")
+public class GreetingServiceImpl extends RemoteServiceServlet implements GreetingService {
+
+    public String greetServer(String input) throws IllegalArgumentException {
+        // Verify that the input is valid.
+        if (!FieldVerifier.isValidName(input)) {
+            // If the input is not valid, throw an IllegalArgumentException back to
+            // the client.
+            throw new IllegalArgumentException("Name must be at least 4 characters long");
+        }
+
+        String serverInfo = getServletContext().getServerInfo();
+        String userAgent = getThreadLocalRequest().getHeader("User-Agent");
+
+        // Escape data from the client to avoid cross-site script vulnerabilities.
+        input = escapeHtml(input);
+        userAgent = escapeHtml(userAgent);
+
+        return "Hello, " + input + "!<br><br>I am running " + serverInfo + ".<br><br>It looks like you are using:<br>" + userAgent;
+    }
+
+    /**
+     * Escape an html string. Escaping data received from the client helps to
+     * prevent cross-site script vulnerabilities.
+     *
+     * @param html the html string to escape
+     * @return the escaped string
+     */
+    private String escapeHtml(String html) {
+        if (html == null) {
+            return null;
+        }
+        return html.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;");
+    }
+}
+
+----
+
+This class is a servlet created to receive RPC requests from client following the interface pattern of the interface +GreetingService+ shared by client code, 
+we are not going to try to reload this servlet because to use JProxy we need a reloadable singleton implementing an interface registered in JProxy.
+We are deeply transforming +GreetingServiceImpl+:
+
+[source,java]
+.GreetingServiceImpl.java
+----
+package com.innowhere.relproxyexgwt.server;
+
+import java.io.File;
+import java.lang.reflect.Method;
+import java.util.Arrays;
+import java.util.List;
+
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.tools.Diagnostic;
+import javax.tools.DiagnosticCollector;
+import javax.tools.JavaFileObject;
+
+import com.google.gwt.user.server.rpc.RemoteServiceServlet;
+import com.innowhere.relproxy.RelProxyOnReloadListener;
+import com.innowhere.relproxy.jproxy.JProxy;
+import com.innowhere.relproxy.jproxy.JProxyConfig;
+import com.innowhere.relproxy.jproxy.JProxyDiagnosticsListener;
+import com.innowhere.relproxy.jproxy.JProxyInputSourceFileExcludedListener;
+import com.innowhere.relproxyexgwt.client.GreetingService;
+
+/**
+ * The server-side implementation of the RPC service.
+ */
+@SuppressWarnings("serial")
+public class GreetingServiceImpl extends RemoteServiceServlet implements
+		GreetingService {
+
+	protected GreetingServiceDelegate delegate;
+	
+	public void init(ServletConfig config) throws ServletException {
+
+            super.init(config);
+				
+            ServletContext context = config.getServletContext();
+		
+	    String inputPath = context.getRealPath("/") + "/../src/";
+	    
+	    JProxyInputSourceFileExcludedListener excludedListener = new JProxyInputSourceFileExcludedListener()
+	    {
+                @Override
+                public boolean isExcluded(File file, File rootFolder) {
+
+                        String absPath = file.getAbsolutePath();				
+                        return 	absPath.contains(File.separatorChar + "client" + File.separatorChar) ||
+                                absPath.contains(File.separatorChar + "shared" + File.separatorChar) ||
+                                absPath.endsWith(GreetingServiceDelegate.class.getSimpleName() + ".java") || 
+                                absPath.endsWith(GreetingServiceImpl.class.getSimpleName() + ".java"); 						
+                }	    	
+	    };
+	    
+	    String classFolder = null; // Optional: context.getRealPath("/") + "/WEB-INF/classes";
+	    Iterable<String> compilationOptions = Arrays.asList(new String[]{"-source","1.6","-target","1.6"});
+	    long scanPeriod = 200;
+
+	    RelProxyOnReloadListener proxyListener = new RelProxyOnReloadListener() {
+	        public void onReload(Object objOld, Object objNew, Object proxy, Method method, Object[] args) {
+	            System.out.println("Reloaded " + objNew + " Calling method: " + method);
+	        }
+	    };
+
+	    JProxyDiagnosticsListener diagnosticsListener = new JProxyDiagnosticsListener()
+	    {
+	        public void onDiagnostics(DiagnosticCollector<javax.tools.JavaFileObject> diagnostics)
+	        {
+	            List<Diagnostic<? extends JavaFileObject>> diagList = diagnostics.getDiagnostics();
+	            int i = 1;
+	            for (Diagnostic<? extends JavaFileObject> diagnostic : diagList)
+	            {
+	               System.err.println("Diagnostic " + i);
+	               System.err.println("  code: " + diagnostic.getCode());
+	               System.err.println("  kind: " + diagnostic.getKind());
+	               System.err.println("  line number: " + diagnostic.getLineNumber());
+	               System.err.println("  column number: " + diagnostic.getColumnNumber());
+	               System.err.println("  start position: " + diagnostic.getStartPosition());
+	               System.err.println("  position: " + diagnostic.getPosition());
+	               System.err.println("  end position: " + diagnostic.getEndPosition());
+	               System.err.println("  source: " + diagnostic.getSource());
+	               System.err.println("  message: " + diagnostic.getMessage(null));
+	               i++;
+	            }
+	        }
+	    };
+
+	    JProxyConfig jpConfig = JProxy.createJProxyConfig();
+	    jpConfig.setEnabled(true)
+	            .setRelProxyOnReloadListener(proxyListener)
+	            .setInputPath(inputPath)
+	            .setJProxyInputSourceFileExcludedListener(excludedListener)
+	            .setScanPeriod(scanPeriod)
+	            .setClassFolder(classFolder)
+	            .setCompilationOptions(compilationOptions)
+	            .setJProxyDiagnosticsListener(diagnosticsListener);
+
+	    JProxy.init(jpConfig);
+		
+	    this.delegate = JProxy.create(new GreetingServiceDelegateImpl(this), GreetingServiceDelegate.class);
+	
+	}   // init
+	
+	public String greetServer(String input) throws IllegalArgumentException 
+        {		
+		try
+		{
+			return delegate.greetServer(input);
+		}
+		catch(IllegalArgumentException ex)
+		{
+			ex.printStackTrace();
+			throw ex;
+		}		
+		catch(Exception ex)
+		{
+			ex.printStackTrace();
+			throw new RuntimeException(ex);
+		}
+	}
+
+	public HttpServletRequest getThreadLocalRequestPublic()
+	{
+		return getThreadLocalRequest();
+	}
+}
+
+----
+
+Let's review this JProxy-ready class. +GreetingServiceImpl+ is a singleton in practice because is a servlet, therefore this attribute:
+
+[source,java]
+----
+protected GreetingServiceDelegate delegate;
+----
+
+which hold the reloadable singleton registered on:
+
+[source,java]
+----
+this.delegate = JProxy.create(new GreetingServiceDelegateImpl(this), GreetingServiceDelegate.class);
+----
+
+As you can see we have create the Java file +GreetingServiceDelegateImpl.java+ and the class with the same name going to be reloaded, implementing 
+the interface +GreetingServiceDelegate+. JProxy returns a proxy object "implementing" +GreetingServiceDelegate+ exposed to the non-reloadable world.
+
+Take a look to this new listener:
+
+[source,java]
+----
+        JProxyInputSourceFileExcludedListener excludedListener = new JProxyInputSourceFileExcludedListener()
+        {
+            @Override
+            public boolean isExcluded(File file, File rootFolder) {
+
+                    String absPath = file.getAbsolutePath();				
+                    return absPath.contains(File.separatorChar + "client" + File.separatorChar) ||
+                           absPath.contains(File.separatorChar + "shared" + File.separatorChar) ||
+                           absPath.endsWith(GreetingServiceDelegate.class.getSimpleName() + ".java") || 
+                           absPath.endsWith(GreetingServiceImpl.class.getSimpleName() + ".java"); 						
+            }	    	
+        };
+----
+
+Registered on:
+
+[source,java]
+----
+        .setJProxyInputSourceFileExcludedListener(excludedListener)
+----
+
+This listener filters the Java source files that need to be ignored by RelProxy/JProxy even when modified, because JProxy creates a new +ClassLoader+ and reload with it all hot-reloadable classes.
+Classes inside +client/+ and +shared/+ folders must not be reloadable because has no sense in GWT, +GreetingServiceImpl+ cannot be reloaded because is the servlet
+and breaks the standard JavaEE servlet system and +GreetingServiceDelegate+ cannot be reloaded because is the interface exposed to the non-reloadable world.
+By this way only +server/+ classes can be reloaded excluding the servlet class.
+
+This is the code of +GreetingServiceDelegate+ :
+
+[source,java]
+.GreetingServiceDelegate
+----
+package com.innowhere.relproxyexgwt.server;
+
+public interface GreetingServiceDelegate {
+
+	public String greetServer(String input) throws IllegalArgumentException;
+	
+}
+----
+
+And the code of +GreetingServiceDelegateImpl.java+, basically a copy/paste of the original servlet code.
+
+[source,java]
+.GreetingServiceDelegateImpl
+----
+package com.innowhere.relproxyexgwt.server;
+
+import com.innowhere.relproxyexgwt.shared.FieldVerifier;
+
+public class GreetingServiceDelegateImpl implements GreetingServiceDelegate
+{
+	protected GreetingServiceImpl parent;
+	
+	public GreetingServiceDelegateImpl()
+	{
+	}	
+	
+	public GreetingServiceDelegateImpl(GreetingServiceImpl parent)
+	{
+		this.parent = parent;
+	}	
+	
+	public String greetServer(String input) throws IllegalArgumentException {
+		
+		// Verify that the input is valid. 
+		if (!FieldVerifier.isValidName(input)) {
+			// If the input is not valid, throw an IllegalArgumentException back to
+			// the client.
+			throw new IllegalArgumentException("Name must be at least 4 characters long");
+		}
+
+		String serverInfo = parent.getServletContext().getServerInfo();
+		String userAgent = parent.getThreadLocalRequestPublic().getHeader("User-Agent");
+
+		// Escape data from the client to avoid cross-site script vulnerabilities.
+		input = escapeHtml(input);
+		userAgent = escapeHtml(userAgent);
+
+		return "Hello, " + input + "!<br><br>I am running " + serverInfo
+				+ ".<br><br>It looks like you are using:<br>" + userAgent;
+	}
+
+	/**
+	 * Escape an html string. Escaping data received from the client helps to
+	 * prevent cross-site script vulnerabilities.
+	 * 
+	 * @param html the html string to escape
+	 * @return the escaped string
+	 */
+	private String escapeHtml(String html) {
+		if (html == null) {
+			return null;
+		}
+		return html.replaceAll("&", "&amp;").replaceAll("<", "&lt;")
+				.replaceAll(">", "&gt;");
+	}
+}
+
+----
+
+Run this example (Run As/Web Application GWT Super Dev Mode), open this URL +http://127.0.0.1:8888/Relproxy_ex_gwt.html+ in your browser and a screen like this is shown:
+
+image:browser_1.png[Fig 1, title="Fig 1"]
+ 
+Click on "Send to Server":
+
+image:browser_2.png[Fig 2, title="Fig 2"]
+
+Click on the "Close" button.
+
+Now we are going to modify on the fly the Java code of +GreetingServiceDelegateImpl+, just change "Hello" by "Hello <b>GUY</b>" and save:
+
+[source,java]
+----
+        return "Hello <b>GUY</b>, " + input + "!<br><br>I am running " + serverInfo
+                        + ".<br><br>It looks like you are using:<br>" + userAgent;
+----
+
+Back to browser, click again on "Send to Server":
+
+image:browser_3.png[Fig 3, title="Fig 3"]
+
+As you can see in this case no reload has been necessary because the requisite is to call the proxied method to reload classes.
+
+In this example we make a very simple method change, adding more methods is not a problem but most of the time you will need to add new fields related to new classes,
+because +GreetingServiceDelegateImpl+ is a singleton we cannot add, remove or change names and types of the fields of this class, to overcome this limitation
+create new classes avoiding the singleton pattern and move the code to them. Code like this:
+
+[source,java]
+.GreetingServiceDelegateImpl
+----
+	public String greetServer(String input) throws IllegalArgumentException {
+		return new GreetingServiceProcessor(this).greetServer(input);
+	}
+----
+
+Declared fields of +GreetingServiceProcessor+ can change with no problem because this class can be reloaded and instantiated by any call to 
++GreetingServiceDelegateImpl.greetServer()+
 
 
 == A new shell scripting language named Java

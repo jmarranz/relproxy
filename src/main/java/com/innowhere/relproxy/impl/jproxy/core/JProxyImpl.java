@@ -50,12 +50,16 @@ public abstract class JProxyImpl extends GenericProxyImpl
         this.engine = new JProxyEngine(this,scriptFile,classLoader,folderSourceList,excludedListener,compilerListener,classFolder,scanPeriod,compilationOptions,diagnosticsListener);          
         return engine.init();
     }    
-   
-    
+       
     public JProxyEngine getJProxyEngine()
     {
         return engine;
     }
+    
+    public boolean isRunning()
+    {       
+        return engine.isRunning();
+    }       
     
     public boolean stop()
     {       

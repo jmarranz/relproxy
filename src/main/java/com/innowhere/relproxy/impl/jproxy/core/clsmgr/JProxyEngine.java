@@ -126,6 +126,11 @@ public class JProxyEngine
         return sourceEncoding;
     }
     
+    public synchronized boolean isRunning()    
+    {    
+        return task != null && scanPeriod > 0;
+    }
+    
     public synchronized boolean stop()    
     {
         if (task != null)

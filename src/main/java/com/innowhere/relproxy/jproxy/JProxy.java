@@ -33,6 +33,7 @@ public class JProxy
         JProxyDefaultImpl.initStatic((JProxyConfigImpl)config);
     }
      
+   
     /**
      * Creates a proxy object using <code>java.lang.reflect.Proxy</code> based on the provided Java object and the class of the implemented Java interface.
      * 
@@ -52,6 +53,16 @@ public class JProxy
     {
         return JProxyDefaultImpl.createStatic(obj, clasz);
     }
+    
+    /**
+     * Informs whether <code>JProxy</code> is configured and started.
+     * 
+     * @return true if running. 
+     */    
+    public static boolean isRunning()
+    {
+        return JProxyDefaultImpl.isRunningStatic();
+    }        
     
     /**
      * Stops source code periodic change detection.

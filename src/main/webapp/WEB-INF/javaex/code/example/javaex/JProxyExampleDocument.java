@@ -1,5 +1,6 @@
 package example.javaex;
 
+import example.javaex.hotreload.JProxyExampleAux2;
 import org.itsnat.comp.ItsNatComponentManager;
 import org.itsnat.comp.text.ItsNatHTMLInputText;
 import org.itsnat.core.ItsNatServletRequest;
@@ -69,5 +70,6 @@ public class JProxyExampleDocument extends JProxyExampleDocumentBase
         AuxMember.log();
         JProxyExampleAux.log();
         JProxyExampleAuxIgnored.log();
+        JProxyExampleAux2.log();        
     }
 }

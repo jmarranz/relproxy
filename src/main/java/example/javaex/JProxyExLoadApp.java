@@ -29,17 +29,22 @@ public class JProxyExLoadApp
     {    
         ServletContext context = itsNatServlet.getItsNatServletContext().getServletContext();
         String realPath = context.getRealPath("/");
-        String inputPath = realPath + "/WEB-INF/javaex/code/";           
+        String[] inputPaths = new String[] 
+        { realPath + "/WEB-INF/javaex/code/", 
+          realPath + "/WEB-INF/javaex/code2/", 
+          realPath + "/src/java/inexp/jproxyex/hotreload/" };
+             
         JProxyInputSourceFileExcludedListener excludedListener = new JProxyInputSourceFileExcludedListener()
         {
             @Override
             public boolean isExcluded(File file, File rootFolderOfSources)
             {
                 String absPath = file.getAbsolutePath();
-                return absPath.endsWith("JProxyExampleAuxIgnored.java");
+                return absPath.endsWith("JProxyExampleAuxIgnored.java") && !absPath.contains(File.separatorChar + "hotreload" + File.separatorChar);
             }            
         };
         
+
         String classFolder = null; // Optional: context.getRealPath("/") + "/WEB-INF/classes";
         Iterable<String> compilationOptions = Arrays.asList(new String[]{"-source","1.6","-target","1.6"});
         long scanPeriod = 200;
@@ -92,7 +97,7 @@ public class JProxyExLoadApp
         JProxyConfig jpConfig = JProxy.createJProxyConfig();
         jpConfig.setEnabled(true)
                 .setRelProxyOnReloadListener(proxyListener)
-                .setInputPath(inputPath)
+                .setInputPaths(inputPaths)
                 .setJProxyInputSourceFileExcludedListener(excludedListener)
                 .setJProxyCompilerListener(compilerListener)
                 .setScanPeriod(scanPeriod)

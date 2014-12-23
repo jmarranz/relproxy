@@ -32,6 +32,7 @@ public class JProxyDefaultImpl extends JProxyImpl
         SINGLETON = new JProxyDefaultImpl();
         SINGLETON.init(config);
     }    
+       
     
     public static <T> T createStatic(T obj,Class<T> clasz)
     {
@@ -41,6 +42,14 @@ public class JProxyDefaultImpl extends JProxyImpl
         return SINGLETON.create(obj, clasz);
     }    
 
+    public static boolean isRunningStatic()
+    {
+        if (SINGLETON == null) 
+            return false;
+        
+        return SINGLETON.isRunning();
+    }            
+    
     public static boolean stopStatic()
     {
         if (SINGLETON == null) 
