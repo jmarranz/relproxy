@@ -1,0 +1,10 @@
+/target/
+/build
+/docs_internal
+/tmp
+# .classpath
+# .project
+# .settings/
+# .gradle/
+
+conf/conf_local.properties

@@ -1,0 +1,2 @@
+serviceClass: com.innowhere.relproxyexgwt.client.GreetingService
+path: 4858964B4008587738C6C68D25E626FF.gwt.rpc

@@ -1,10 +1,2 @@
-/target/
-/build
-/docs_internal
-/tmp
-.classpath
-.project
-.settings/
-.gradle/
+/relproxy_dist/
 
-conf/conf_local.properties
