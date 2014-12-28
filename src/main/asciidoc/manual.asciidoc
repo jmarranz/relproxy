@@ -8,14 +8,22 @@
 :sectanchors:
 :toc2:
 // usamos highlightjs o prettify porque coderay falla (aunque está incluido) 
-// NOTA: se configura en el POM
+// NOTA: se configura en el POM pues aquí parece que no funciona
 // :source-highlighter: highlightjs
 
+
 = RelProxy
+
+++++
+<link rel="stylesheet" href="css/better_toc.css" />
+++++
+
 (C) Jose María Arranz Santamaría
-v0.8.1
+v0.8.1  December 26, 2014
 
 _Because Java is also a dynamic language and Groovy can still be a dynamic language in a Java based environment._
+
+
 
 == The origins of RelProxy
 
@@ -420,6 +428,20 @@ public static void init(ItsNatHttpServlet itsNatServlet,ServletConfig config)
         }        
     };
 
+    JProxyCompilerListener compilerListener = new JProxyCompilerListener(){
+        @Override
+        public void beforeCompile(File file)
+        {
+            System.out.println("Before compile: " + file);
+        }
+
+        @Override
+        public void afterCompile(File file)
+        {
+            System.out.println("After compile: " + file);
+        } 
+    };
+
     JProxyDiagnosticsListener diagnosticsListener = new JProxyDiagnosticsListener()
     {
         public void onDiagnostics(DiagnosticCollector<JavaFileObject> diagnostics)
@@ -450,6 +472,7 @@ public static void init(ItsNatHttpServlet itsNatServlet,ServletConfig config)
             .setScanPeriod(scanPeriod)
             .setClassFolder(classFolder)
             .setCompilationOptions(compilationOptions)
+            .setJProxyCompilerListener(compilerListener)
             .setJProxyDiagnosticsListener(diagnosticsListener);
 
     JProxy.init(jpConfig);
@@ -481,6 +504,7 @@ Let's explain the previous code:
             .setScanPeriod(scanPeriod)
             .setClassFolder(classFolder)
             .setCompilationOptions(compilationOptions)
+            .setJProxyCompilerListener(compilerListener)
             .setJProxyDiagnosticsListener(diagnosticsListener);
 
     JProxy.init(jpConfig);
@@ -504,6 +528,8 @@ classpath).
 * +setCompilationOptions(compilationOptions)+ optionally sets the list of options you want for compiling phase, these are the same kind of options you would provide to the
 http://docs.oracle.com/javase/6/docs/technotes/tools/windows/javac.html[javac command], internally the 
 http://docs.oracle.com/javase/6/docs/api/javax/tools/JavaCompiler.html[Java compiler API] receives this parameters and the reason of the required format.
+
+* +setJProxyCompilerListener(compilerListener)+ optionally registers a listener to be called when a file is going to be compiled.
 
 * +setJProxyDiagnosticsListener(diagnosticsListener)+ optionally registers the +JProxyDiagnosticsListener+ listener to be executed when some warning or error happens compiling
 Java code, when providing null or not called RelProxy uses a default listener very similar to this example.
@@ -583,11 +609,11 @@ how we can exclude source files from the hot class reload system of RelProxy/JPr
 In GWT, JProxy only can be used to reload Java code executed in server, this is why we are going to apply JProxy to a GWT-RPC project (that is a client-server web application).
 
 Install http://eclipse.org[Eclipse] (Eclipse 4.4 Luna was used fot this example), install the https://developers.google.com/eclipse/docs/download[Google Plugin for Eclipse], only install
-GWT dependencies if you want (there is no need of Google App Engine parts).
+GWT dependencies if you want (there is no need of Android and Google App Engine parts) and +relproxy-x.y.z.jar+ dependency.
 
 Select in Eclipse the menu option +New/Other/Google/ Web Application Project+ to create a GWT-RPC sample project (Google App Engine is not needed).
 
-In this example we have create the project with name +relproxy_ex_gwt+ and package +com.innowhere.relproxyexgwt+, this is
+In this example we have created the project with name +relproxy_ex_gwt+ and package +com.innowhere.relproxyexgwt+, this is
 the structure of the generated source code:
 
 ++++
@@ -610,7 +636,7 @@ relproxy_ex_gwt    (root folder of project)
 ++++
 
 
-We are only be able to reload executed in server classes, that is, classes below +server/+ folder. This why the class +GreetingServiceImpl.java+ is our focus,
+We are only be able to reload classes executed in server, that is, classes below +server/+ folder. This why the class +GreetingServiceImpl.java+ is our focus,
 this is the code generated:
 
 [source,java]
@@ -701,100 +727,115 @@ import com.innowhere.relproxyexgwt.client.GreetingService;
 public class GreetingServiceImpl extends RemoteServiceServlet implements
 		GreetingService {
 
-	protected GreetingServiceDelegate delegate;
-	
-	public void init(ServletConfig config) throws ServletException {
+    protected GreetingServiceDelegate delegate;
 
-            super.init(config);
-				
-            ServletContext context = config.getServletContext();
-		
-	    String inputPath = context.getRealPath("/") + "/../src/";
-	    
-	    JProxyInputSourceFileExcludedListener excludedListener = new JProxyInputSourceFileExcludedListener()
-	    {
-                @Override
-                public boolean isExcluded(File file, File rootFolder) {
+    public void init(ServletConfig config) throws ServletException {
 
-                        String absPath = file.getAbsolutePath();				
-                        return 	absPath.contains(File.separatorChar + "client" + File.separatorChar) ||
-                                absPath.contains(File.separatorChar + "shared" + File.separatorChar) ||
-                                absPath.endsWith(GreetingServiceDelegate.class.getSimpleName() + ".java") || 
-                                absPath.endsWith(GreetingServiceImpl.class.getSimpleName() + ".java"); 						
-                }	    	
-	    };
-	    
-	    String classFolder = null; // Optional: context.getRealPath("/") + "/WEB-INF/classes";
-	    Iterable<String> compilationOptions = Arrays.asList(new String[]{"-source","1.6","-target","1.6"});
-	    long scanPeriod = 200;
+        super.init(config);
 
-	    RelProxyOnReloadListener proxyListener = new RelProxyOnReloadListener() {
-	        public void onReload(Object objOld, Object objNew, Object proxy, Method method, Object[] args) {
-	            System.out.println("Reloaded " + objNew + " Calling method: " + method);
-	        }
-	    };
+        ServletContext context = config.getServletContext();
 
-	    JProxyDiagnosticsListener diagnosticsListener = new JProxyDiagnosticsListener()
-	    {
-	        public void onDiagnostics(DiagnosticCollector<javax.tools.JavaFileObject> diagnostics)
-	        {
-	            List<Diagnostic<? extends JavaFileObject>> diagList = diagnostics.getDiagnostics();
-	            int i = 1;
-	            for (Diagnostic<? extends JavaFileObject> diagnostic : diagList)
-	            {
-	               System.err.println("Diagnostic " + i);
-	               System.err.println("  code: " + diagnostic.getCode());
-	               System.err.println("  kind: " + diagnostic.getKind());
-	               System.err.println("  line number: " + diagnostic.getLineNumber());
-	               System.err.println("  column number: " + diagnostic.getColumnNumber());
-	               System.err.println("  start position: " + diagnostic.getStartPosition());
-	               System.err.println("  position: " + diagnostic.getPosition());
-	               System.err.println("  end position: " + diagnostic.getEndPosition());
-	               System.err.println("  source: " + diagnostic.getSource());
-	               System.err.println("  message: " + diagnostic.getMessage(null));
-	               i++;
-	            }
-	        }
-	    };
+        String inputPath = context.getRealPath("/") + "/../src/";
 
-	    JProxyConfig jpConfig = JProxy.createJProxyConfig();
-	    jpConfig.setEnabled(true)
-	            .setRelProxyOnReloadListener(proxyListener)
-	            .setInputPath(inputPath)
-	            .setJProxyInputSourceFileExcludedListener(excludedListener)
-	            .setScanPeriod(scanPeriod)
-	            .setClassFolder(classFolder)
-	            .setCompilationOptions(compilationOptions)
-	            .setJProxyDiagnosticsListener(diagnosticsListener);
+        JProxyInputSourceFileExcludedListener excludedListener = new JProxyInputSourceFileExcludedListener()
+        {
+            @Override
+            public boolean isExcluded(File file, File rootFolder) {
 
-	    JProxy.init(jpConfig);
-		
-	    this.delegate = JProxy.create(new GreetingServiceDelegateImpl(this), GreetingServiceDelegate.class);
-	
-	}   // init
-	
-	public String greetServer(String input) throws IllegalArgumentException 
-        {		
-		try
-		{
-			return delegate.greetServer(input);
-		}
-		catch(IllegalArgumentException ex)
-		{
-			ex.printStackTrace();
-			throw ex;
-		}		
-		catch(Exception ex)
-		{
-			ex.printStackTrace();
-			throw new RuntimeException(ex);
-		}
-	}
+                String absPath = file.getAbsolutePath();				
+                return absPath.contains(File.separatorChar + "client" + File.separatorChar) ||
+                       absPath.contains(File.separatorChar + "shared" + File.separatorChar) ||
+                       absPath.endsWith(GreetingServiceDelegate.class.getSimpleName() + ".java") || 
+                       absPath.endsWith(GreetingServiceImpl.class.getSimpleName() + ".java"); 						
+            }	    	
+        };
 
-	public HttpServletRequest getThreadLocalRequestPublic()
-	{
-		return getThreadLocalRequest();
-	}
+        String classFolder = null; // Optional: context.getRealPath("/") + "/WEB-INF/classes";
+        Iterable<String> compilationOptions = Arrays.asList(new String[]{"-source","1.6","-target","1.6"});
+        long scanPeriod = 200;
+
+        RelProxyOnReloadListener proxyListener = new RelProxyOnReloadListener() {
+            public void onReload(Object objOld, Object objNew, Object proxy, Method method, Object[] args) {
+                System.out.println("Reloaded " + objNew + " Calling method: " + method);
+            }
+        };
+
+        JProxyCompilerListener compilerListener = new JProxyCompilerListener(){
+            @Override
+            public void beforeCompile(File file)
+            {
+                System.out.println("Before compile: " + file);
+            }
+
+            @Override
+            public void afterCompile(File file)
+            {
+                System.out.println("After compile: " + file);
+            } 
+        };
+
+        JProxyDiagnosticsListener diagnosticsListener = new JProxyDiagnosticsListener()
+        {
+            public void onDiagnostics(DiagnosticCollector<javax.tools.JavaFileObject> diagnostics)
+            {
+                List<Diagnostic<? extends JavaFileObject>> diagList = diagnostics.getDiagnostics();
+                int i = 1;
+                for (Diagnostic<? extends JavaFileObject> diagnostic : diagList)
+                {
+                   System.err.println("Diagnostic " + i);
+                   System.err.println("  code: " + diagnostic.getCode());
+                   System.err.println("  kind: " + diagnostic.getKind());
+                   System.err.println("  line number: " + diagnostic.getLineNumber());
+                   System.err.println("  column number: " + diagnostic.getColumnNumber());
+                   System.err.println("  start position: " + diagnostic.getStartPosition());
+                   System.err.println("  position: " + diagnostic.getPosition());
+                   System.err.println("  end position: " + diagnostic.getEndPosition());
+                   System.err.println("  source: " + diagnostic.getSource());
+                   System.err.println("  message: " + diagnostic.getMessage(null));
+                   i++;
+                }
+            }
+        };
+
+        JProxyConfig jpConfig = JProxy.createJProxyConfig();
+        jpConfig.setEnabled(true)
+                .setRelProxyOnReloadListener(proxyListener)
+                .setInputPath(inputPath)
+                .setJProxyInputSourceFileExcludedListener(excludedListener)
+                .setScanPeriod(scanPeriod)
+                .setClassFolder(classFolder)
+                .setCompilationOptions(compilationOptions)
+                .setJProxyCompilerListener(compilerListener)
+                .setJProxyDiagnosticsListener(diagnosticsListener);
+
+        JProxy.init(jpConfig);
+
+        this.delegate = JProxy.create(new GreetingServiceDelegateImpl(this), GreetingServiceDelegate.class);
+
+    }   // init
+
+    public String greetServer(String input) throws IllegalArgumentException 
+    {		
+            try
+            {
+                    return delegate.greetServer(input);
+            }
+            catch(IllegalArgumentException ex)
+            {
+                    ex.printStackTrace();
+                    throw ex;
+            }		
+            catch(Exception ex)
+            {
+                    ex.printStackTrace();
+                    throw new RuntimeException(ex);
+            }
+    }
+
+    public HttpServletRequest getThreadLocalRequestPublic()
+    {
+            return getThreadLocalRequest();
+    }
 }
 
 ----
@@ -873,7 +914,7 @@ public class GreetingServiceDelegateImpl implements GreetingServiceDelegate
 {
 	protected GreetingServiceImpl parent;
 	
-	public GreetingServiceDelegateImpl()
+	public GreetingServiceDelegateImpl() // needed by JProxy
 	{
 	}	
 	
@@ -930,11 +971,11 @@ image:browser_2.png[Fig 2, title="Fig 2"]
 
 Click on the "Close" button.
 
-Now we are going to modify on the fly the Java code of +GreetingServiceDelegateImpl+, just change "Hello" by "Hello <b>GUY</b>" and save:
+Now we are going to modify on the fly the Java code of +GreetingServiceDelegateImpl+, just change "Hello" by "Hello <b>BROTHER</b>" and save:
 
 [source,java]
 ----
-        return "Hello <b>GUY</b>, " + input + "!<br><br>I am running " + serverInfo
+        return "Hello <b>BROTHER</b>, " + input + "!<br><br>I am running " + serverInfo
                         + ".<br><br>It looks like you are using:<br>" + userAgent;
 ----
 

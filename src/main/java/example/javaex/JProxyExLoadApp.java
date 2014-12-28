@@ -99,10 +99,10 @@ public class JProxyExLoadApp
                 .setRelProxyOnReloadListener(proxyListener)
                 .setInputPaths(inputPaths)
                 .setJProxyInputSourceFileExcludedListener(excludedListener)
-                .setJProxyCompilerListener(compilerListener)
                 .setScanPeriod(scanPeriod)
                 .setClassFolder(classFolder)
                 .setCompilationOptions(compilationOptions)
+                .setJProxyCompilerListener(compilerListener)                
                 .setJProxyDiagnosticsListener(diagnosticsListener);
         
         JProxy.init(jpConfig);

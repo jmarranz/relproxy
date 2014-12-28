@@ -1,0 +1,4 @@
+/* Truco para añadir al menu lateral izdo una bolita a cada item */
+
+ul.sectlevel1 { list-style-type: square !important; }
+ul.sectlevel2 { list-style-type: circle !important; } 
