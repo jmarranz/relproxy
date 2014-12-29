@@ -4,7 +4,8 @@ RelProxy
 News
 ------
 
-- 2015-12-29 v0.8.1 Released! Focus on First release.
+- 2015-12-29 v0.8.1 Released! [Release Notes](https://github.com/jmarranz/relproxy/blob/master/relproxy/CHANGES.txt)
+
 
 Download Binaries and Docs
 ------
@@ -22,9 +23,11 @@ RelProxy is a simple Java and Groovy hot class reloader for Java and Groovy prov
 
 In case of Java "scripting", there is no a new language, is pure Java code with compilation on the fly.
 
-In spite of RelProxy is a general purpose tool it was heavily inspired in ItsNat web framework to provide hot class reload in development time... and if you want also in production.
+In spite of RelProxy is a general purpose tool it was conceived for [ItsNat web framework](http://www.itsnat.org) to provide hot class reload in development time... and if you want also in production.
 
 Take a look to the source code of RelProxy and [ItsNat Experiments](https://github.com/jmarranz/itsnat/tree/master/inexperiments) for Maven and Ant configurations (for NetBeans) and code examples of how to use with ItsNat (Java and Groovy code) and standalone shell. ItsNat examples are just an example of use case of RelProxy, RelProxy has no dependency on ItsNat and is not part of ItsNat.
+
+An [example of RelProxy applied to GWT-RPC](https://github.com/jmarranz/relproxy/tree/master/relproxy_ex_gwt) is also in the repository.
 
 As bonus, RelProxy provides a shell scripting environment to execute:
 
@@ -40,8 +43,9 @@ JavaSE application from source code).
 3) Interactive console to edit and execute Java code (ever compilation on the fly). [Example of launcher](https://github.com/jmarranz/relproxy/blob/master/relproxy/test_cmd/test_java_shell_interactive_launcher.sh)
 
 Finally RelProxy implements the official JSR-223 [Java Scripting API](http://docs.oracle.com/javase/6/docs/technotes/guides/scripting/programmer_guide/index.html) as found in Java 1.6 for "Java" language.
+By using this API you can embed Java as any other scripting language in your Java code.
 
-Yes, Java is also a dynamic and scripting language with no need of manual compilation and extremely fast and robust.
+Yes, Java is also a dynamic scripting language with no need of manual compilation, and it is extremely fast and robust.
 
 Online Docs Last Version
 ------
