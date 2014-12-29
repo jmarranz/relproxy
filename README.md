@@ -50,7 +50,7 @@ Yes, Java is also a dynamic scripting language with no need of manual compilatio
 Online Docs Last Version
 ------
 
-[Manual](http://relproxy.sourceforge.net/docs/manual.html)
+[Manual](http://relproxy.sourceforge.net/docs/manual/manual.html)
 
 [JavaDocs](http://relproxy.sourceforge.net/docs/javadoc/)
 
