@@ -4,16 +4,16 @@ RelProxy
 News
 ------
 
-- 2014-02-11 v0.8 Released! First release.
+- 2015-12-29 v0.8.1 Released! Focus on First release.
 
 Download Binaries and Docs
 ------
 
-Last version: v0.8
+Last version: v0.8.1
 
 [Download](https://sourceforge.net/projects/relproxy/files/)
 
-Distribution file includes binaries, manual and javadocs.
+Distribution file includes binaries, examples, manual and javadocs.
 
 Overview
 ------
