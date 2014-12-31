@@ -45,12 +45,17 @@ public class GreetingServiceImpl extends RemoteServiceServlet implements
 			public boolean isExcluded(File file, File rootFolder) {
 
 				String absPath = file.getAbsolutePath();				
-				return 	absPath.contains(File.separatorChar + "client" + File.separatorChar) ||
-						absPath.contains(File.separatorChar + "shared" + File.separatorChar) ||
-						absPath.endsWith(GreetingServiceDelegate.class.getSimpleName() + ".java") || 
-						absPath.endsWith(GreetingServiceImpl.class.getSimpleName() + ".java"); 						
-			}
-	    	
+				if (file.isDirectory())
+				{
+					return absPath.endsWith(File.separatorChar + "client") ||
+						   absPath.endsWith(File.separatorChar + "shared");					
+				}
+				else
+				{
+					return absPath.endsWith(GreetingServiceDelegate.class.getSimpleName() + ".java") || 
+						   absPath.endsWith(GreetingServiceImpl.class.getSimpleName() + ".java");
+				}
+			}	    	
 	    };
 	    
 	    String classFolder = null; // Optional: context.getRealPath("/") + "/WEB-INF/classes";

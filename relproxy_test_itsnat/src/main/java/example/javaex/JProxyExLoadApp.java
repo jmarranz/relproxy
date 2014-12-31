@@ -39,8 +39,16 @@ public class JProxyExLoadApp
             @Override
             public boolean isExcluded(File file, File rootFolderOfSources)
             {
-                String absPath = file.getAbsolutePath();
-                return absPath.endsWith("JProxyExampleAuxIgnored.java") && !absPath.contains(File.separatorChar + "hotreload" + File.separatorChar);
+                String absPath = file.getAbsolutePath();                
+                if (file.isDirectory())
+                {
+                    return absPath.contains(File.separatorChar + "nothotreload" + File.separatorChar); // In src folder
+                }
+                else
+                {
+                    return absPath.endsWith(JProxyExampleAuxIgnored.class.getSimpleName() + ".java") &&  // In folder below WEB-INF/
+                           !absPath.contains(File.separatorChar + "hotreload" + File.separatorChar);  // In src folder
+                }
             }            
         };
         

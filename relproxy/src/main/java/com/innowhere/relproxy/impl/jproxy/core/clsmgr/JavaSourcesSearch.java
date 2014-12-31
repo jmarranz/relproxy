@@ -24,38 +24,46 @@ public class JavaSourcesSearch
     {
         ClassDescriptorSourceScript scriptFileDesc = (scriptFile == null) ? null : processSourceFileScript(scriptFile,oldSourceFileMap,newSourceFileMap,updatedSourceFiles,newSourceFiles,deletedSourceFiles);
         File[] folderSourceList = engine.getFolderSourceList().getArray();
-        if (folderSourceList != null) // Si es null es el caso de shell interactivo o code snippet
-        {
-            boolean allEmpty = true;
+        if (folderSourceList == null) // Es el caso de shell interactivo o code snippet
+            return scriptFileDesc;
+        
+        boolean allEmpty = true;
 
-            String scriptFileJavaAbsPath = (scriptFile != null && (scriptFile instanceof SourceScriptRootFileJavaExt)) ? ((SourceScriptRootFileJavaExt)scriptFile).getFile().getAbsolutePath() : null;                       
-            
-            for(int i = 0; i < folderSourceList.length; i++)
-            {
-                File rootFolderOfSources = folderSourceList[i];
-                String[] children = rootFolderOfSources.list(); 
-                if (children == null) continue; // Empty
-                                
-                if (allEmpty) allEmpty = false;
-                recursiveSourceFileJavaSearch(scriptFileJavaAbsPath, i ,rootFolderOfSources,children,oldSourceFileMap,newSourceFileMap,updatedSourceFiles,newSourceFiles,deletedSourceFiles);
-                if (oldSourceFileMap != null && !oldSourceFileMap.isEmpty())        
-                    deletedSourceFiles.addAll(oldSourceFileMap.getClassDescriptorSourceFileColl());            
-            }
-            
-            if (allEmpty)
-                throw new RelProxyException("All specified input source folders are empty");
+        String scriptFileJavaAbsPath = (scriptFile != null && (scriptFile instanceof SourceScriptRootFileJavaExt)) ? ((SourceScriptRootFileJavaExt)scriptFile).getFile().getAbsolutePath() : null;                       
+
+        for(int i = 0; i < folderSourceList.length; i++)
+        {
+            File rootFolderOfSources = folderSourceList[i];
+            String[] children = rootFolderOfSources.list(); 
+            if (children == null) continue; // El que ha configurado los rootFolders es tonto y ha puesto alguno nulo o no es válido el path
+            if (children.length == 0) continue; // Empty
+
+            if (allEmpty) allEmpty = false;
+            recursiveSourceFileJavaSearch(scriptFileJavaAbsPath, i ,rootFolderOfSources,children,oldSourceFileMap,newSourceFileMap,updatedSourceFiles,newSourceFiles,deletedSourceFiles);
+            if (oldSourceFileMap != null && !oldSourceFileMap.isEmpty())        
+                deletedSourceFiles.addAll(oldSourceFileMap.getClassDescriptorSourceFileColl());            
         }
+
+        if (allEmpty)
+            throw new RelProxyException("All specified input source folders are empty");
+
         return scriptFileDesc;
     }
     
     private void recursiveSourceFileJavaSearch(String scriptFileJavaAbsPath,int rootFolderOfSourcesIndex,File parentPath,String[] relPathList,ClassDescriptorSourceFileRegistry oldSourceFileMap,ClassDescriptorSourceFileRegistry newSourceFileMap,LinkedList<ClassDescriptorSourceUnit> updatedSourceFiles,LinkedList<ClassDescriptorSourceUnit> newSourceFiles,LinkedList<ClassDescriptorSourceUnit> deletedSourceFiles)
     {
+        File rootFolderOfSources = engine.getFolderSourceList().getArray()[rootFolderOfSourcesIndex];           
+        JProxyInputSourceFileExcludedListener listener = engine.getJProxyInputSourceFileExcludedListener();        
+        
         for(String relPath : relPathList)
         {
             File file = new File(parentPath + "/" + relPath);        
             if (file.isDirectory())
             {
-                String[] children = file.list();   
+                if (listener != null && listener.isExcluded(file,rootFolderOfSources)) 
+                    continue;                
+                
+                String[] children = file.list();  // Si está vacío el array está vacío pero existe
                 recursiveSourceFileJavaSearch(scriptFileJavaAbsPath,rootFolderOfSourcesIndex,file,children,oldSourceFileMap,newSourceFileMap,updatedSourceFiles,newSourceFiles,deletedSourceFiles);
             }
             else
@@ -68,9 +76,6 @@ public class JavaSourcesSearch
                 if (scriptFileJavaAbsPath != null && scriptFileJavaAbsPath.equals(absPath))
                     continue; // Es el propio archivo script inicial que es .java, así evitamos considerarlo dos veces
                 
-                File rootFolderOfSources = engine.getFolderSourceList().getArray()[rootFolderOfSourcesIndex];                
-                
-                JProxyInputSourceFileExcludedListener listener = engine.getJProxyInputSourceFileExcludedListener();
                 if (listener != null && listener.isExcluded(file,rootFolderOfSources)) 
                     continue;
                                 

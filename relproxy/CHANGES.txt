@@ -1,6 +1,11 @@
 
  RELEASE CHANGES
 
+* 0.8.2 (UNPUBLISHED)
+
+    - Optimization: method JProxyInputSourceFileExcludedListener.isExcluded(File file,File) is called being file also a directory, if the directory is fully
+      excluded, RelProxy doesn't call isExcluded for files into the folder. Useful for big source code bases and used RelProxy for normal source code folders.
+
 * 0.8.1
 
     - Fixed a problem with class localization and loading of javax.* classes not included in Java core (ex javax.servlet classes)
