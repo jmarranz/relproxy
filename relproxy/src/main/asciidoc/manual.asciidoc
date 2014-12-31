@@ -742,12 +742,17 @@ public class GreetingServiceImpl extends RemoteServiceServlet implements
         {
             @Override
             public boolean isExcluded(File file, File rootFolder) {
-
                 String absPath = file.getAbsolutePath();				
-                return absPath.contains(File.separatorChar + "client" + File.separatorChar) ||
-                       absPath.contains(File.separatorChar + "shared" + File.separatorChar) ||
-                       absPath.endsWith(GreetingServiceDelegate.class.getSimpleName() + ".java") || 
-                       absPath.endsWith(GreetingServiceImpl.class.getSimpleName() + ".java"); 						
+                if (file.isDirectory())
+                {
+                    return absPath.endsWith(File.separatorChar + "client") ||
+                           absPath.endsWith(File.separatorChar + "shared");					
+                }
+                else
+                {
+                    return absPath.endsWith(GreetingServiceDelegate.class.getSimpleName() + ".java") || 
+                           absPath.endsWith(GreetingServiceImpl.class.getSimpleName() + ".java");
+                }
             }	    	
         };
 
@@ -866,12 +871,17 @@ Take a look to this new listener:
         {
             @Override
             public boolean isExcluded(File file, File rootFolder) {
-
-                    String absPath = file.getAbsolutePath();				
-                    return absPath.contains(File.separatorChar + "client" + File.separatorChar) ||
-                           absPath.contains(File.separatorChar + "shared" + File.separatorChar) ||
-                           absPath.endsWith(GreetingServiceDelegate.class.getSimpleName() + ".java") || 
-                           absPath.endsWith(GreetingServiceImpl.class.getSimpleName() + ".java"); 						
+                String absPath = file.getAbsolutePath();				
+                if (file.isDirectory())
+                {
+                    return absPath.endsWith(File.separatorChar + "client") ||
+                           absPath.endsWith(File.separatorChar + "shared");					
+                }
+                else
+                {
+                    return absPath.endsWith(GreetingServiceDelegate.class.getSimpleName() + ".java") || 
+                           absPath.endsWith(GreetingServiceImpl.class.getSimpleName() + ".java");
+                }
             }	    	
         };
 ----
@@ -884,9 +894,11 @@ Registered on:
 ----
 
 This listener filters the Java source files that need to be ignored by RelProxy/JProxy even when modified, because JProxy creates a new +ClassLoader+ and reload with it all hot-reloadable classes.
-Classes inside +client/+ and +shared/+ folders must not be reloadable because has no sense in GWT, +GreetingServiceImpl+ cannot be reloaded because is the servlet
-and breaks the standard JavaEE servlet system and +GreetingServiceDelegate+ cannot be reloaded because is the interface exposed to the non-reloadable world.
-By this way only +server/+ classes can be reloaded excluding the servlet class.
+Classes inside +client/+ and +shared/+ folders must not be reloadable because has no sense in GWT, when a folder part of a source folder of reloadable classes specified in configuration
+is going to be inspected for changed classes the method +isExcluded+ is called to check whether the complete folder must be excluded, this is very useful for projects with a lot of files
+not reloadable (in this case a lot of classes below +client/+ and +shared/+. +GreetingServiceImpl+ cannot be reloaded because is a servlet and cannot be registered in JProxy
+because is already in use by the JavaEE servlet system. Finally +GreetingServiceDelegate+ cannot be reloaded because is the interface exposed to the non-reloadable world.
+In summary only +server/+ classes can be reloaded excluding the servlet class and +GreetingServiceDelegate+.
 
 This is the code of +GreetingServiceDelegate+ :
 
