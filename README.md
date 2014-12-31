@@ -75,9 +75,9 @@ You can read the [in progress latest documentation here](https://github.com/jmar
 Articles/Presentations
 ------
 
-[v0.8 announce at JavaLobby](http://java.dzone.com/articles/presenting-relproxy-hot-class)
+Dec 31,2014 [RelProxy v0.8.1 reduce el número de redeploys en GWT-RPC y otros Java web frameworks](http://www.javahispano.org/portada/2014/12/31/relproxy-v081-reduce-el-numero-de-redeploys-en-gwt-rpc-y-otr.html) Published at javaHispano
 
-[v0.8 announce at JavaHispano](http://www.javahispano.org/portada/2014/2/12/publicado-relproxy-v08-hot-class-reloader-y-scripting-para-j.html)
+Feb 15,2014 [v0.8 announce at JavaLobby](http://java.dzone.com/articles/presenting-relproxy-hot-class)
 
-
+Feb 12,2014 [v0.8 announce at javaHispano](http://www.javahispano.org/portada/2014/2/12/publicado-relproxy-v08-hot-class-reloader-y-scripting-para-j.html)
 
