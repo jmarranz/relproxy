@@ -4,9 +4,11 @@ import com.innowhere.relproxy.RelProxyException;
 import com.innowhere.relproxy.impl.jproxy.core.clsmgr.ClassDescriptor;
 import java.io.File;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.JarURLConnection;
 import java.net.URI;
 import java.net.URL;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
@@ -48,10 +50,23 @@ public class JavaFileObjectInputClassFinderByClassLoader
 
     private Collection<JavaFileObjectInputClassInFileSystem> listUnder(String packageName, URL packageFolderURL) 
     {
-        File directory = new File(packageFolderURL.getFile());
-        if (directory.isDirectory()) { // browse local .class files - useful for local execution
-            return processDir(packageName, directory);
-        } else { // browse a jar file
+    	String pkgPath = packageFolderURL.toExternalForm(); //packageFolderURL.getFile(); El problema de getFile es que también está URL-encoded (un espacio es %20) lo cual no es compatible con File
+
+        if (pkgPath.startsWith("file:"))
+        {
+            pkgPath = pkgPath.substring("file:".length());
+        
+            try { pkgPath = URLDecoder.decode(pkgPath, "UTF-8"); } // Detecté el problema con Vaadin en un path con "Documents%20and%20Settings" con %20 obviamente no es un path correcto, deben ser espacios
+            catch (UnsupportedEncodingException ex) { throw new RelProxyException(ex); }
+            
+            File directory = new File(pkgPath);
+            if (directory.isDirectory())  // browse local .class files - useful for local execution
+                return processDir(packageName, directory);            
+            else
+                throw new RelProxyException("Internal Error:" + pkgPath);
+        }
+        else 
+        { // browse a jar file
             return processJar(packageFolderURL);
         } // maybe there can be something else for more involved class loaders
     }
