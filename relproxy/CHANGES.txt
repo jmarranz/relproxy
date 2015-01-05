@@ -3,8 +3,11 @@
 
 * 0.8.2 (UNPUBLISHED)
 
-    - Optimization: method JProxyInputSourceFileExcludedListener.isExcluded(File file,File) is called being file also a directory, if the directory is fully
+    - Optimization: method JProxyInputSourceFileExcludedListener.isExcluded(File file,File) is called being parameter file also a directory, if the directory is fully
       excluded, RelProxy doesn't call isExcluded for files into the folder. Useful for big source code bases and used RelProxy for normal source code folders.
+    - Bug fix in case of paths with spaces
+    - Manual has been very improved documenting new features and new chapters.
+    - Added to manual: "Configuring your Tomcat server in Eclipse to avoid automatic context reloading" .
 
 * 0.8.1
 
