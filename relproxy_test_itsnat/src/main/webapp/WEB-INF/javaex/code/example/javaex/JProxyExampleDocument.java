@@ -58,7 +58,8 @@ public class JProxyExampleDocument extends JProxyExampleDocumentBase
             public void handleEvent(Event evt) 
             {
                 String text = textInput.getText(); 
-                resultsElem.setTextContent(text);
+                String comment = " YES I SAID THIS";
+                resultsElem.setTextContent(text + comment);
             }
         };
         
@@ -67,7 +68,7 @@ public class JProxyExampleDocument extends JProxyExampleDocumentBase
 
         this.resultsElem = doc.getElementById("resultsId");
         
-        System.out.println("JProxyExampleDocument 1 " + this.getClass().getClassLoader().hashCode());        
+        System.out.println("JProxyExampleDocument 2 " + this.getClass().getClassLoader().hashCode());        
         new AuxMemberInMethod().log();
         AuxMember.log();
         JProxyExampleAux.log();

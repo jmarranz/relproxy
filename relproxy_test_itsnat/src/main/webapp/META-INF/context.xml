@@ -1,2 +1,2 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Context antiJARLocking="true" path="/relproxy_test_itsnat"/>
+<Context reloadable="false" antiJARLocking="true" path="/relproxy_test_itsnat"/>

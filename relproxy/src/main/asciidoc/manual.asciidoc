@@ -1,4 +1,4 @@
-// :icons: font es necesario para que se considere en la generacion de HTML usando Font Awesome en donde palabras especiales son iconos por ej en "NOTE:" "IMPORTANT:" etc 
+// :icons: font es necesario para que se considere en la generación de HTML usando Font Awesome en donde palabras especiales son iconos por ej en "NOTE:" "IMPORTANT:" etc 
 :icons: font  
 // :linkcss: por defecto está definida por si acaso, para linkar asciidoctor.css
 :linkcss:
