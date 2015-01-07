@@ -67,7 +67,7 @@ public class JavaFileManagerInMemory extends ForwardingJavaFileManager
                 // dicha configuración es por ejemplo el classpath tanto para encontrar .class como .java
                 // En nuestro caso no disponemos del classpath de los .class, disponemos del ClassLoader a través del cual podemos obtener "a mano" via resources los 
                 // JavaFileObject de los .class que necesitamos.
-                // Ahora bien, no es el caso de los archivos fuente en donde sí tenemos un path claro el cual pasamos como classpath al compilador y por tanto un super.list(location, packageName, kinds, recurse)
+                // Ahora bien, no es el caso de los archivos fuente en donde sí­ tenemos un path claro el cual pasamos como classpath al compilador y por tanto un super.list(location, packageName, kinds, recurse)
                 // nos devolverá los .java (como JavaFileObject claro) si encuentra archivos correspondientes al package buscado.
                                
                 LinkedList<JavaFileObject> result = new LinkedList<JavaFileObject>();                
