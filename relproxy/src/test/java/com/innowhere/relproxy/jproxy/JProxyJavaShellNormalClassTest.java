@@ -14,9 +14,6 @@ import org.junit.Test;
  */
 public class JProxyJavaShellNormalClassTest
 {
-   
-     
-    
     public JProxyJavaShellNormalClassTest()
     {
     }

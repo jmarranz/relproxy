@@ -33,7 +33,7 @@ public class JProxyServletContextListener implements ServletContextListener
         String[] inputPaths = new String[] 
         { realPath + "/WEB-INF/javaex/code/", 
           realPath + "/WEB-INF/javaex/code2/", 
-          realPath + "/src/java/inexp/jproxyex/hotreload/" };
+          realPath + "/../../src/main/java/example/javaex/hotreload/" };
              
         JProxyInputSourceFileExcludedListener excludedListener = new JProxyInputSourceFileExcludedListener()
         {

@@ -1,6 +1,7 @@
 package com.innowhere.relproxy.impl.jproxy.core.clsmgr.comp;
 
 import com.innowhere.relproxy.RelProxyException;
+import com.innowhere.relproxy.impl.FileExt;
 import com.innowhere.relproxy.impl.jproxy.core.clsmgr.ClassDescriptor;
 import com.innowhere.relproxy.impl.jproxy.core.clsmgr.ClassDescriptorInner;
 import com.innowhere.relproxy.impl.jproxy.core.clsmgr.ClassDescriptorSourceUnit;
@@ -124,7 +125,7 @@ public class JProxyCompilerInMemory
         if (sourceFileDesc instanceof ClassDescriptorSourceFileJava)
         {
             List<File> sourceFileList = new ArrayList<File>();
-            sourceFileList.add(((ClassDescriptorSourceFileJava)sourceFileDesc).getSourceFile());            
+            sourceFileList.add(((ClassDescriptorSourceFileJava)sourceFileDesc).getSourceFile().getFile());            
             compilationUnits = standardFileManager.getJavaFileObjectsFromFiles(sourceFileList);
         }
         else if (sourceFileDesc instanceof ClassDescriptorSourceScript)
@@ -160,15 +161,15 @@ public class JProxyCompilerInMemory
         if (compilationOptions != null)        
             for(String option : compilationOptions) finalCompilationOptions.add(option);
         
-        File[] folderSourceList = engine.getFolderSourceList().getArray();
+        FileExt[] folderSourceList = engine.getFolderSourceList().getArray();
         if (folderSourceList != null)
         {
             finalCompilationOptions.add("-classpath");
             StringBuilder classPath = new StringBuilder();
             for(int i = 0; i < folderSourceList.length; i++)
             {
-                File folderSources = folderSourceList[i];
-                classPath.append(folderSources.getAbsolutePath());
+                FileExt folderSources = folderSourceList[i];
+                classPath.append(folderSources.getCanonicalPath());
                 if (i < folderSourceList.length - 1)
                     classPath.append(File.pathSeparatorChar);       
             }

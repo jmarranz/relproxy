@@ -7,8 +7,6 @@ import com.innowhere.relproxy.impl.jproxy.core.JProxyImpl;
 import com.innowhere.relproxy.impl.jproxy.core.clsmgr.ClassDescriptorSourceScript;
 import com.innowhere.relproxy.impl.jproxy.core.clsmgr.FolderSourceList;
 import com.innowhere.relproxy.impl.jproxy.core.clsmgr.SourceScriptRoot;
-import com.innowhere.relproxy.jproxy.JProxyCompilerListener;
-import java.io.File;
 import java.lang.reflect.Method;
 import java.util.LinkedList;
 
@@ -60,8 +58,8 @@ public abstract class JProxyShellImpl extends JProxyImpl
         config.setInputPath(inputPath);
         config.setJProxyInputSourceFileExcludedListener(null);        
         config.setJProxyCompilerListener(null);
-        config.setJProxyDiagnosticsListener(null); // Nos vale el log por defecto y no hay manera de espeficar otra cosa via comando
-
+        config.setJProxyDiagnosticsListener(null); // Nos vale el log por defecto y no hay manera de espeficar otra cosa via comando      
+        
         LinkedList<String> argsToScript = new LinkedList<String>();
         processConfigParams(args,argsToScript,config);
         

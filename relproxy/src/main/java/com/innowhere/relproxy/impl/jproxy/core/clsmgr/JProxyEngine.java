@@ -1,5 +1,6 @@
 package com.innowhere.relproxy.impl.jproxy.core.clsmgr;
 
+import com.innowhere.relproxy.impl.FileExt;
 import com.innowhere.relproxy.impl.jproxy.JProxyUtil;
 import com.innowhere.relproxy.impl.jproxy.core.JProxyImpl;
 import com.innowhere.relproxy.impl.jproxy.core.clsmgr.comp.JProxyCompilerContext;
@@ -30,6 +31,7 @@ public class JProxyEngine
     protected String folderClasses; // Puede ser nulo (es decir NO salvar como .class los cambios)
     protected long scanPeriod;
     protected ClassDescriptorSourceFileRegistry sourceRegistry;
+    protected LinkedList<ClassDescriptorSourceUnit> sourceFilesCompiled;    
     protected String sourceEncoding = "UTF-8"; // Por ahora, provisional
     public volatile boolean stop = false;
     protected TimerTask task;
@@ -59,6 +61,8 @@ public class JProxyEngine
     {
         ClassDescriptorSourceScript scriptFileDesc = detectChangesInSources(); // Primera vez para detectar cambios en los .java respecto a los .class mientras el servidor estaba parado
         
+        reloadWhenChanged(); // La primera vez cargamos pues el código fuente manda sobre los .class
+
         startScanner();
         
         return scriptFileDesc;
@@ -135,6 +139,7 @@ public class JProxyEngine
     {
         if (task != null)
         {
+            this.stop = true;
             task.cancel();
             this.task = null;
             return true;
@@ -147,7 +152,11 @@ public class JProxyEngine
     
     public synchronized boolean start()    
     {
-        if (task == null) return startScanner();
+        if (task == null)
+        {
+            this.stop = false;
+            return startScanner();
+        }
         else return false;
     }        
     
@@ -199,13 +208,6 @@ public class JProxyEngine
         
         compiler.compileSourceFile(sourceFile,context,customClassLoader,sourceRegistry);      
     }        
-    
-    private void reloadAndSaveSource(ClassDescriptorSourceUnit sourceFile)
-    {       
-        reloadSource(sourceFile,false); // No hace falta que detectemos las innerclasses porque al compilar se "descubren" todas
-
-        if (isSaveClassesMode()) saveClasses(sourceFile);        
-    }       
     
     private void reloadSource(ClassDescriptorSourceUnit sourceFile,boolean detectInnerClasses)
     {
@@ -293,8 +295,15 @@ public class JProxyEngine
             }
         }
     }          
+   
+    public synchronized ClassDescriptorSourceScript detectChangesInSourcesAndReload()
+    {
+        ClassDescriptorSourceScript res = detectChangesInSources();
+        reloadWhenChanged();
+        return res;
+    }    
     
-    public synchronized ClassDescriptorSourceScript detectChangesInSources()
+    private synchronized ClassDescriptorSourceScript detectChangesInSources()
     {
         // boolean firstTime = (sourceFileMap == null); // La primera vez sourceFileMap es null
 
@@ -310,21 +319,19 @@ public class JProxyEngine
         this.sourceRegistry = newSourceRegistry;
 
         if (!updatedSourceFiles.isEmpty() || !newSourceFiles.isEmpty() || !deletedSourceFiles.isEmpty()) // También el hecho de eliminar una clase debe implicar crear un ClassLoader nuevo para que dicha clase desaparezca de las clases cargadas aunque será muy raro que sólo eliminemos un .java y no añadamos/cambiemos otros, otro motico es porque si tenemos configurado el autosalvado de .class tenemos que eliminar en ese caso
-        {   
-            addNewClassLoader();
-                        
-            LinkedList<ClassDescriptorSourceUnit> sourceFilesToRecompile = new LinkedList<ClassDescriptorSourceUnit>();
-            sourceFilesToRecompile.addAll(updatedSourceFiles);
-            sourceFilesToRecompile.addAll(newSourceFiles);            
+        {                      
+            LinkedList<ClassDescriptorSourceUnit> sourceFilesToCompile = new LinkedList<ClassDescriptorSourceUnit>();
+            sourceFilesToCompile.addAll(updatedSourceFiles);
+            sourceFilesToCompile.addAll(newSourceFiles);            
             
-            updatedSourceFiles = null;
-            newSourceFiles = null;
+            updatedSourceFiles = null; // Ya no se necesita
+            newSourceFiles = null; // Ya no se necesita
             
-            if (!sourceFilesToRecompile.isEmpty())             
+            if (!sourceFilesToCompile.isEmpty())             
             {
                 // Eliminamos el estado de la anterior compilación de todas las clases que van a recompilarse antes de compilarlas porque al compilar una clase es posible que
                 // se necesite recompilar al mismo tiempo una dependiente de otra (ej clase base) y luego se intente compilar la dependiente y sería un problema que limpiáramos antes de compilar cada archivo
-                for(ClassDescriptorSourceUnit sourceFile : sourceFilesToRecompile)            
+                for(ClassDescriptorSourceUnit sourceFile : sourceFilesToCompile)            
                     cleanBeforeCompile(sourceFile);   
                 
            
@@ -333,26 +340,26 @@ public class JProxyEngine
                 try
                 {            
                     
-                    for(ClassDescriptorSourceUnit sourceFile : sourceFilesToRecompile)            
+                    for(ClassDescriptorSourceUnit sourceFile : sourceFilesToCompile)            
                     {
                         File file = null;
                         if (compilerListener != null)
                         {                           
                             SourceUnit srcUnit = sourceFile.getSourceUnit();
                             if (srcUnit instanceof SourceFileJavaNormal)
-                                file = ((SourceFileJavaNormal)srcUnit).getFile();
+                                file = ((SourceFileJavaNormal)srcUnit).getFileExt().getFile();
                             else if (srcUnit instanceof SourceScriptRootFile)
-                                file = ((SourceScriptRootFile)srcUnit).getFile();
+                                file = ((SourceScriptRootFile)srcUnit).getFileExt().getFile();
                             else if (srcUnit instanceof SourceScriptRootInMemory) // Caso de shell interactive y code snippet, en ese caso NO hay listener porque no hay forma de definirlo
                                 file = null;
                         }
                         
-                        if (file != null)
+                        if (compilerListener != null && file != null)
                             compilerListener.beforeCompile(file);                        
                         
                         compile(sourceFile,context);        
                         
-                        if (file != null)
+                        if (compilerListener != null && file != null)
                             compilerListener.afterCompile(file);                        
                     }
                 }
@@ -361,26 +368,62 @@ public class JProxyEngine
                     context.close();
                 }
                 
-                for(ClassDescriptorSourceUnit sourceFile : sourceFilesToRecompile)            
-                    reloadAndSaveSource(sourceFile);                
+                if (isSaveClassesMode())
+                {
+                    for(ClassDescriptorSourceUnit sourceFile : sourceFilesToCompile)            
+                    {
+                        saveClasses(sourceFile);                     
+                    }                
+                }
             }
 
             if (isSaveClassesMode() && !deletedSourceFiles.isEmpty())
                 for(ClassDescriptorSourceUnit sourceFile : deletedSourceFiles)
                     deleteClasses(sourceFile);                     
             
-            deletedSourceFiles = null;
-            
+            deletedSourceFiles = null; // Ya no se necesita
+              
             for(ClassDescriptorSourceUnit sourceFile : sourceRegistry.getClassDescriptorSourceFileColl())
             {
-                if (sourceFilesToRecompile.contains(sourceFile))
+                if (sourceFilesToCompile.contains(sourceFile))
                     continue;
                 // las clases deleted no están en sourceFileMap por lo que no hay que filtrarlas
                 reloadSource(sourceFile,true); // Ponemos detectInnerClasses a true porque son archivos fuente que posiblemente nunca se hayan tocado desde la carga inicial y por tanto quizás se desconocen las innerclasses
             }
+            
+            this.sourceFilesCompiled = sourceFilesToCompile;
+        }
+        else
+        {
+            this.sourceFilesCompiled = null;
         }
         
         return scriptFileDesc;
     }
     
+    public synchronized boolean reloadWhenChanged()
+    {
+        if (sourceFilesCompiled != null && !sourceFilesCompiled.isEmpty())
+        {
+            addNewClassLoader();
+            
+            for(ClassDescriptorSourceUnit sourceFile : sourceFilesCompiled)            
+            {
+                reloadSource(sourceFile,false); // No hace falta que detectemos las innerclasses porque al compilar se "descubren" todas                    
+            }            
+                        
+            for(ClassDescriptorSourceUnit sourceFile : sourceRegistry.getClassDescriptorSourceFileColl())  // sourceRegistry NUNCA es nulo pues se ejecuta una primera vez en tiempo de inicialización
+            {
+                if (sourceFilesCompiled.contains(sourceFile))
+                    continue;
+                // las clases deleted no están en sourceFileMap por lo que no hay que filtrarlas
+                reloadSource(sourceFile,true); // Ponemos detectInnerClasses a true porque son archivos fuente que posiblemente nunca se hayan tocado desde la carga inicial y por tanto quizás se desconocen las innerclasses
+            }            
+            
+            this.sourceFilesCompiled = null;
+            return true;
+        }
+        return false;         
+    }
+   
 }

@@ -1,5 +1,6 @@
 package com.innowhere.relproxy.impl.jproxy.core.clsmgr;
 
+import com.innowhere.relproxy.impl.FileExt;
 import com.innowhere.relproxy.impl.jproxy.JProxyUtil;
 import java.io.File;
 
@@ -9,17 +10,17 @@ import java.io.File;
  */
 public abstract class SourceScriptRootFile extends SourceScriptRoot
 {
-    protected File sourceFile;
+    protected FileExt sourceFile;
     
-    public SourceScriptRootFile(File sourceFile,FolderSourceList folderSourceList)
+    public SourceScriptRootFile(FileExt sourceFile,FolderSourceList folderSourceList)
     {
         super(buildClassNameFromFile(sourceFile,folderSourceList));
         this.sourceFile = sourceFile;         
     }
     
-    public static SourceScriptRootFile createSourceScriptRootFile(File sourceFile,FolderSourceList folderSourceList)
+    public static SourceScriptRootFile createSourceScriptRootFile(FileExt sourceFile,FolderSourceList folderSourceList)
     {
-        String ext = JProxyUtil.getFileExtension(sourceFile); // Si no tiene extensión devuelve ""
+        String ext = JProxyUtil.getFileExtension(sourceFile.getFile()); // Si no tiene extensión devuelve ""
         if ("java".equals(ext))
             return new SourceScriptRootFileJavaExt(sourceFile,folderSourceList);
         else
@@ -29,10 +30,10 @@ public abstract class SourceScriptRootFile extends SourceScriptRoot
     @Override
     public long lastModified()
     {
-        return sourceFile.lastModified();
+        return sourceFile.getFile().lastModified();
     }    
 
-    public File getFile()
+    public FileExt getFileExt()
     {
         return sourceFile;
     }

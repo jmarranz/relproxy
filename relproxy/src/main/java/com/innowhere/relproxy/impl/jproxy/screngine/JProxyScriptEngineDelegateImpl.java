@@ -67,7 +67,7 @@ public class JProxyScriptEngineDelegateImpl extends JProxyImpl
                 ClassDescriptorSourceScript classDescSourceScript2 = null;
                 try
                 {
-                    classDescSourceScript2 = jproxyEngine.detectChangesInSources();
+                    classDescSourceScript2 = jproxyEngine.detectChangesInSourcesAndReload();
                 }
                 catch(JProxyCompilationException ex) 
                 {

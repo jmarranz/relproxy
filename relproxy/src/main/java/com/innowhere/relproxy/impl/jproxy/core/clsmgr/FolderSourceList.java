@@ -1,6 +1,8 @@
 package com.innowhere.relproxy.impl.jproxy.core.clsmgr;
 
 import com.innowhere.relproxy.RelProxyException;
+import com.innowhere.relproxy.impl.FileExt;
+import com.innowhere.relproxy.impl.jproxy.JProxyUtil;
 import java.io.File;
 
 /**
@@ -9,41 +11,47 @@ import java.io.File;
  */
 public class FolderSourceList
 {
-    protected File[] sourceList;
+    protected FileExt[] sourceList;
     
     public FolderSourceList(String[] sourcePathList)
     {
         if (sourcePathList != null) // En el caso de shell interactivo es null
         {
             // El convertir siempre a File los paths es para normalizar paths
-            this.sourceList = new File[sourcePathList.length];
+            this.sourceList = new FileExt[sourcePathList.length];
             for(int i = 0; i < sourcePathList.length; i++) 
-                sourceList[i] = new File(sourcePathList[i]);
+            {
+                File folder = new File(sourcePathList[i]);
+                if (!folder.exists())
+                    throw new RelProxyException("Source folder does not exist: " + folder.getAbsolutePath());
+                if (!folder.isDirectory())
+                    throw new RelProxyException("Source folder is not a folder: " + folder.getAbsolutePath());                
+                sourceList[i] = new FileExt(folder);                
+            }
         }
     }    
     
-    public File[] getArray()
+    public FileExt[] getArray()
     {
         return sourceList; 
     }
     
-    protected String buildClassNameFromFile(File sourceFile)
+    protected String buildClassNameFromFile(FileExt sourceFile)
     {
-        String path = sourceFile.getAbsolutePath();
-        for(File rootFolderOfSources : sourceList)
+        for(FileExt rootFolderOfSources : sourceList)
         {
             String className = buildClassNameFromFile(sourceFile,rootFolderOfSources);
             if (className != null)
                 return className;            
         }
-        throw new RelProxyException("File not found in source folders: " + path);
+        throw new RelProxyException("File not found in source folders: " + sourceFile.getFile().getAbsolutePath());
     }           
     
-    protected static String buildClassNameFromFile(File sourceFile,File rootFolderOfSources)
-    {
-        String path = sourceFile.getAbsolutePath();
+    protected static String buildClassNameFromFile(FileExt sourceFile,FileExt rootFolderOfSources)
+    {        
+        String path = sourceFile.getCanonicalPath();
 
-        String rootFolderOfSourcesAbsPath = rootFolderOfSources.getAbsolutePath();
+        String rootFolderOfSourcesAbsPath = rootFolderOfSources.getCanonicalPath();
         int pos = path.indexOf(rootFolderOfSourcesAbsPath); 
         if (pos == 0) // Está en este source folder
         {

@@ -88,11 +88,12 @@
   <build>
     <plugins>
         
+      <!-- This project is mainly created to test and development help (including source code debug) of relproxy -->        
+      <!--
       <plugin>
-        <!-- This project is mainly created to test and development help (including source code debug) of relproxy -->
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>build-helper-maven-plugin</artifactId>
-        <version>1.7</version>
+        <version>1.9.1</version>
         <executions>
           <execution>
             <id>add-source</id>
@@ -108,7 +109,7 @@
           </execution>
         </executions>
       </plugin>
-              
+              -->
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-compiler-plugin</artifactId>

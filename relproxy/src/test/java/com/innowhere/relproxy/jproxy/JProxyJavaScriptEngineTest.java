@@ -3,6 +3,8 @@ package com.innowhere.relproxy.jproxy;
 import com.innowhere.relproxy.RelProxyOnReloadListener;
 import static com.innowhere.relproxy.jproxy.util.JProxyTestUtil.RESOURCES_FOLDER;
 import static com.innowhere.relproxy.jproxy.util.JProxyTestUtil.getProjectFolder;
+import example.javashellex.JProxyShellExampleListener;
+import example.javashellex.JProxyShellExampleListenerImpl;
 
 import java.io.File;
 import java.lang.reflect.Method;
@@ -135,7 +137,7 @@ public class JProxyJavaScriptEngineTest
 
         manager.getBindings().put("msg","HELLO GLOBAL WORLD!");
 
-        ScriptEngine engine = manager.getEngineByName("Java");
+        ScriptEngine engine = (JProxyScriptEngine)manager.getEngineByName("Java");
 
         assertNotNull(engine);
 

@@ -1,5 +1,6 @@
 package com.innowhere.relproxy.impl.jproxy.core.clsmgr;
 
+import com.innowhere.relproxy.impl.FileExt;
 import java.io.File;
 
 /**
@@ -8,9 +9,9 @@ import java.io.File;
  */
 public class SourceFileJavaNormal extends SourceUnit
 {
-    protected File sourceFile;
+    protected FileExt sourceFile;
     
-    public SourceFileJavaNormal(File sourceFile,File rootFolderOfSources)
+    public SourceFileJavaNormal(FileExt sourceFile,FileExt rootFolderOfSources)
     {
         super(buildClassNameFromFile(sourceFile,rootFolderOfSources));        
         this.sourceFile = sourceFile;      
@@ -19,10 +20,10 @@ public class SourceFileJavaNormal extends SourceUnit
     @Override
     public long lastModified()
     {
-        return sourceFile.lastModified();
+        return sourceFile.getFile().lastModified();
     }
     
-    public File getFile()
+    public FileExt getFileExt()
     {
         return sourceFile;
     }

@@ -34,6 +34,7 @@ public class JProxyVersionedObject<T> extends GenericProxyVersionedObject<T>
     protected <T> Class<T> reloadClass() 
     {
         JProxyEngine engine = getJProxyInvocationHandler().getJProxyImpl().getJProxyEngine();        
+        engine.reloadWhenChanged();
         return (Class<T>)engine.findClass(className);           
     }
    

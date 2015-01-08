@@ -1,6 +1,7 @@
 package com.innowhere.relproxy.impl.jproxy.shell;
 
 import com.innowhere.relproxy.RelProxyException;
+import com.innowhere.relproxy.impl.FileExt;
 import com.innowhere.relproxy.impl.jproxy.JProxyConfigImpl;
 import com.innowhere.relproxy.impl.jproxy.JProxyUtil;
 import com.innowhere.relproxy.impl.jproxy.core.clsmgr.ClassDescriptorSourceScript;
@@ -16,7 +17,7 @@ import java.util.LinkedList;
  */
 public class JProxyShellScriptFileImpl extends JProxyShellImpl
 {
-    protected File scriptFile;
+    protected FileExt scriptFile;
     
     public void init(String[] args)
     {
@@ -24,7 +25,7 @@ public class JProxyShellScriptFileImpl extends JProxyShellImpl
         if (!scriptFile.exists())        
             throw new RelProxyException("File " + args[0] + " does not exist");
         
-        this.scriptFile = scriptFile;
+        this.scriptFile = new FileExt(scriptFile);
         
         File parentDir = JProxyUtil.getParentDir(scriptFile);
         String inputPath = parentDir.getAbsolutePath();        
