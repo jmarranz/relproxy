@@ -33,7 +33,7 @@ public class JProxyExampleDocument
             public void handleEvent(Event evt) 
             {
                 String text = textInput.getText(); 
-                String comment = "  YES I SAID THAT 2"; // " YES I SAID THAT";                
+                String comment = "  YES I SAID THAT"; // " YES I SAID THAT";                
                 resultsElem.setTextContent(text + comment);
             }
         };

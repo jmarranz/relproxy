@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project basedir="." default="sync_relproxy_src" name="relproxy_dev" xmlns:artifact="antlib:org.apache.maven.artifact.ant">
+    
+    <target name="sync_relproxy_src">
+                       
+        <property name="source" value="${basedir}/../relproxy/src/main/java/com/innowhere/relproxy" />        
+        <property name="target" value="${basedir}/src/main/java/com/innowhere/relproxy" />                
+        
+        <sync todir="${target}" includeEmptyDirs="true">
+          <fileset dir="${source}"/>
+        </sync>
+
+        <echo message="If you change RelProxy in relproxy_test_itsnat you must copy manually your changes, for instance use WinMerge for changes" />
+    </target>    
+    
+</project>

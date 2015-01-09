@@ -58,7 +58,7 @@ public class JProxyExampleDocument extends JProxyExampleDocumentBase
             public void handleEvent(Event evt) 
             {
                 String text = textInput.getText(); 
-                String comment = " YES I SAID THIS 1";
+                String comment = " YES I SAID THIS";
                 resultsElem.setTextContent(text + comment);
             }
         };

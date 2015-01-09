@@ -33,22 +33,30 @@ public class JProxyServletContextListener implements ServletContextListener
         String[] inputPaths = new String[] 
         { realPath + "/WEB-INF/javaex/code/", 
           realPath + "/WEB-INF/javaex/code2/", 
-          realPath + "/../../src/main/java/example/javaex/hotreload/" };
+          realPath + "/../../src/main/java/" };
              
         JProxyInputSourceFileExcludedListener excludedListener = new JProxyInputSourceFileExcludedListener()
         {
             @Override
             public boolean isExcluded(File file, File rootFolderOfSources)
             {
+                String rootFolderAbsPath = rootFolderOfSources.getAbsolutePath();
                 String absPath = file.getAbsolutePath();                
-                if (file.isDirectory())
+                if (rootFolderAbsPath.endsWith(File.separatorChar + "code") || rootFolderAbsPath.endsWith(File.separatorChar + "code2"))
                 {
-                    return absPath.contains(File.separatorChar + "nothotreload" + File.separatorChar); // In src folder
+                    return absPath.endsWith(JProxyExampleAuxIgnored.class.getSimpleName() + ".java");
                 }
-                else
+                else // /../../src/main/java/
                 {
-                    return absPath.endsWith(JProxyExampleAuxIgnored.class.getSimpleName() + ".java") &&  // In folder below WEB-INF/
-                           !absPath.contains(File.separatorChar + "hotreload" + File.separatorChar);  // In src folder
+                    if (file.isDirectory())
+                    {
+                        return absPath.endsWith(File.separatorChar + "com" + File.separatorChar + File.separatorChar + "innowhere") || // El código fuente de RelProxy lo tenemos copiado para testear, tenemos que excluirlo
+                               absPath.endsWith(File.separatorChar + "nothotreload");
+                    }
+                    else
+                    {
+                        return !absPath.contains(File.separatorChar + "hotreload" + File.separatorChar);
+                    }
                 }
             }            
         };

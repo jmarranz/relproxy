@@ -86,7 +86,7 @@ public class JProxyExampleServlet extends HttpServletWrapper
             {
                 List<Diagnostic<? extends JavaFileObject>> diagList = diagnostics.getDiagnostics();                
                 int i = 1;
-                for (Diagnostic diagnostic : diagList)
+                for (Diagnostic<? extends JavaFileObject> diagnostic : diagList)
                 {
                    System.err.println("Diagnostic " + i);
                    System.err.println("  code: " + diagnostic.getCode());
