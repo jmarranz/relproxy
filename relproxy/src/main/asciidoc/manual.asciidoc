@@ -61,7 +61,7 @@ Groovy is also a language compiled to bytecode, but compilation happens on deman
 The problem of using Groovy in ItsNat was the need of registering Groovy listeners in ItsNat Java listeners (view processors), when registering
 on an ItsNat (Java) listener the object registered is "frozen" and cannot be reloaded...
 
-This was the context to invent RelProxy and is the reason of the name, Reload + Proxy, the first feature of RelProxy was creating Java proxies (+java.lang.reflect.Proxy+) to wrap Groovy objects before registering
+This was the context to invent RelProxy and is the reason of the name, Reload + Proxy, the first feature of RelProxy was creating Java proxies (`java.lang.reflect.Proxy`) to wrap Groovy objects before registering
 into Java methods (ItsNat listeners), RelProxy proxies ever use the last version of the Groovy class by using the hot class loader of Groovy, by this way we can hot class reload classes in ItsNat... coded in Groovy.
 
 The next step is obvious, Groovy class reloader is also a Groovy "compiler on demand", if we are able to make a "compiler on demand" for Java we can get THE SAME AS Groovy provides... in Java.
@@ -92,7 +92,7 @@ That is all, welcome to dynamic Java, welcome to a more dynamic Groovy in a Java
 == RelProxy: a fast alternative to context reloading for Java (and Groovy)
 
 Most of Java application servers (servlet containers) have the context reloading feature. Context reloading is a great feature of Java servlet/EE application servers, 
-it reloads the web application usually when a .class is changed in +WEB-INF/classes+. This feature is usually used in development with the help of your favourite IDE, 
+it reloads the web application usually when a .class is changed in `WEB-INF/classes`. This feature is usually used in development with the help of your favourite IDE, 
 when you change a Java source file the IDE automatically compiles the file and save the .class to WEB-INF/classes, this change triggers the context reloading loading the new 
 changed class.
 
@@ -109,11 +109,11 @@ of the tool because your are just going to reload just a subset of the source co
 of RelProxy but other type of Java applications, for instance desktop, could be used.
 
 RelProxy can be used in development only and/or in production, in the case of production, source code going to be reloaded is included into the war file (recommended of course
-under +WEB-INF/+), you can modify the Java source file directly in production and automatically changes are detected, recompiled in memory and reloaded when needed, no .class
+under `WEB-INF/`), you can modify the Java source file directly in production and automatically changes are detected, recompiled in memory and reloaded when needed, no .class
 change is needed, by this way you get the similar experience when you change the source code in production of a PHP, Ruby, JSP etc files without the need of restarting
 the application. If you do not want use RelProxy in production just disable it, the performance penalty is zero.
 
-RelProxy also can be used in development only acccesing directly to your source files in +/src+ folder (multiple source folders are allowed) with no need of uploading source code to
+RelProxy also can be used in development only acccesing directly to your source files in `/src` folder (multiple source folders are allowed) with no need of uploading source code to
 production.
 
 RelProxy is an alternative to context reloading, if your application is small and you feel comfortable with context reloading you do not need the class reloading features of RelProxy
@@ -129,11 +129,11 @@ Just uncompress the RelProxy distribution file.
 
 The distribution file has two important files:
 
-. relproxy-X.Y.Z.jar : needed in classpath to use RelProxy in any form. 
-. jproxysh : needed whether command line scripting capabilities in Java are going to be used.
+. `relproxy-X.Y.Z.jar` : needed in classpath to use RelProxy in any form. 
+. `jproxysh` : needed whether command line scripting capabilities in Java are going to be used.
 
-The distribution file includes some example scripts into the folder +cmd_examples+ to test the shell capabilities or RelProxy Java, executing the script
-+sh fixesforunix.sh+ is recommended to define the appropriated executable permissions, then define the environment variable +JAVA_HOME+ with the location of your 1.6+ JDK installation.
+The distribution file includes some example scripts into the folder `cmd_examples` to test the shell capabilities or RelProxy Java, executing the script
+`sh fixesforunix.sh` is recommended to define the appropriated executable permissions, then define the environment variable `JAVA_HOME` with the location of your 1.6+ JDK installation.
 
 
 == Disabling automatic context reload
@@ -144,36 +144,36 @@ RelProxy is an alternative to context reloading, use of both has no sense and ma
 
 In Eclipse the Tomcat associated can have a configuration controlled only by Eclipse (the default mode), this configuration is only valid inside the Eclipse environment and the original configuration
 of Tomcat is untouched. By default Eclipse is configured to "Automatically publish when resources changed" for your concrete associated Tomcat, this option is required, to review this option go to
-menu +Window / Show View / Servers", this menu option opens a view listing your servers, double click on the concrete Tomcat to show a configuration panel (if no server is associated
-to your Eclipse install a Tomcat back to Eclipse Servers view click the right button and select +New / Server+ to associate the Tomcat to Eclipse).
+menu `Window / Show View / Servers`, this menu option opens a view listing your servers, double click on the concrete Tomcat to show a configuration panel (if no server is associated
+to your Eclipse install a Tomcat back to Eclipse Servers view click the right button and select `New / Server` to associate the Tomcat to Eclipse).
 
-In the configuration panel click on +Publishing+ drop-down and review whether is correct.
+In the configuration panel click on `Publishing` drop-down and review whether is correct.
 
 image:publishing.png[Publishing, title="Publishing"]
  
-Now we are going to disable automatic context reload in a per web application/module basis (we can keep enabled in global configuration in +Server Options+).
+Now we are going to disable automatic context reload in a per web application/module basis (we can keep enabled in global configuration in `Server Options`).
 
 image:server_options.png[Server Options, title="Publishing"]
 
-Click on +Modules+ tab.
+Click on `Modules` tab.
 
 image:module_conf.png[Web Modules, title="Web Modules"]
 
-Disable the +Auto Reload+ feature selecting the required module and clicking +Edit...+
+Disable the `Auto Reload` feature selecting the required module and clicking `Edit...`
 
 image:edit_web_module.png[Edit Web Module, title="Edit Web Module"]
 
 === In NetBeans
 
-The author of this manual has not been able to disable context reloading feature of Tomcat in NetBeans environment. The xml archive with the <Context> descriptor in Tomcat installation is
-replaced with the content of +META-INF/contex.xml+, in theory just adding +reloadable=true+ to <Context> in this file would make the job... no sucess, is ignored.
+The author of this manual has not been able to disable context reloading feature of Tomcat in NetBeans environment. The xml archive with the `<Context>` descriptor in Tomcat installation is
+replaced with the content of `META-INF/contex.xml`, in theory just adding `reloadable=true` to `<Context>` in this file would make the job... no sucess, is ignored.
 
-We are able of disabling context reload avoiding the automatic synchronization of sources and deployed artifacts, two flags are involved in +Project Properties+ dialog:
+We are able of disabling context reload avoiding the automatic synchronization of sources and deployed artifacts, two flags are involved in `Project Properties` dialog:
 
-.+Build / Compile / Compile on Save+
-.+Run / Deploy on Save+
+.`Build / Compile / Compile on Save`
+.`Run / Deploy on Save`
 
-Just disabling +Deploy on Save+ makes the job of avoiding .class changes and therefore context reloading.
+Just disabling `Deploy on Save` makes the job of avoiding .class changes and therefore context reloading.
 
 This is valid for Maven web projects and Ant based projects generated by NetBeans's wizards.
 
@@ -185,10 +185,10 @@ The price is the lost of automatic synchronization when single source files are 
 
 === Dynamic Web Project
 
-We are talking about a web application created by +New / Dynamic Web Project+ (or +New / Project... / Web / Dynamic Web Project+) in Eclipse with Java source code
-going to be published in production usually in a folder under +WEB-INF/+ (for obvious privacy reasons). 
+We are talking about a web application created by `New / Dynamic Web Project` (or `New / Project... / Web / Dynamic Web Project`) in Eclipse with Java source code
+going to be published in production usually in a folder under `WEB-INF/` (for obvious privacy reasons). 
 
-Because this folder is also a source code folder, you must add it to the project configuration +Properties / Java Build Path / Source / Add Folder".
+Because this folder is also a source code folder, you must add it to the project configuration `Properties / Java Build Path / Source / Add Folder`.
 
 This only affects to Java source folders, in case of using RelProxy-Groovy (GProxy) there is no need of configuring in Eclipse the folder with Groovy code (Groovy built-in compiler compiles
 Groovy files with no need of Eclipse).
@@ -200,13 +200,13 @@ Installing and configuring the http://www.onehippo.org/library/development/use-f
 
 image:install_filesync1.png[Filesync Plugin installation, title="Filesync Plugin installation"]
 
-Configure Filesync in project +Properties+.
+Configure Filesync in project `Properties`.
 
 image:filesync_conf.png[Filesync configuration, title="Filesync configuration"]
 
-In this example the folder +relproxy_ex_itsnat/WebContent/WEB-INF/javaex/code+ is a source code folder root containing .java files.
+In this example the folder `relproxy_ex_itsnat/WebContent/WEB-INF/javaex/code` is a source code folder root containing .java files.
 
-The tricky part is the +Default target folder+. This folder is the root of the real deployed web application, the final deployed web application is created under your +workspace+ folder, you can
+The tricky part is the `Default target folder`. This folder is the root of the real deployed web application, the final deployed web application is created under your `workspace` folder, you can
 get the path of this folder executing in your servlet init method:
 
 [source,java]
@@ -220,13 +220,13 @@ get the path of this folder executing in your servlet init method:
         String inputPath = realPath + "/WEB-INF/javaex/code/";
 ----
 
-The variable +inputPath+ contains the path to be configured as +Default target folder+ in this example.
+The variable `inputPath` contains the path to be configured as `Default target folder` in this example.
 
 Sometimes the Filesync Plugin seems to fail, in this case you can need to force synchronization:
 
 image:filesync_force_file_sync.png[Force File Synchronization, title="Force File Synchronization"]
 
-An alternative is manual synchronization of files under +/WEB-INF+ executing a custom Ant script like this:
+An alternative is manual synchronization of files under `/WEB-INF` executing a custom Ant script like this:
 
 [source,xml]
 ----
@@ -259,17 +259,17 @@ An alternative is manual synchronization of files under +/WEB-INF+ executing a c
 </project>
 ----
 
-After any modification of source code execute the synchronization task to be copied to the build directory created by Eclipse under +workspace+ folder explained before.
+After any modification of source code execute the synchronization task to be copied to the build directory created by Eclipse under `workspace` folder explained before.
 
 
 === Maven based Web Project
 
-We can create a web project based on a Maven POM using the Maven archetype +maven-archetype-webapp+ selecting +New / Other / Maven / Maven Project+, set in +Filter+
-the value +maven-archetype-webapp+.
+We can create a web project based on a Maven POM using the Maven archetype `maven-archetype-webapp` selecting `New / Other / Maven / Maven Project`, set in `Filter`
+the value `maven-archetype-webapp`.
 
-In project +Properties / Java Build Path / Libraries / Add Library+ add the server for instance +Apache Tomcat v7+.
+In project `Properties / Java Build Path / Libraries / Add Library` add the server for instance `Apache Tomcat v7`.
 
-The header of web.xml generated by Maven is a bit old (based on +DOCTYPE+), replace it with something like this (servlet 2.5, 3.0 is also valid for Tomcat v7):
+The header of web.xml generated by Maven is a bit old (based on `DOCTYPE`), replace it with something like this (servlet 2.5, 3.0 is also valid for Tomcat v7):
 
 [source,xml]
 .web.xml
@@ -280,17 +280,17 @@ The header of web.xml generated by Maven is a bit old (based on +DOCTYPE+), repl
 </web-app>
 ----
 
-Follow the same steps described for an Eclipse Dynamic Web Project, yes in spite of most of things are defined in Maven we must repeat the same on Eclipse +Project Properties+ dialogs,
+Follow the same steps described for an Eclipse Dynamic Web Project, yes in spite of most of things are defined in Maven we must repeat the same on Eclipse `Project Properties` dialogs,
 (for instance register the extra source code folders).
 
-Because we are going to publish source code files (located in some place under +WEB-INF/+) to the final war we need to explain to Maven where are located these extra folders
+Because we are going to publish source code files (located in some place under `WEB-INF/`) to the final war we need to explain to Maven where are located these extra folders
 to be also included in compilation and copied to the final war, this configuration is done adding the extra source code folders as <directory> resources.
 
-At the time of writing RelProxy is not in Maven Central repository, you must manually include it in your dependencies as a +system+ dependency, and copy the jar to the +WEB-INF/lib+ 
+At the time of writing RelProxy is not in Maven Central repository, you must manually include it in your dependencies as a `system` dependency, and copy the jar to the `WEB-INF/lib` 
 folder.
 
-The following POM is a simple example of a ItsNat web application using RelProxy (v0.8.2) and including a published source code folder, +src/main/webapp/WEB-INF/code+, able to 
-contain reloadable source code (remember to add ItsNat-1.3.1.jar and relproxy-0.8.2.jar to the +WEB-INF/lib+ folder):
+The following POM is a simple example of a ItsNat web application using RelProxy (v0.8.2) and including a published source code folder, `src/main/webapp/WEB-INF/code`, able to 
+contain reloadable source code (remember to add `ItsNat-1.3.1.jar` and `relproxy-0.8.2.jar` to the `WEB-INF/lib` folder):
 
 [source,xml]
 .pom.xml
@@ -449,13 +449,13 @@ If you have several folders with source code (RelProxy supports multiple hot rel
 
 == Configuring a NetBeans web application publishing Java and/or Groovy source code on the final target war
 
-Remember you must avoid context reloading disabling first +Run / Deploy on Save+ in +Project Properties+ dialog.
+Remember you must avoid context reloading disabling first `Run / Deploy on Save` in `Project Properties` dialog.
 
 === Web Project based on Ant created by NetBeans
 
-A conventional (not Maven) web project is created in NetBeans selecting the menu +File / New Project / Java Web / Web Application+.
+A conventional (not Maven) web project is created in NetBeans selecting the menu `File / New Project / Java Web / Web Application`.
 
-By default he generated Ant file filters .java files under +WEB-INF/+ when deploying, to avoid this filtering just add to the build.xml:
+By default he generated Ant file filters .java files under `WEB-INF/` when deploying, to avoid this filtering just add to the build.xml:
 
 [source,xml]
 .build.xml
@@ -467,24 +467,24 @@ By default he generated Ant file filters .java files under +WEB-INF/+ when deplo
     </target>     
 ----
 
-Fortunately in this type of Ant based project, if the option +Project Properties / Build / Compile / Compile on Save+ is enabled, NetBeans takes (by using Ant) care of automatic
-synchronization of resources of +/web/WEB-INF+ and the same folder under +/build+, this includes .java files because we have avoided this filtering.
+Fortunately in this type of Ant based project, if the option `Project Properties / Build / Compile / Compile on Save` is enabled, NetBeans takes (by using Ant) care of automatic
+synchronization of resources of `/web/WEB-INF` and the same folder under `/build`, this includes .java files because we have avoided this filtering.
 
 === Web Project based on Maven POM
 
-A Maven web project is created in NetBeans selecting the menu +File / New Project / Maven / Web Application+. 
+A Maven web project is created in NetBeans selecting the menu `File / New Project / Maven / Web Application`. 
 
 Take a look again to the chapter about Eclipse Maven based web applications, the Maven POM structure is the same for NetBeans, remember you must specify extra source code folders
-under +WEB-INF/+ adding them as <resource>s. 
+under `WEB-INF/` adding them as `<resource>`s. 
 
-Because the default structure of Maven, on development time when deploying a web application, Maven deploys under the +target/projectname+ folder 
-the final web application. Changed source files under +src/webapp+ in runtime are not detected by RelProxy because the real files being used
-are really below +target/projectname+ unless NetBeans automatically synchronizes files between both file trees. Effectively NetBeans automatically copies the modified file
-to the +target/projectname+, but unfortunately excluding .java (and .groovy) files.
+Because the default structure of Maven, on development time when deploying a web application, Maven deploys under the `target/projectname` folder 
+the final web application. Changed source files under `src/webapp` in runtime are not detected by RelProxy because the real files being used
+are really below `target/projectname` unless NetBeans automatically synchronizes files between both file trees. Effectively NetBeans automatically copies the modified file
+to the `target/projectname`, but unfortunately excluding .java (and .groovy) files.
 
-In theory enabling +Project Properties / Run / Deploy on Save+ does the job but enables automatic context reloading.
+In theory enabling `Project Properties / Run / Deploy on Save` does the job but enables automatic context reloading.
 
-One simple solution is adding a special Ant task to syncronize the source files to the same files in +target/projectname+. Call this task after hot source code modification.
+One simple solution is adding a special Ant task to syncronize the source files to the same files in `target/projectname`. Call this task after hot source code modification.
 
 For instance:
 
@@ -525,21 +525,28 @@ For instance:
 </project>
 ----
 
+== Configuring a NetBeans or Eclipse web application NOT publishing Java and/or Groovy source code on the final target war
+
+As you have seen adding source code files under `WEB-INF/` is very problematic, we have needed some tricks and workarounds to synchronize these source folders to the final deployed
+web application.
+ 
+If you are not going to publish source code to production and you just need hot reload source code under your `/src/main/java` folder in Maven or `src/java` in NetBeans or `/src` 
+in Eclipse only in development phase, you do not need synchronization tricks because you tell RelProxy to directly access to the original source being modified for you.
+
+Both types of web applications, publishing source code to war and direct access to normal source code, are going to be shown you using concrete examples.
 
 
-== GProxy or how to be able to reload Groovy classes on Java environment
+== GProxy or how to be able to reload Groovy classes on the Java environment
 
-+com.innowhere.relproxy.gproxy.GProxy+ is the main Java class of RelProxy to provide this feature, with +GProxy+ you can create Java proxies for Groovy objects because 
-a +java.lang.reflect.Proxy+ wrapper is passed instead of the original Groovy object, the original Groovy object is retained under the hood and method calls to the proxy 
+`com.innowhere.relproxy.gproxy.GProxy` is the main Java class of RelProxy to provide this feature, with `GProxy` you can create Java proxies for Groovy objects because 
+a `java.lang.reflect.Proxy` wrapper is passed instead of the original Groovy object, the original Groovy object is retained under the hood and method calls to the proxy 
 are redirected to the real object calling the corresponding method using reflection. When the source code of the Groovy class changes GProxy automatically reloads the Groovy 
 class and creates a new object to replace the old one, the fields of the original object are got and re-set to the new object to keep the state (number of fields and types 
 must be the same otherwise reloading is not possible and a redeploy is required).
 
-The following code is an example of how to use RelProxy along with ItsNat web framework, this code is part of the example code of RelProxy source code. 
+The following code is an example of how to use RelProxy along with ItsNat web framework, this code is included in the examples of RelProxy (`relproxy_ex_itsnat` or `relproxy_ex_itsnat_maven`). 
 
-
-
-The +servlet+ variable is a servlet object containing a just configured +groovy.util.GroovyScriptEngine+, the setting up of this util object is omitted: 
+The `servlet` variable is a servlet object containing a just configured `groovy.util.GroovyScriptEngine`, the setting up of this utility object is omitted: 
 
 
 [source,groovy]
@@ -599,8 +606,8 @@ def gproxyGroovyEngine = {
         } as GProxyGroovyScriptEngine;
 ----
 
-Defines a listener needed by +GProxy+ to indirectly call the +groovy.util.GroovyScriptEngine+ to load classes, take a look to the signature of +GProxyGroovyScriptEngine+ 
-there is no dependency with +groovy.*+ packages, this is why you can use RelProxy in pure Java projects with no Groovy dependency in spite of Groovy support.
+Defines a listener needed by `GProxy` to indirectly call the `groovy.util.GroovyScriptEngine` to load classes, take a look to the signature of `GProxyGroovyScriptEngine` 
+there is no dependency with `groovy.*` packages, this is why you can use RelProxy in pure Java projects with no Groovy dependency in spite of Groovy support.
 
 
 [source,groovy]
@@ -619,7 +626,7 @@ and the class of the original object associated has been reloaded (and a new "or
 When you perform a source code change in source code managed by RelProxy the first time this method is called is the signal that changes has been detected and reloaded 
 accordingly.
 
-This interface and behavior is not +GProxy+ specific and will be also used in +JProxy+ for Java. 
+This interface and behavior is not `GProxy` specific and will be also used in `JProxy` for Java. 
 
 [source,groovy]
 ----
@@ -631,11 +638,11 @@ gpConfig.setEnabled(true)
 GProxy.init(gpConfig);
 ----
 
-Configures +GProxy+, now it is ready to proxy Groovy objects.
+Configures `GProxy`, now it is ready to proxy Groovy objects.
 
-Take a look to the optional +setEnabled(true)+ configuration call, +GProxy+ is enabled by default, this means proxied Groovy objects are instrumented for hot reload. 
-Calling +setEnabled(false)+ tells +GProxy+ to ignore any other configuration, +GProxy+ is disabled and no proxy is created calling +GProxy.create+, the original Groovy 
-objects will be returned with absolute no performance penalty, this is the preferred configuration in production whether you do not want hot class reload in production.
+Take a look to the optional `setEnabled(true)` configuration call, `GProxy` is enabled by default, this means proxied Groovy objects are instrumented for hot reload. 
+Calling `setEnabled(false)` tells `GProxy` to ignore any other configuration, `GProxy` is disabled and no proxy is created calling `GProxy.create`, the original Groovy 
+objects will be returned with absolutely no performance penalty, this is the preferred configuration in production whether you do not want hot class reload in production.
 
 The final code:
 
@@ -647,12 +654,12 @@ ItsNatServletRequestListener listener = GProxy.create(new example.groovyex.Groov
 docTemplate.addItsNatServletRequestListener(listener);
 ----
 
-is an example of proxying a +example.groovyex.GroovyExampleLoadListener+ object and registering the returned Java proxy into the ItsNat infrastructure. 
-The class +example.groovyex.GroovyExampleLoadListener+ implements the ItsNat standard interface +ItsNatServletRequestListener+ implementing the method
-+processRequest(ItsNatServletRequest request, ItsNatServletResponse response)+ this method is called by ItsNat, the proxy object receives this call and forwards this call
+is an example of proxying a `example.groovyex.GroovyExampleLoadListener` object and registering the returned Java proxy into the ItsNat infrastructure. 
+The class `example.groovyex.GroovyExampleLoadListener` implements the ItsNat standard interface `ItsNatServletRequestListener` implementing the method
+`processRequest(ItsNatServletRequest request, ItsNatServletResponse response)` this method is called by ItsNat when a page rendered by the template is loaded, the proxy object receives this call and forwards this call
 to the latest class loaded, we are going to see more details later.
 
-Let's go to take a look to +example.groovyex.GroovyExampleLoadListener+:
+Let's go to take a look to `example.groovyex.GroovyExampleLoadListener`:
 
 [source,groovy]
 .GroovyExampleLoadListener.groovy
@@ -686,53 +693,58 @@ class GroovyExampleLoadListener implements ItsNatServletRequestListener
 }
 ----
 
-To understand this code let's to explain how ItsNat works, the method +processRequest+ is called every time a page is loaded specifying the same ItsNat template, 
-because this listener was registered as the load processor.
+To understand this code let's to explain how ItsNat works, the method `processRequest` is called every time a page is loaded specifying the same ItsNat template, 
+because this listener was registered as its load processor.
 
-When RelProxy (through +groovy.util.GroovyScriptEngine+) detects the source code of the class +GroovyExampleLoadListener+ or dependent classes like +GroovyExampleDocument+ 
-have changed, all classes with associated hot reloadable source, are reloaded and a new +ClassLoader+ is created for them, next calls to +GroovyExampleLoadListener+ proxy 
+When RelProxy (through `groovy.util.GroovyScriptEngine`) detects the source code of the class `GroovyExampleLoadListener` or dependent classes like `GroovyExampleDocument` 
+have changed, all classes with associated hot reloadable source, are reloaded and a new `ClassLoader` is created for them, next calls to `GroovyExampleLoadListener` proxy 
 will use the new loaded class and the same with dependent classes.
 
-However a concrete +GroovyExampleLoadListener+ object was used to register, how can we reload a class with one live object already created?
+However a concrete `GroovyExampleLoadListener` object was used to register, how can we reload a class with one live object already created?
 
-The +GroovyExampleLoadListener+ object was the one proxied, the class of this object is reloaded when a source change is detected (or any related class) because this is the 
-objective of RelProxy, but this object can have fields pointing to objects usually loaded _before_ registering/proxying the +GroovyExampleLoadListener+ object. The classes 
-of these attribute objects may be also reloaded but the new version is not effective because pointed objects are usually being used in other places, if we re-create these 
-objects we are creating new instances for instance of objects designed to be singletons. This is the case of the +db+ attribute of 
-class +FalseDB+, this attribute references a concrete +FalseDB+ object not able to be automatically reloaded in spite of the Groovy +FalseDB+ class could be reloaded. 
-This is why in case of the proxied object +GroovyExampleLoadListener+, RelProxy recreates the object based on the new loaded class by calling the default constructor and 
+The `GroovyExampleLoadListener` object was the one proxied, the class of this object is reloaded when a source change is detected (or any related class) because this is the 
+objective of RelProxy, but this object can have fields pointing to objects usually loaded _before_ registering/proxying the `GroovyExampleLoadListener` object. The classes 
+of these attribute objects may be also reloaded but the new version is not effective because referenced objects are usually being used in other places, if we re-create these 
+objects we are creating new instances for instance of objects designed to be singletons. This is the case of the `db` attribute of 
+class `FalseDB`, this attribute references a concrete `FalseDB` object not able to be automatically reloaded in spite of the Groovy `FalseDB` class could be reloaded. 
+This is why in case of the proxied object `GroovyExampleLoadListener`, RelProxy recreates the object based on the new loaded class by calling the default constructor and 
 *re-setting the attributes*, by this way the new object is based on the new class containing the same attribute objects defined before, you cannot add, remove or change 
-the type of attributes if you do so RelProxy will not be able to hot reload and a new redeploy is needed.
+the type of attributes, if you do so RelProxy will not be able to hot reload and a new redeploy is needed.
 
 The proxied class usually creates new objects based on dependent classes to execute some task, if no object of these dependent classes is "saved" and/or used outside of 
 proxied environment RelProxy can reload dependent classes with no problem.
 
-This is the case of the class +GroovyExampleDocument+ and dependent classes (see the source code).
+This is the case of the class `GroovyExampleDocument` and dependent classes (see the source code).
 
-Other classes and interfaces like +ItsNatServletRequest+ or +ItsNatServletResponse+ are not reloaded in this example because they are ItsNat based and source code is not
-present in Groovy environment. +FalseDB+ class could be reloaded but reloading will fail because the proxied object (+GroovyExampleLoadListener+) holds an attribute +db+ of this 
+Other classes and interfaces like `ItsNatServletRequest` or `ItsNatServletResponse` are not reloaded in this example because they are ItsNat based and source code is not
+present in Groovy environment. `FalseDB` class could be reloaded but reloading will fail because the proxied object (`GroovyExampleLoadListener`) holds an attribute `db` of this 
 class, RelProxy will say you the reloading process has been failed and a redeploy is recommended to effectively use the new version of the class.
 
-In summary, in this ItsNat example, when source code of +GroovyExampleLoadListener+ or dependent classes with source code controlled by RelProxy change, all of these classes are reloaded.
-When the +processRequest+ method of the proxied +GroovyExampleLoadListener+ object is called because an end user is reloading the related web page, RelProxy detects this class has 
-been reloaded and recreates the +GroovyExampleLoadListener+ object with the new class re-setting the fields and finally the +processRequest+ method is called and method processing
-is done using the new version of dependent classes.
+In summary, in this ItsNat example, when source code of `GroovyExampleLoadListener` or dependent classes with source code controlled by RelProxy change, all of these classes are recompiled
+and reloaded by Groovy when changed. When the `processRequest` method of the proxied `GroovyExampleLoadListener` object is called because an end user is reloading the related web page, `GProxy` detects 
+the singleton has been reloaded and recreates the `GroovyExampleLoadListener` object with the new +Class+ re-setting the fields and finally 
+the `processRequest` method is called and method processing is done using the new version of dependent classes.
 
 Finally we have been able to reload Groovy classes mixed in a Java environment without using the strongly intrusive instrument of Java agents.
 
 == JProxy or how to be able to reload Java classes without using Java agents
 
 Java hot reloadable proxies are very similar to Groovy support of RelProxy, in this case the task of detecting source changes, recompiling and reloading is fully done by RelProxy
-(in case of Groovy provided +groovy.util.GroovyScriptEngine+ does most of this work).
+(in case of Groovy provided `groovy.util.GroovyScriptEngine` does most of this work).
 
-+com.innowhere.relproxy.jproxy.JProxy+ is the main Java class of RelProxy for hot reload of pure Java, with JProxy you can create Java +java.lang.reflect.Proxy+ proxies wrapping
+`com.innowhere.relproxy.jproxy.JProxy` is the main Java class of RelProxy for hot reload of pure Java, with `JProxy` you can create Java `java.lang.reflect.Proxy` proxies wrapping
 your original objects to be passed to listeners, the original object is retained under the hood and method calls to the proxy are redirected to the real object calling the 
-corresponding method using reflection. When the source code of the proxied Java class (or dependent classes) changes JProxy automatically reloads the class and creates a 
-new object to replace the old one, the fields of the original object are got and re-set to the new object to keep the state (number of fields and types must be the same 
-otherwise reloading is not possible and a redeploy is required).
+corresponding method using reflection. When the source code of a monitored Java file is changed, it is automatically recompiled in memory. When the `processRequest` method of 
+the proxied `JProxyExampleLoadListener` object is called because an end user is reloading the related web page, `JProxy` detects something has changed and reload all monitored
+classes with a new `ClassLoader`, because the singleton class has been reloaded JProxy recreates the `JProxyExampleLoadListener` object with the new +Class+ re-setting the fields
+to keep the state (number of fields and types must be the same otherwise reloading is not possible and a redeploy is required) and finally the `processRequest` method is called and method processing
+is done using the new version of dependent classes. 
 
-The following code is an example of how to use +JProxy+ along with ItsNat web framework, this code is part of the example code of RelProxy source code and basically 
-is the same as the Groovy example:
+As you can see reloading only happens when hot reloadable classes are going to be used, only recompiling is done when some file is changed, this is a performance and memory 
+improvement over the typical "context reloading per file save".
+
+The following code is an example of how to use `JProxy` along with ItsNat web framework, this code is part of the RelProxy examples (`relproxy_ex_itsnat` or `relproxy_ex_itsnat_maven`) 
+basically doing the same as the Groovy example:
 
 
 [source,java]
@@ -743,7 +755,16 @@ public static void init(ItsNatHttpServlet itsNatServlet,ServletConfig config)
     String inputPath = context.getRealPath("/") + "/WEB-INF/javaex/code/";           
     String classFolder = null; // Optional: context.getRealPath("/") + "/WEB-INF/classes";
     Iterable<String> compilationOptions = Arrays.asList(new String[]{"-source","1.6","-target","1.6"});
-    long scanPeriod = 200;
+    long scanPeriod = 300;
+
+    JProxyInputSourceFileExcludedListener excludedListener = new JProxyInputSourceFileExcludedListener()
+    {
+        @Override
+        public boolean isExcluded(File file, File rootFolderOfSources)
+        {
+            return false;
+        }            
+    }; 
 
     RelProxyOnReloadListener proxyListener = new RelProxyOnReloadListener() {
         public void onReload(Object objOld, Object objNew, Object proxy, Method method, Object[] args) {
@@ -792,11 +813,13 @@ public static void init(ItsNatHttpServlet itsNatServlet,ServletConfig config)
     jpConfig.setEnabled(true)
             .setRelProxyOnReloadListener(proxyListener)
             .setInputPath(inputPath)
+            .setJProxyInputSourceFileExcludedListener(excludedListener)
             .setScanPeriod(scanPeriod)
             .setClassFolder(classFolder)
             .setCompilationOptions(compilationOptions)
-            .setJProxyCompilerListener(compilerListener)
+            .setJProxyCompilerListener(compilerListener)                
             .setJProxyDiagnosticsListener(diagnosticsListener);
+
 
     JProxy.init(jpConfig);
 
@@ -813,7 +836,7 @@ public static void init(ItsNatHttpServlet itsNatServlet,ServletConfig config)
 } 
 ----
 
-There is more code than Groovy code because +GroovyScriptEngine+ setting up was omitted (not specific of RelProxy) and now some configuration options are shown in spite of they 
+There is more code than Groovy code because `GroovyScriptEngine` setting up was omitted (not specific of RelProxy) and now some configuration options are shown in spite of they 
 may be optional.
 
 Let's explain the previous code:
@@ -824,10 +847,11 @@ Let's explain the previous code:
     jpConfig.setEnabled(true)
             .setRelProxyOnReloadListener(proxyListener)
             .setInputPath(inputPath)
+            .setJProxyInputSourceFileExcludedListener(excludedListener)
             .setScanPeriod(scanPeriod)
             .setClassFolder(classFolder)
             .setCompilationOptions(compilationOptions)
-            .setJProxyCompilerListener(compilerListener)
+            .setJProxyCompilerListener(compilerListener)                
             .setJProxyDiagnosticsListener(diagnosticsListener);
 
     JProxy.init(jpConfig);
@@ -835,27 +859,29 @@ Let's explain the previous code:
 
 This is an example of JProxy configuration.
 
-* +setEnabled(boolean)+ configuration method is the same as +GProxy+, when setting to false other configuration options are ignored, there is no hot reload and proxying and 
+* `setEnabled(boolean)` configuration method is the same as `GProxy`, when setting to false other configuration options are ignored, there is no hot reload and proxying and 
 performance penalty is zero.
 
-* +setRelProxyOnReloadListener(proxyListener)+ is the same as +GProxy+ in fact the same interface +RelProxyOnReloadListener+ is shared between +GProxy+ and +JProxy+.
+* `setRelProxyOnReloadListener(proxyListener)` is the same as `GProxy` in fact the same interface `RelProxyOnReloadListener` is shared between `GProxy` and `JProxy`.
 
-* +setInputPath(inputPath)+ defines where the source code files of hot reloadable classes is. The variant method +setInputPaths(String[])+ allows registering 
-several root folders and +setJProxyInputSourceFileExcludedListener(JProxyInputSourceFileExcludedListener)+ allows excluding concrete files.
+* `setInputPath(inputPath)` defines where the source code files of hot reloadable classes is. The variant method `setInputPaths(String[])` allows registering 
+several root folders and `setJProxyInputSourceFileExcludedListener(JProxyInputSourceFileExcludedListener)` allows excluding concrete files.
 
-* +setScanPeriod(scanPeriod)+ defines the period (in ms) between checks of timestamps of source code files to detect changes.
+* `setJProxyInputSourceFileExcludedListener(excludedListener)` optionally defines whether the specified folder or file is excluded in the recompiling detection. In this example nothing is excluded.
 
-* +setClassFolder(classFolder)+ optionally defines where to save, as .class files, the bytecode resulting of re-compiling modified source files in runtime. 
+* `setScanPeriod(scanPeriod)` defines the period (in ms) between checks of timestamps of source code files to detect changes.
+
+* `setClassFolder(classFolder)` optionally defines where to save, as .class files, the bytecode resulting of re-compiling modified source files in runtime. 
 By this way the next time the application is started .class files are aligned with source files and no runtime compilation is needed (class folder of course must be in
 classpath).
 
-* +setCompilationOptions(compilationOptions)+ optionally sets the list of options you want for compiling phase, these are the same kind of options you would provide to the
+* `setCompilationOptions(compilationOptions)` optionally sets the list of options you want for compiling phase, these are the same kind of options you would provide to the
 http://docs.oracle.com/javase/6/docs/technotes/tools/windows/javac.html[javac command], internally the 
 http://docs.oracle.com/javase/6/docs/api/javax/tools/JavaCompiler.html[Java compiler API] receives this parameters and the reason of the required format.
 
-* +setJProxyCompilerListener(compilerListener)+ optionally registers a listener to be called when a file is going to be compiled.
+* `setJProxyCompilerListener(compilerListener)` optionally registers a listener to be called when a file is going to be compiled.
 
-* +setJProxyDiagnosticsListener(diagnosticsListener)+ optionally registers the +JProxyDiagnosticsListener+ listener to be executed when some warning or error happens compiling
+* `setJProxyDiagnosticsListener(diagnosticsListener)` optionally registers the `JProxyDiagnosticsListener` listener to be executed when some warning or error happens compiling
 Java code, when providing null or not called RelProxy uses a default listener very similar to this example.
 
 
@@ -871,7 +897,7 @@ The final code:
 
 Is symmetric to Groovy counterpart, it is the same example and the same expected behavior of RelProxy but all in Java.
 
-Anyway this is the code of +JProxyExampleLoadListener+:
+Anyway this is the code of `JProxyExampleLoadListener`:
 
 [source,java]
 .JProxyExampleLoadListener.java
@@ -905,39 +931,117 @@ public class JProxyExampleLoadListener implements ItsNatServletRequestListener
 }
 ----
 
-=== Start and stop source change detection
+=== Use of JProxy with multiple servlets 
 
-You can reduce to zero the footprint of RelProxy in production setting +setEnabled(boolean)+ to false, however if you are a brave guy or girl and you want to make also hot changes
-in production... +JProxy.start()+ and +JProxy.stop()+ methods are for you.
+In the previous JProxy example we have supposed one single servlet requiring class reloading and context reloading disabled.
 
-Remember we must to define the period between source files checking for changes calling +setScanPeriod(scanPeriod)+, RelProxy defines behind the scene a +java.util.Timer+ for this 
-task, of course every time source code is checked needs some time, because there are synchronizations between source code checking and proxies use a very small performance penalty 
-happen when checking source code. This is why we can +stop+ source code checking if we are not able to make source code changes reducing performance penalty to minimum, and we can 
-call +start+ again to detect any source change.
+If you have more servlets or you are a purist developer, you can use a `ServletContextListener`:
 
-You can call several times to +JProxy.start()+ and +JProxy.stop()+ methods, if nothing is going to be done nothing is done without errors (both methods return true
+[source,java]
+.JProxyServletContextListener.java
+----
+...
+public class JProxyServletContextListener implements ServletContextListener
+{
+    @Override
+    public void contextInitialized(ServletContextEvent sce)
+    {
+        System.out.println("ServletContextListener contextInitialized");
+        
+        ServletContext context = sce.getServletContext();
+        ...
+        JProxy.init(jpConfig);             
+    }
+
+    @Override
+    public void contextDestroyed(ServletContextEvent sce)
+    {
+        System.out.println("ServletContextListener contextDestroyed");
+        JProxy.stop();
+    }
+}
+----
+
+Registered on your `web.xml`:
+
+[source,xml]
+.web.xml
+----
+<web-app ...
+
+   <listener>
+	<listener-class>
+             example.javaex.JProxyServletContextListener 
+        </listener-class>
+   </listener>    
+</web-app>
+
+Finally in your servlets only register your singletons:
+
+[source,java]
+----
+    @Override
+    public void init(ServletConfig config) throws ServletException 
+    {
+        super.init(config);
+
+        ServletContext context = config.getServletContext();
+        
+        String pathPrefix = context.getRealPath("/") + "/WEB-INF/javaex/pages/";
+
+        ItsNatDocumentTemplate docTemplate;
+        docTemplate = itsNatServlet.registerItsNatDocumentTemplate("javaex","text/html", pathPrefix + "javaex.html");
+
+        FalseDB db = new FalseDB();        
+        
+        ItsNatServletRequestListener listener = JProxy.create(new example.javaex.JProxyExampleLoadListener(db), ItsNatServletRequestListener.class);
+        docTemplate.addItsNatServletRequestListener(listener);
+    }    
+----
+
+
+=== Starting and stopping class change detection and reloading in JProxy
+
+You can reduce to zero the footprint of RelProxy in production setting `setEnabled(boolean)` to false, however if you are a brave guy or girl and you want to make also hot changes
+in production... `JProxy.start()` and `JProxy.stop()` methods are for you.
+
+Remember we must to define the period between source files checking for changes calling `setScanPeriod(scanPeriod)`, RelProxy defines behind the scene a `java.util.Timer` for this 
+task, of course every time source code is checked for changes needs some time and CPU use, because there are synchronizations between source code checking and proxies use, a very small performance penalty 
+happens when checking source code. This is why we can `stop` source code checking if we are not able to make source code changes anymore reducing performance penalty to minimum, and we can 
+call `start` again to detect any source change.
+
+You can call several times to `JProxy.start()` and `JProxy.stop()` methods, if nothing is going to be done nothing is done without errors (both methods return true
 when a state change was effective), and they are thread safe.
 
-== How JProxy can help you only in development time (GWT example)
 
-In previous chapter we have added new source code folders below +WEB-INF/+ folder, this configuration is very useful in production to be able to hot change 
-your Java code, of course in production time you can remove these folders avoiding publishing source code before packaging to +war+ and with a simple call +setEnabled(false)+ 
-disable JProxy with zero performance penalty. In this "development only" use case of JProxy is not necessary to put the source code going to be reloaded below
-+WEB-INF/+ you can modify Java source code and reload it located in conventional source code folders. Some IDE is needed because IDEs automatically syncronize and recompile
-changed source code with the final compiled construction (+/build+, +/target+, +/war+ depending of the IDE or build system like Maven being used), automatic syncronization
-of IDEs is needed but not enough for hot class reload with a simple page reload in your web browser (the objective of RelProxy).
+== How JProxy can help you only in development time with no need of publishing code (a GWT example) 
+
+In previous chapters we have added new source code folders below `WEB-INF/` folder, this configuration is very useful in production to be able to hot change 
+your Java code, of course in production time you can remove these folders avoiding publishing source code before packaging to `war` and with a simple call `setEnabled(false)` 
+disable JProxy with zero performance penalty, this makes JProxy helpful in development only but as you can easily figure out, adding source code under `WEB-INF/` folder
+is not a good idea if you are not going to use this code in production. 
+
+With JProxy is not necessary to put the source code going to be reloaded under `WEB-INF/`, you can modify Java source code and reload it located in conventional source code folders. 
+
+Because JProxy is going to directly access to original source code, the folder synchronizing problems are gone in this use case. 
 
 We are going to illustrate this capability with a GWT RPC example using Eclipse. Besides how to use JProxy in a GWT-RPC project, in this chapter we are going to learn
-how we can exclude source files from the hot class reload system of RelProxy/JProxy.
+how we can exclude source files from the hot class reload system of RelProxy/JProxy, we are going to need this feature.
+
+
+
+
+
+
 
 In GWT, JProxy only can be used to reload Java code executed in server, this is why we are going to apply JProxy to a GWT-RPC project (that is a client-server web application).
 
 Install http://eclipse.org[Eclipse] (Eclipse 4.4 Luna was used fot this example), install the https://developers.google.com/eclipse/docs/download[Google Plugin for Eclipse], 
-only install GWT dependencies if you want (there is no need of Android and Google App Engine parts) and +relproxy-x.y.z.jar+ dependency.
+only install GWT dependencies if you want (there is no need of Android and Google App Engine parts) and `relproxy-x.y.z.jar` dependency.
 
-Select in Eclipse the menu option +New/Other/Google/ Web Application Project+ to create a GWT-RPC sample project (Google App Engine is not needed).
+Select in Eclipse the menu option `New / Other / Google/ Web Application Project` to create a GWT-RPC sample project (Google App Engine is not needed).
 
-In this example we have created the project with name +relproxy_ex_gwt+ and package +com.innowhere.relproxyexgwt+, this is
+In this example we have created the project with name `relproxy_ex_gwt` and package `com.innowhere.relproxyexgwt`, this is
 the structure of the generated source code:
 
 ++++
@@ -960,7 +1064,7 @@ relproxy_ex_gwt    (root folder of project)
 ++++
 
 
-We are only be able to reload classes executed in server, that is, classes below +server/+ folder. This why the class +GreetingServiceImpl.java+ is our focus,
+We are only be able to reload classes executed in server, that is, classes below `server/` folder. This why the class `GreetingServiceImpl.java` is our focus,
 this is the code generated:
 
 [source,java]
@@ -1014,9 +1118,9 @@ public class GreetingServiceImpl extends RemoteServiceServlet implements Greetin
 
 ----
 
-This class is a servlet created to receive RPC requests from client following the interface pattern of the interface +GreetingService+ shared by client code, 
+This class is a servlet created to receive RPC requests from client following the interface pattern of the interface `GreetingService` shared by client code, 
 we are not going to try to reload this servlet because to use JProxy we need a reloadable singleton implementing an interface registered in JProxy.
-We are deeply transforming +GreetingServiceImpl+:
+We are deeply transforming `GreetingServiceImpl`:
 
 [source,java]
 .GreetingServiceImpl.java
@@ -1170,7 +1274,7 @@ public class GreetingServiceImpl extends RemoteServiceServlet implements
 
 ----
 
-Let's review this JProxy-ready class. +GreetingServiceImpl+ is a singleton in practice because is a servlet, therefore this attribute:
+Let's review this JProxy-ready class. `GreetingServiceImpl` is a singleton in practice because is a servlet, therefore this attribute:
 
 [source,java]
 ----
@@ -1184,8 +1288,8 @@ which hold the reloadable singleton registered on:
 this.delegate = JProxy.create(new GreetingServiceDelegateImpl(this), GreetingServiceDelegate.class);
 ----
 
-As you can see we have create the Java file +GreetingServiceDelegateImpl.java+ and the class with the same name going to be reloaded, implementing 
-the interface +GreetingServiceDelegate+. JProxy returns a proxy object "implementing" +GreetingServiceDelegate+ exposed to the non-reloadable world.
+As you can see we have create the Java file `GreetingServiceDelegateImpl.java` and the class with the same name going to be reloaded, implementing 
+the interface `GreetingServiceDelegate`. JProxy returns a proxy object "implementing" `GreetingServiceDelegate` exposed to the non-reloadable world.
 
 Take a look to this new listener:
 
@@ -1217,14 +1321,14 @@ Registered on:
         .setJProxyInputSourceFileExcludedListener(excludedListener)
 ----
 
-This listener filters the Java source files that need to be ignored by RelProxy/JProxy even when modified, because JProxy creates a new +ClassLoader+ and reload with it all 
-hot-reloadable classes. Classes inside +client/+ and +shared/+ folders must not be reloadable because has no sense in GWT, when a folder part of a source folder of reloadable 
-classes specified in configuration is going to be inspected for changed classes the method +isExcluded+ is called to check whether the complete folder must be excluded, this 
-is very useful for projects with a lot of files not reloadable (in this case a lot of classes below +client/+ and +shared/+. +GreetingServiceImpl+ cannot be reloaded because 
-is a servlet and cannot be registered in JProxy because is already in use by the JavaEE servlet system. Finally +GreetingServiceDelegate+ cannot be reloaded because is the 
-interface exposed to the non-reloadable world. In summary only +server/+ classes can be reloaded excluding the servlet class and +GreetingServiceDelegate+.
+This listener filters the Java source files that need to be ignored by RelProxy/JProxy even when modified, because JProxy creates a new `ClassLoader` and reload with it all 
+hot-reloadable classes. Classes inside `client/` and `shared/` folders must not be reloadable because has no sense in GWT, when a folder part of a source folder of reloadable 
+classes specified in configuration is going to be inspected for changed classes the method `isExcluded` is called to check whether the complete folder must be excluded, this 
+is very useful for projects with a lot of files not reloadable (in this case a lot of classes below `client/` and `shared/`. `GreetingServiceImpl` cannot be reloaded because 
+is a servlet and cannot be registered in JProxy because is already in use by the JavaEE servlet system. Finally `GreetingServiceDelegate` cannot be reloaded because is the 
+interface exposed to the non-reloadable world. In summary only `server/` classes can be reloaded excluding the servlet class and `GreetingServiceDelegate`.
 
-This is the code of +GreetingServiceDelegate+ :
+This is the code of `GreetingServiceDelegate` :
 
 [source,java]
 .GreetingServiceDelegate
@@ -1238,7 +1342,7 @@ public interface GreetingServiceDelegate {
 }
 ----
 
-And the code of +GreetingServiceDelegateImpl.java+, basically a copy/paste of the original servlet code.
+And the code of `GreetingServiceDelegateImpl.java`, basically a copy/paste of the original servlet code.
 
 [source,java]
 .GreetingServiceDelegateImpl
@@ -1298,17 +1402,17 @@ public class GreetingServiceDelegateImpl implements GreetingServiceDelegate
 
 ----
 
-Run this example (Run As/Web Application GWT Super Dev Mode), open this URL +http://127.0.0.1:8888/Relproxy_ex_gwt.html+ in your browser and a screen like this is shown:
+Run this example (Run As/Web Application GWT Super Dev Mode), open this URL `http://127.0.0.1:8888/Relproxy_ex_gwt.html` in your browser and a screen like this is shown:
 
 image:browser_1.png[Fig 1, title="Fig 1"]
  
-Click on "Send to Server":
+Click on `Send to Server`:
 
 image:browser_2.png[Fig 2, title="Fig 2"]
 
-Click on the "Close" button.
+Click on the `Close` button.
 
-Now we are going to modify on the fly the Java code of +GreetingServiceDelegateImpl+, just change "Hello" by "Hello <b>BROTHER</b>" and save:
+Now we are going to modify on the fly the Java code of `GreetingServiceDelegateImpl`, just change "Hello" by "Hello <b>BROTHER</b>" and save:
 
 [source,java]
 ----
@@ -1323,7 +1427,7 @@ image:browser_3.png[Fig 3, title="Fig 3"]
 As you can see in this case no reload has been necessary because the requisite is to call the proxied method to reload classes.
 
 In this example we make a very simple method change, adding more methods is not a problem but most of the time you will need to add new fields related to new classes,
-because +GreetingServiceDelegateImpl+ is a singleton we cannot add, remove or change names and types of the fields of this class, to overcome this limitation
+because `GreetingServiceDelegateImpl` is a singleton we cannot add, remove or change names and types of the fields of this class, to overcome this limitation
 create new classes avoiding the singleton pattern and move the code to them. Code like this:
 
 [source,java]
@@ -1334,8 +1438,8 @@ create new classes avoiding the singleton pattern and move the code to them. Cod
 	}
 ----
 
-Declared fields of +GreetingServiceProcessor+ can change with no problem because this class can be reloaded and instantiated by any call to 
-+GreetingServiceDelegateImpl.greetServer()+
+Declared fields of `GreetingServiceProcessor` can change with no problem because this class can be reloaded and instantiated by any call to 
+`GreetingServiceDelegateImpl.greetServer()`
 
 
 == A new shell scripting language named Java
@@ -1347,7 +1451,7 @@ or http://www.2ality.com/2011/12/nodejs-shell-scripting.html[JavaScript].
 
 But when you think Java like a new shell scripting language sure you say "it's impossible".
 
-No, it is possible, RelProxy includes a tool named *+jproxysh+* to make possible executing Java like another shell scripting language.
+No, it is possible, RelProxy includes a tool named *`jproxysh`* to make possible executing Java like another shell scripting language.
 
 The principle is simple and is very similar to Groovy scripting, Groovy compiles on the fly Groovy code saving in memory the compiled bytecode, by this way developers
 think Groovy script is interpreted and is not, the same approach is applied to Java through RelProxy. In the case of RelProxy, bytecode can be optionally saved as .class
@@ -1371,14 +1475,13 @@ System.out.println("example_java_shell 1 ");
 example.javashellex.JProxyShellExample.exec();
 ----
 
-The best way to think this script is like the content of the standard method +main+ of a class with some invented name in the default package (no package), in fact, 
+The best way to think this script is like the content of the standard method `main` of a class with some invented name in the default package (no package), in fact, 
 this is how it is managed internally by RelProxy.
 
-We could use +/bin/jproxysh+ or +/usr/local/bin/jproxysh+ but we are forced to install RelProxy in a concrete fixed place, by using +/usr/bin/env+ the command +jproxysh+ 
+We could use `/bin/jproxysh` or `/usr/local/bin/jproxysh` but we are forced to install RelProxy in a concrete fixed place, by using `/usr/bin/env` the command `jproxysh` 
 will be located using the current PATH.
 
-Save this file in a folder root of the dependent classes. The dependent class in this example is +JProxyShellExample+ (this example in RelProxy distribution includes more classes
-but we are going to ignore them to simplify).
+Save this file in a folder root of the dependent classes. The dependent class in this example is `JProxyShellExample`.
 
 The hierarchy is:
 
@@ -1394,14 +1497,14 @@ The hierarchy is:
 
 
 {nbsp} +
-Yes, you are right, mentally adding the .java extension to +example_java_shell+ you get the typical file hierarchy of a JavaSE program. 
+Yes, you are right, mentally adding the .java extension to `example_java_shell` you get the typical file hierarchy of a JavaSE program. 
 
 
-The first requisite is that +jproxysh+ must be accessible by the environment variable +PATH+, anyway executing this script is not direct, it requires some previous configuration:
+The first requisite is that `jproxysh` must be accessible by the environment variable `PATH`, anyway executing this script is not direct, it requires some previous configuration:
 
-* First of all the +JAVA_HOME+ environment variable is required. 
-* The +CLASSPATH+ environment variable must locate the +relproxy-X.X.jar+ file and other folders and jars required by your Java application, conventions are the same than a typical JavaSE program.
-* Optionally you may specify +JAVA_OPTS+ to provide options for the JVM.
+* First of all the `JAVA_HOME` environment variable is required. 
+* The `CLASSPATH` environment variable must locate the `relproxy-X.X.jar` file and other folders and jars required by your Java application, conventions are the same than a typical JavaSE program.
+* Optionally you may specify `JAVA_OPTS` to provide options for the JVM.
 
 There are other _optional_ environment variables in this case RelProxy specific:
 
@@ -1410,9 +1513,9 @@ server and JProxy (already configured) is used inside.
 * JPROXYSH_CACHE_CLASS_FOLDER : defines where to save the .class files resulting of compiling on the fly the scripting code, this folder is automatically added to the class path, 
 so when the script is loaded the second time the .class are used instead of source code according to the typical source-binary timestamp rules (if source code is more recent the 
 class is ignored and replaced with a new file).
-* JPROXYSH_COMPILATION_OPTIONS : compilations passed to the JDK compiler, the format is the same as the command line +javac+.
+* JPROXYSH_COMPILATION_OPTIONS : compilations passed to the JDK compiler, the format is the same as the command line `javac`.
 
-The following is an example of shell code (into a script file) to execute the previous +example_java_shell+, this example is included in RelProxy distribution:
+The following is an example of shell code (into a script file) to execute the previous `example_java_shell`, this example is included in RelProxy distribution:
 
 [source,sh]
 .ex_java_shell_launcher.sh
@@ -1446,7 +1549,7 @@ export JPROXYSH_COMPILATION_OPTIONS="-source 1.6 -target 1.6"
 $PROJECT/cmd_examples/code/example_java_shell "HELLO " "WORLD!"
 ----
 
-Because +example_java_shell+ is a +jproxysh+ based script, nothing prevents of being executed directly using +jproxysh+:
+Because `example_java_shell` is a `jproxysh` based script, nothing prevents of being executed directly using `jproxysh`:
 
 [source,sh]
 ----
@@ -1457,7 +1560,7 @@ jproxysh $PROJECT/cmd_examples/code/example_java_shell "HELLO " "WORLD!"
 
 === Defining a complete Java class
 
-As you have seen in +example_java_shell+ example, you can access to other Java "scripting" classes from the initial scripting file, this is really interesting when your scripts 
+As you have seen in `example_java_shell` example, you can access to other Java "scripting" classes from the initial scripting file, this is really interesting when your scripts 
 become too large and you need state (attributes) more methods and so on, that is, you need more classes.
 
 But in case most of or completely your code can be in just one class, or the main scripting file needs to be more structured, you have the option of defining a conventional class
@@ -1486,17 +1589,17 @@ public class example_java_shell_complete_class
 }
 ----
 
-+example_java_shell_complete_class+ is a conventional class, you can add methods, attributes and so on, the only limitation is the name of the class, it must be the same as the 
+`example_java_shell_complete_class` is a conventional class, you can add methods, attributes and so on, the only limitation is the name of the class, it must be the same as the 
 container file that is, the same as conventional JavaSE programming.
 
-You can execute this script by the same ways we executed +example_java_shell+, directly or as a parameter of +jproxysh+.
+You can execute this script by the same ways we executed `example_java_shell`, directly or as a parameter of `jproxysh`.
 
 === Scripting conventional JavaSE source code
 
-The differences between the +example_java_shell_complete_class+ script and a conventional Java source file are just the extension (missing) and the hash bang to execute jproxysh.
+The differences between the `example_java_shell_complete_class` script and a conventional Java source file are just the extension (missing) and the hash bang to execute jproxysh.
 
-We can remove the hashbang and set a +.java+ extension to the main scripting file, in this scenario the source code is the same as a conventional JavaSE application.
-Instead of compiling with +javac+ and executing with +java+ command, you just must execute it with +jproxysh+
+We can remove the hashbang and set a `.java` extension to the main scripting file, in this scenario the source code is the same as a conventional JavaSE application.
+Instead of compiling with `javac` and executing with `java` command, you just must execute it with `jproxysh`
 
 [source,sh]
 ----
@@ -1507,9 +1610,9 @@ jproxysh $PROJECT/cmd_examples/code/example_normal_class.java "HELLO " "WORLD!"
 === Executing a Java code snippet
 
 You have done some powerful Java methods, these Java methods allows some combinations to make easily amazing things, you just need one, or two or just three sentences... 
-you don't need to create a Java shell scripting file, you just want to write down and execute. RelProxy through +jproxy+ allows executing Java code snippets on the fly.
+you don't need to create a Java shell scripting file, you just want to write down and execute. RelProxy through `jproxy` allows executing Java code snippets on the fly.
 
-The following is a shell script included in RelProxy distribution which executes a simple code snippet (the param +-c+ indicates you are going to execute inline code):
+The following is a shell script included in RelProxy distribution which executes a simple code snippet (the param `-c` indicates you are going to execute inline code):
 
 [source,sh]
 .ex_java_shell_snippet_launcher.sh
@@ -1544,8 +1647,8 @@ jproxysh -c 'System.out.print("This code snippet says: ");' \
 
 You can execute a single code block (into a string parameter) or several blocks in several lines separated with "\", every block can contain several Java sentences.
 
-Alternatively you can execute a complete class with a standard +main+ method, RelProxy detects when you are specifying a sentence block or a complete class, because there 
-is no file holding the code the class name must be known by default and must be +_jproxyMainClass_+. For instance:
+Alternatively you can execute a complete class with a standard `main` method, RelProxy detects when you are specifying a sentence block or a complete class, because there 
+is no file holding the code the class name must be known by default and must be `_jproxyMainClass_`. For instance:
 
 [source,sh]
 ----
@@ -1563,7 +1666,7 @@ jproxysh -c 'public class _jproxyMainClass_ { '  \
 
 When you need something more interactive, just like the Groovy shell, RelProxy provides a simple interactive shell. 
 
-To launch the interactive shell define the required environment variables like the code snippet example and execute +jproxysh+ with no parameters:
+To launch the interactive shell define the required environment variables like the code snippet example and execute `jproxysh` with no parameters:
 
 [source,sh]
 ----
@@ -1573,18 +1676,18 @@ jproxysh
 A message info is shown and a prompt is shown waiting for your commands and or code. Write 'help' to know the shell options, if the text written is not recognized like a command
 it is interpreted as Java code and saved in a buffer to be executed when you want writing the 'exec' command.
 
-The interactive Java shell accepts a block of sentences or a complete class with a standard +main+ method and name +_jproxyMainClass_+.
+The interactive Java shell accepts a block of sentences or a complete class with a standard `main` method and name `_jproxyMainClass_`.
 
 === How to use RelProxy shell scripting in Windows
 
-RelProxy does not provide a +jproxysh+ version for Windows because you can easily build a mini-Linux/Unix in your Windows box with http://www.mingw.org/[MinGW/MSYS].
+RelProxy does not provide a `jproxysh` version for Windows because you can easily build a mini-Linux/Unix in your Windows box with http://www.mingw.org/[MinGW/MSYS].
 
-Install MinGW/MSYS, you must be able to locate the shell launcher +msys.bat+ in a folder like +C:\MinGW\msys\1.0\+ (exact location may change according to your installation folder).
+Install MinGW/MSYS, you must be able to locate the shell launcher `msys.bat` in a folder like `C:\MinGW\msys\1.0\` (exact location may change according to your installation folder).
 
-Execute +msys.bat+ and you will get a simple Linux shell environment, in this environment you can execute your typical Linux commands like +ls+, +ps+, +find+ etc and of course
+Execute `msys.bat` and you will get a simple Linux shell environment, in this environment you can execute your typical Linux commands like `ls`, `ps`, `find` etc and of course
 launch the previous script files documented in this manual and included in RelProxy distribution.
 
-MSYS console is enough for most of purposes, if you also install +mintty+ using the MinGW GUI or command based installer, calling +mintty&+ in MSYS opens an even more sophisticated
+MSYS console is enough for most of purposes, if you also install `mintty` using the MinGW GUI or command based installer, calling `mintty&` in MSYS opens an even more sophisticated
 Linux console. Mintty has some problem with some keyboard characters editing Java code in the RelProxy interactive console, back to basic MSYS console when necesssary.
 
 If you need to execute Linux shell scripts (for instance RelProxy based) from Windows without a Linux like interactive console, do something like this in your Windows script or console:
@@ -1595,7 +1698,7 @@ set PATH=C:\MinGW\msys\1.0\bin;%PATH%
 sh <path to the shell file>
 ----
 
-Where +<path to the shell file>+ can have Windows or Linux format (e.g. +/c/development/relproxy/cmd_examples/ex_java_shell_launcher.sh+).
+Where `<path to the shell file>` can have Windows or Linux format (e.g. `/c/development/relproxy/cmd_examples/ex_java_shell_launcher.sh`).
 
 == Java Scripting API implementation
 
@@ -1645,12 +1748,12 @@ System.out.println("RETURNED: " + result);
 ((JProxyScriptEngine)engine).stop(); // Necessary if scanPeriod > 0 was defined
 ----
 
-As you can see initialization code is the same as in +JProxy+ examples, the main difference between +JProxy+ and +ScriptEngine+ is that +JProxy+ is like a singleton and
-you get a new +ScriptEngine+ instance every time you call +manager.getEngineByName("Java")+. In spite a new +ScriptEngine+ instance is ever created only one instance
+As you can see initialization code is the same as in `JProxy` examples, the main difference between `JProxy` and `ScriptEngine` is that `JProxy` is like a singleton and
+you get a new `ScriptEngine` instance every time you call `manager.getEngineByName("Java")`. In spite a new `ScriptEngine` instance is ever created only one instance
 is recommended because for instance you have the option of saving .class files as cache, some concurrent conflicting saving can happen when competing
-two +ScriptEngine+ (with the same configuration).
+two `ScriptEngine` (with the same configuration).
 
-Inside the +eval+ method, compilation phase is thread safe but not code execution, you can use several threads to call +eval+ and execute concurrent lengthy tasks without 
+Inside the `eval` method, compilation phase is thread safe but not code execution, you can use several threads to call `eval` and execute concurrent lengthy tasks without 
 execution blocking.
 
 The last line:
@@ -1660,29 +1763,29 @@ The last line:
 ((JProxyScriptEngine)engine).stop(); // Necessary if scanPeriod > 0 was defined
 ----
 
-Shows that returned +ScriptEngine+ implements +JProxyScriptEngine+, this interface defines the same methods you are going to find in +JProxy+, for instance
-the +stop()+ method is necessary whether you define a +scanPeriod+ and you want to dispose the +ScriptEngine+ (otherwise the +ScriptEngine+ is looking for
+Shows that returned `ScriptEngine` implements `JProxyScriptEngine`, this interface defines the same methods you are going to find in `JProxy`, for instance
+the `stop()` method is necessary whether you define a `scanPeriod` and you want to dispose the `ScriptEngine` (otherwise the `ScriptEngine` is looking for
 source changes forever). 
 
-As said before two +ScriptEngine+ objects created using the same factory, just share the same configuration but they are different instances, for instance,
-the +stop()+ method just affect to the concrete instance used to call.
+As said before two `ScriptEngine` objects created using the same factory, just share the same configuration but they are different instances, for instance,
+the `stop()` method just affect to the concrete instance used to call.
 
-You can directly call the +JProxyScriptEngineFactory.getScriptEngine()+ method without registering on a +ScriptEngineManager+, in this case avoid calling 
-+ServiceContext.getBindings(javax.script.ScriptContext.GLOBAL_SCOPE)+ use because the default global scope +Bindings+ object is not defined. In fact the method
-+ScriptEngineManager.getEngineByName(String)+ calls +JProxyScriptEngineFactory.getScriptEngine()+ and may return null if the +JProxyScriptEngineFactory.getScriptEngine()+ 
+You can directly call the `JProxyScriptEngineFactory.getScriptEngine()` method without registering on a `ScriptEngineManager`, in this case avoid calling 
+`ServiceContext.getBindings(javax.script.ScriptContext.GLOBAL_SCOPE)` use because the default global scope `Bindings` object is not defined. In fact the method
+`ScriptEngineManager.getEngineByName(String)` calls `JProxyScriptEngineFactory.getScriptEngine()` and may return null if the `JProxyScriptEngineFactory.getScriptEngine()` 
 method throws an exception for instance when some configuration data is wrong, because there is no log info of this exception you have no way to know what is happening, in 
-this case directly call +JProxyScriptEngineFactory.getScriptEngine()+ to know what is happening.
+this case directly call `JProxyScriptEngineFactory.getScriptEngine()` to know what is happening.
 
-If you need two or more different configurations, create one +JProxyScriptEngineFactory+ per configuration, use them standalone or create several +ScriptEngineManager+ instances.
+If you need two or more different configurations, create one `JProxyScriptEngineFactory` per configuration, use them standalone or create several `ScriptEngineManager` instances.
 
-The scripting code can be the content of a +main+ method with this signature:
+The scripting code can be the content of a `main` method with this signature:
 
 [source,java]
 ----
 public static Object main(javax.script.ScriptEngine engine,javax.script.ScriptContext context)
 ----
 
-Or optionally you can define a complete Java class containing the previous +main+ method and name +_jproxyMainClass_+, for instance:
+Or optionally you can define a complete Java class containing the previous `main` method and name `_jproxyMainClass_`, for instance:
 
 [source,java]
 ----
@@ -1694,7 +1797,7 @@ public class _jproxyMainClass_ {
 }
 ----
 
-Because you have access to the +ScriptEngine+ inside your code, you can define a hot reloadable server using RelProxy in a similar form to using the static +JProxy+ class: 
+Because you have access to the `ScriptEngine` inside your code, you can define a hot reloadable server using RelProxy in a similar form to using the static `JProxy` class: 
 
 [source,java]
 ----
