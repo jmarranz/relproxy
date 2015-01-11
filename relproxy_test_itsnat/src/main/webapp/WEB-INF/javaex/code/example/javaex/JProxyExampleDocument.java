@@ -68,7 +68,7 @@ public class JProxyExampleDocument extends JProxyExampleDocumentBase
 
         this.resultsElem = doc.getElementById("resultsId");
         
-        System.out.println("JProxyExampleDocument 2 " + this.getClass().getClassLoader().hashCode());        
+        System.out.println("JProxyExampleDocument 1 " + this.getClass().getClassLoader().hashCode());        
         new AuxMemberInMethod().log();
         AuxMember.log();
         JProxyExampleAux.log();

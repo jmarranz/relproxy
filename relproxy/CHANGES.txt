@@ -5,11 +5,10 @@
 
     - Optimization: method JProxyInputSourceFileExcludedListener.isExcluded(File file,File) is called being parameter file also a directory, if the directory is fully
       excluded, RelProxy doesn't call isExcluded for files into the folder. Useful for big source code bases and used RelProxy for normal source code folders.
-    - Class reloading with a new ClassLoader when using a singleton registered in JProxy.
+    - Reload using a new ClassLoader is done when calling the exposed methods of the singletons registered on JProxy.
     - Bug fix in case of paths with spaces in JProxy
     - Bug fix in case of ".." in paths in JProxy
     - Manual has been very improved documenting new features and new chapters.
-    - Added to manual: "Configuring your Tomcat server in Eclipse to avoid automatic context reloading" .
 
 * 0.8.1
 
