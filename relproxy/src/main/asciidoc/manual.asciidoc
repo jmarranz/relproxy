@@ -82,8 +82,11 @@ Because:
 
 If you can execute uncompiled Java code, can we get something similar to an interactive shell to execute Java code snippets? Yes of course.
 
-Finally, do not confuse Java scripting provided by RelProxy with http://www.beanshell.org/[BeanShell], BeanShell is NOT Java, is a scripting language heavily inspired on Java < 1.5, 
+Do not confuse Java scripting provided by RelProxy with http://www.beanshell.org/[BeanShell], BeanShell is NOT Java, is a scripting language heavily inspired on Java < 1.5, 
 running on the JVM with a nice integration with real Java, for instance in BeanShell there is no support of Java 1.5 features like generics.
+
+Finally, RelProxy is in some way similar to the famous http://zeroturnaround.com/software/jrebel/[JRebel], but is not so transparent and has more limitations. The only advantage is the price, zero, and maybe lesser memory footprint
+and better performance. 
 
 That is all, welcome to dynamic Java, welcome to a more dynamic Groovy in a Java environment.
  
@@ -113,7 +116,7 @@ under `WEB-INF/`), you can modify the Java source file directly in production an
 change is needed, by this way you get the similar experience when you change the source code in production of a PHP, Ruby, JSP etc files without the need of restarting
 the application. If you do not want use RelProxy in production just disable it, the performance penalty is zero.
 
-RelProxy also can be used in development only acccesing directly to your source files in `/src` folder (multiple source folders are allowed) with no need of uploading source code to
+RelProxy also can be used in development only accessing directly to your source files in `/src` folder (multiple source folders are allowed) with no need of uploading source code to
 production.
 
 RelProxy is an alternative to context reloading, if your application is small and you feel comfortable with context reloading you do not need the class reloading features of RelProxy
@@ -170,7 +173,7 @@ image:edit_web_module.png[Edit Web Module, title="Edit Web Module"]
 In this manual NetBeans 8.0.2 has been used, behaviour of previous and future versions may be the same but not tested.
 
 The author of this manual has not been able to disable context reloading feature of Tomcat in NetBeans environment. The xml archive with the `<Context>` descriptor in Tomcat installation is
-replaced with the content of `META-INF/contex.xml`, in theory just adding `reloadable=true` to `<Context>` in this file would make the job... no sucess, is ignored.
+replaced with the content of `META-INF/contex.xml`, in theory just adding `reloadable=true` to `<Context>` in this file would make the job... no success, is ignored.
 
 We are able of disabling context reload avoiding the automatic synchronization of sources and deployed artifacts, two flags are involved in `Project Properties` dialog:
 
@@ -488,7 +491,7 @@ to the `target/projectname`, but unfortunately excluding .java (and .groovy) fil
 
 In theory enabling `Project Properties / Run / Deploy on Save` does the job but enables automatic context reloading.
 
-One simple solution is adding a special Ant task to syncronize the source files to the same files in `target/projectname`. Call this task after hot source code modification.
+One simple solution is adding a special Ant task to synchronize the source files to the same files in `target/projectname`. Call this task after hot source code modification.
 
 For instance:
 
@@ -752,92 +755,136 @@ basically doing the same as the Groovy example:
 
 
 [source,java]
+.JProxyExampleServlet.java
 ----
-public static void init(ItsNatHttpServlet itsNatServlet,ServletConfig config)
-{    
-    ServletContext context = itsNatServlet.getItsNatServletContext().getServletContext();
-    String inputPath = context.getRealPath("/") + "/WEB-INF/javaex/code/";           
-    String classFolder = null; // Optional: context.getRealPath("/") + "/WEB-INF/classes";
-    Iterable<String> compilationOptions = Arrays.asList(new String[]{"-source","1.6","-target","1.6"});
-    long scanPeriod = 300;
+package example.javaex;
 
-    JProxyInputSourceFileExcludedListener excludedListener = new JProxyInputSourceFileExcludedListener()
+import java.io.File;
+import java.lang.reflect.Method;
+import java.util.Arrays;
+import java.util.List;
+
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
+import javax.tools.Diagnostic;
+import javax.tools.DiagnosticCollector;
+import javax.tools.JavaFileObject;
+
+import org.itsnat.core.event.ItsNatServletRequestListener;
+import org.itsnat.core.http.HttpServletWrapper;
+import org.itsnat.core.tmpl.ItsNatDocumentTemplate;
+import com.innowhere.relproxy.RelProxyOnReloadListener;
+import com.innowhere.relproxy.jproxy.JProxy;
+import com.innowhere.relproxy.jproxy.JProxyCompilerListener;
+import com.innowhere.relproxy.jproxy.JProxyConfig;
+import com.innowhere.relproxy.jproxy.JProxyDiagnosticsListener;
+import com.innowhere.relproxy.jproxy.JProxyInputSourceFileExcludedListener;
+
+
+/**
+ * 
+ * @author jmarranz
+ */
+public class JProxyExampleServlet extends HttpServletWrapper
+{  
+    public JProxyExampleServlet()
     {
-        @Override
-        public boolean isExcluded(File file, File rootFolderOfSources)
-        {
-            return false;
-        }            
-    }; 
-
-    RelProxyOnReloadListener proxyListener = new RelProxyOnReloadListener() {
-        public void onReload(Object objOld, Object objNew, Object proxy, Method method, Object[] args) {
-            System.out.println("Reloaded " + objNew + " Calling method: " + method);
-        }        
-    };
-
-    JProxyCompilerListener compilerListener = new JProxyCompilerListener(){
-        @Override
-        public void beforeCompile(File file)
-        {
-            System.out.println("Before compile: " + file);
-        }
-
-        @Override
-        public void afterCompile(File file)
-        {
-            System.out.println("After compile: " + file);
-        } 
-    };
-
-    JProxyDiagnosticsListener diagnosticsListener = new JProxyDiagnosticsListener()
+    }
+    
+    @Override
+    public void init(ServletConfig config) throws ServletException 
     {
-        public void onDiagnostics(DiagnosticCollector<JavaFileObject> diagnostics)
+        super.init(config);
+
+        ServletContext context = getServletContext();
+        String realPath = context.getRealPath("/");
+        String inputPath = realPath + "/WEB-INF/javaex/code/";  
+        String classFolder = null; // Optional: context.getRealPath("/") + "/WEB-INF/classes";
+        Iterable<String> compilationOptions = Arrays.asList(new String[]{"-source","1.6","-target","1.6"});
+        long scanPeriod = 300;
+        
+        RelProxyOnReloadListener proxyListener = new RelProxyOnReloadListener() {
+            @Override
+            public void onReload(Object objOld, Object objNew, Object proxy, Method method, Object[] args) {
+                System.out.println("Reloaded " + objNew + " Calling method: " + method);
+            }        
+        };
+        
+        
+        JProxyInputSourceFileExcludedListener excludedListener = new JProxyInputSourceFileExcludedListener()
         {
-            List<Diagnostic<? extends JavaFileObject>> diagList = diagnostics.getDiagnostics();                
-            int i = 1;
-            for (Diagnostic diagnostic : diagList)
+            @Override
+            public boolean isExcluded(File file, File rootFolderOfSources)
             {
-               System.err.println("Diagnostic " + i);
-               System.err.println("  code: " + diagnostic.getCode());
-               System.err.println("  kind: " + diagnostic.getKind());
-               System.err.println("  line number: " + diagnostic.getLineNumber());                   
-               System.err.println("  column number: " + diagnostic.getColumnNumber());
-               System.err.println("  start position: " + diagnostic.getStartPosition());
-               System.err.println("  position: " + diagnostic.getPosition());                   
-               System.err.println("  end position: " + diagnostic.getEndPosition());
-               System.err.println("  source: " + diagnostic.getSource());
-               System.err.println("  message: " + diagnostic.getMessage(null));
-               i++;
+            	return false;
+            }            
+        };             
+        
+        JProxyCompilerListener compilerListener = new JProxyCompilerListener(){
+            @Override
+            public void beforeCompile(File file)
+            {
+                System.out.println("Before compile: " + file);
             }
-        }
-    };
 
-    JProxyConfig jpConfig = JProxy.createJProxyConfig();
-    jpConfig.setEnabled(true)
-            .setRelProxyOnReloadListener(proxyListener)
-            .setInputPath(inputPath)
-            .setJProxyInputSourceFileExcludedListener(excludedListener)
-            .setScanPeriod(scanPeriod)
-            .setClassFolder(classFolder)
-            .setCompilationOptions(compilationOptions)
-            .setJProxyCompilerListener(compilerListener)                
-            .setJProxyDiagnosticsListener(diagnosticsListener);
+            @Override
+            public void afterCompile(File file)
+            {
+                System.out.println("After compile: " + file);
+            } 
+        };   
+        
+        JProxyDiagnosticsListener diagnosticsListener = new JProxyDiagnosticsListener()
+        {
+            @Override
+            public void onDiagnostics(DiagnosticCollector<JavaFileObject> diagnostics)
+            {
+                List<Diagnostic<? extends JavaFileObject>> diagList = diagnostics.getDiagnostics();                
+                int i = 1;
+                for (Diagnostic<? extends JavaFileObject> diagnostic : diagList)
+                {
+                   System.err.println("Diagnostic " + i);
+                   System.err.println("  code: " + diagnostic.getCode());
+                   System.err.println("  kind: " + diagnostic.getKind());
+                   System.err.println("  line number: " + diagnostic.getLineNumber());                   
+                   System.err.println("  column number: " + diagnostic.getColumnNumber());
+                   System.err.println("  start position: " + diagnostic.getStartPosition());
+                   System.err.println("  position: " + diagnostic.getPosition());                   
+                   System.err.println("  end position: " + diagnostic.getEndPosition());
+                   System.err.println("  source: " + diagnostic.getSource());
+                   System.err.println("  message: " + diagnostic.getMessage(null));
+                   i++;
+                }
+            }
+        };
+        
+        JProxyConfig jpConfig = JProxy.createJProxyConfig();
+        jpConfig.setEnabled(true)
+                .setRelProxyOnReloadListener(proxyListener)
+                .setInputPath(inputPath)
+                .setJProxyInputSourceFileExcludedListener(excludedListener)
+                .setScanPeriod(scanPeriod)
+                .setClassFolder(classFolder)
+                .setCompilationOptions(compilationOptions)
+                .setJProxyCompilerListener(compilerListener)                
+                .setJProxyDiagnosticsListener(diagnosticsListener);
+        
+        JProxy.init(jpConfig);
 
+        
+        String pathPrefix = context.getRealPath("/") + "/WEB-INF/javaex/pages/";
 
-    JProxy.init(jpConfig);
+        ItsNatDocumentTemplate docTemplate;
+        docTemplate = itsNatServlet.registerItsNatDocumentTemplate("javaex","text/html", pathPrefix + "javaex.html");
 
-
-    String pathPrefix = context.getRealPath("/") + "/WEB-INF/javaex/pages/";
-
-    ItsNatDocumentTemplate docTemplate;
-    docTemplate = itsNatServlet.registerItsNatDocumentTemplate("javaex","text/html", pathPrefix + "javaex.html");
-
-    FalseDB db = new FalseDB();
-
-    ItsNatServletRequestListener listener = JProxy.create(new example.javaex.JProxyExampleLoadListener(db), ItsNatServletRequestListener.class);
-    docTemplate.addItsNatServletRequestListener(listener);
-} 
+        FalseDB db = new FalseDB();        
+        
+        ItsNatServletRequestListener listener = JProxy.create(new example.javaex.JProxyExampleLoadListener(db), ItsNatServletRequestListener.class);
+        docTemplate.addItsNatServletRequestListener(listener);   
+    }    
+ 
+}
 ----
 
 There is more code than Groovy code because `GroovyScriptEngine` setting up was omitted (not specific of RelProxy) and now some configuration options are shown in spite of they 
@@ -979,6 +1026,7 @@ Registered on your `web.xml`:
         </listener-class>
    </listener>    
 </web-app>
+----
 
 Finally in your servlets only register your singletons:
 
@@ -1034,23 +1082,12 @@ how we can exclude source files from the hot class reload system of RelProxy/JPr
 
 This example is for development phase only, nothing prevents of appliying both strategies because JProxy allows multiple source folders to monitor by using `JProxyConfig.setInputPaths(String[])`. 
 
-
-
-
-
-
-
-
-
-
-
-
 In GWT, JProxy only can be used to reload Java code executed in server, this is why we are going to apply JProxy to a GWT-RPC project (that is a client-server web application).
 
-Install http://eclipse.org[Eclipse] (Eclipse 4.4 Luna was used fot this example), install the https://developers.google.com/eclipse/docs/download[Google Plugin for Eclipse] (version 4.4 was used), 
+Install http://eclipse.org[Eclipse] (Eclipse 4.4 Luna was used for this example), install the https://developers.google.com/eclipse/docs/download[Google Plugin for Eclipse] (version 4.4 was used), 
 only install GWT dependencies if you want (there is no need of Android and Google App Engine parts), download RelProxy distribution file and copy the `relproxy-x.y.z.jar`.
 
-Select in Eclipse the menu option `New / Other / Google/ Web Application Project` to create a GWT-RPC sample project (Google App Engine is not needed).
+Select in Eclipse the menu option `New / Other... / Google/ Web Application Project` to create a GWT-RPC sample project (Google App Engine is not needed).
 
 In this example we have created the project with name `relproxy_ex_gwt` and package `com.innowhere.relproxyexgwt`, this is
 the structure of the generated source code:
@@ -1076,7 +1113,7 @@ relproxy_ex_gwt    (root folder of project)
 
 
 We are only be able to reload classes executed in server, that is, classes below `server/` folder. This why the class `GreetingServiceImpl.java` is our focus,
-this is the code generated:
+this is the generated code:
 
 [source,java]
 .GreetingServiceImpl.java
@@ -1129,9 +1166,9 @@ public class GreetingServiceImpl extends RemoteServiceServlet implements Greetin
 
 ----
 
-This class is a servlet created to receive RPC requests from client following the interface pattern of the interface `GreetingService` shared by client code, 
-we are not going to try to reload this servlet because to use JProxy we need a reloadable singleton implementing an interface registered in JProxy.
-We are deeply transforming `GreetingServiceImpl`:
+This class is a servlet created to receive RPC requests from client following the interface pattern of the interface `GreetingService` shared by client and server code.
+We are not going to try to reload this servlet because to use JProxy we need a reloadable singleton implementing an interface registered in JProxy, therefore
+we are deeply transforming `GreetingServiceImpl`:
 
 [source,java]
 .GreetingServiceImpl.java
@@ -1299,10 +1336,10 @@ which hold the reloadable singleton registered on:
 this.delegate = JProxy.create(new GreetingServiceDelegateImpl(this), GreetingServiceDelegate.class);
 ----
 
-As you can see we have create the Java file `GreetingServiceDelegateImpl.java` and the class with the same name going to be reloaded, implementing 
+As you can see we have created the Java file `GreetingServiceDelegateImpl.java` the class to hold the singleton going to be reloaded, implementing 
 the interface `GreetingServiceDelegate`. JProxy returns a proxy object "implementing" `GreetingServiceDelegate` exposed to the non-reloadable world.
 
-Take a look to this new listener:
+Take a look to this listener, in the previous example it was trivial, in this case is very important:
 
 [source,java]
 ----
@@ -1332,23 +1369,24 @@ Registered on:
         .setJProxyInputSourceFileExcludedListener(excludedListener)
 ----
 
-This listener filters the Java source files that need to be ignored by RelProxy/JProxy even when modified, because JProxy creates a new `ClassLoader` and reload with it all 
-hot-reloadable classes. Classes inside `client/` and `shared/` folders must not be reloadable because has no sense in GWT, when a folder part of a source folder of reloadable 
-classes specified in configuration is going to be inspected for changed classes the method `isExcluded` is called to check whether the complete folder must be excluded, this 
-is very useful for projects with a lot of files not reloadable (in this case a lot of classes below `client/` and `shared/`. `GreetingServiceImpl` cannot be reloaded because 
-is a servlet and cannot be registered in JProxy because is already in use by the JavaEE servlet system. Finally `GreetingServiceDelegate` cannot be reloaded because is the 
-interface exposed to the non-reloadable world. In summary only `server/` classes can be reloaded excluding the servlet class and `GreetingServiceDelegate`.
+This listener filters the Java source files that need to be ignored by RelProxy/JProxy even when modified, because JProxy creates a new `ClassLoader` and reloads on it all 
+hot-reloadable classes. Classes inside `client/` and `shared/` folders must not be reloadable because has no sense in GWT, when a folder inside a declared source folder of reloadable 
+classes specified in configuration is going to be inspected for changed classes, the method `isExcluded` is called to check whether the complete folder must be excluded, this 
+is very useful for big projects with a lot of files not reloadable. In this case classes inside `client/` or `shared/` are excluded. If a folder is not excluded, files
+in folder are asked for excluding calling `isExcluded`, the class `GreetingServiceImpl` cannot be reloaded because it is a servlet and cannot be registered in JProxy 
+because is already in use by the JavaEE servlet system and cannot be registered on JProxy. Finally `GreetingServiceDelegate.java` cannot be reloaded because is the 
+interface exposed to the non-reloadable world. In summary only `server/` classes can be reloaded excluding the servlet class `GreetingServiceImpl.java` and `GreetingServiceDelegate.java`.
 
 This is the code of `GreetingServiceDelegate` :
 
 [source,java]
-.GreetingServiceDelegate
+.GreetingServiceDelegate.java
 ----
 package com.innowhere.relproxyexgwt.server;
 
 public interface GreetingServiceDelegate {
 
-	public String greetServer(String input) throws IllegalArgumentException;
+    public String greetServer(String input) throws IllegalArgumentException;
 	
 }
 ----
@@ -1356,7 +1394,7 @@ public interface GreetingServiceDelegate {
 And the code of `GreetingServiceDelegateImpl.java`, basically a copy/paste of the original servlet code.
 
 [source,java]
-.GreetingServiceDelegateImpl
+.GreetingServiceDelegateImpl.java
 ----
 package com.innowhere.relproxyexgwt.server;
 
@@ -1364,56 +1402,56 @@ import com.innowhere.relproxyexgwt.shared.FieldVerifier;
 
 public class GreetingServiceDelegateImpl implements GreetingServiceDelegate
 {
-	protected GreetingServiceImpl parent;
-	
-	public GreetingServiceDelegateImpl() // needed by JProxy
-	{
-	}	
-	
-	public GreetingServiceDelegateImpl(GreetingServiceImpl parent)
-	{
-		this.parent = parent;
-	}	
-	
-	public String greetServer(String input) throws IllegalArgumentException {
-		
-		// Verify that the input is valid. 
-		if (!FieldVerifier.isValidName(input)) {
-			// If the input is not valid, throw an IllegalArgumentException back to
-			// the client.
-			throw new IllegalArgumentException("Name must be at least 4 characters long");
-		}
+    protected GreetingServiceImpl parent;
 
-		String serverInfo = parent.getServletContext().getServerInfo();
-		String userAgent = parent.getThreadLocalRequestPublic().getHeader("User-Agent");
+    public GreetingServiceDelegateImpl() // needed by JProxy
+    {
+    }	
 
-		// Escape data from the client to avoid cross-site script vulnerabilities.
-		input = escapeHtml(input);
-		userAgent = escapeHtml(userAgent);
+    public GreetingServiceDelegateImpl(GreetingServiceImpl parent)
+    {
+        this.parent = parent;
+    }	
 
-		return "Hello, " + input + "!<br><br>I am running " + serverInfo
-				+ ".<br><br>It looks like you are using:<br>" + userAgent;
-	}
+    public String greetServer(String input) throws IllegalArgumentException {
 
-	/**
-	 * Escape an html string. Escaping data received from the client helps to
-	 * prevent cross-site script vulnerabilities.
-	 * 
-	 * @param html the html string to escape
-	 * @return the escaped string
-	 */
-	private String escapeHtml(String html) {
-		if (html == null) {
-			return null;
-		}
-		return html.replaceAll("&", "&amp;").replaceAll("<", "&lt;")
-				.replaceAll(">", "&gt;");
-	}
+        // Verify that the input is valid. 
+        if (!FieldVerifier.isValidName(input)) {
+                // If the input is not valid, throw an IllegalArgumentException back to
+                // the client.
+                throw new IllegalArgumentException("Name must be at least 4 characters long");
+        }
+
+        String serverInfo = parent.getServletContext().getServerInfo();
+        String userAgent = parent.getThreadLocalRequestPublic().getHeader("User-Agent");
+
+        // Escape data from the client to avoid cross-site script vulnerabilities.
+        input = escapeHtml(input);
+        userAgent = escapeHtml(userAgent);
+
+        return "Hello, " + input + "!<br><br>I am running " + serverInfo
+                        + ".<br><br>It looks like you are using:<br>" + userAgent;
+    }
+
+    /**
+     * Escape an html string. Escaping data received from the client helps to
+     * prevent cross-site script vulnerabilities.
+     * 
+     * @param html the html string to escape
+     * @return the escaped string
+     */
+    private String escapeHtml(String html) {
+            if (html == null) {
+                    return null;
+            }
+            return html.replaceAll("&", "&amp;").replaceAll("<", "&lt;")
+                            .replaceAll(">", "&gt;");
+    }
 }
 
 ----
 
-Run this example (Run As/Web Application GWT Super Dev Mode), open this URL `http://127.0.0.1:8888/Relproxy_ex_gwt.html` in your browser and a screen like this is shown:
+Run this example (`Run As/Web Application GWT Super Dev Mode`), open this URL http://127.0.0.1:8888/Relproxy_ex_gwt.html[http://127.0.0.1:8888/Relproxy_ex_gwt.html] in your browser and a screen like this is shown:
 
 image:browser_1.png[Fig 1, title="Fig 1"]
  
@@ -1437,9 +1475,9 @@ image:browser_3.png[Fig 3, title="Fig 3"]
 
 As you can see in this case no reload has been necessary because the requisite is to call the proxied method to reload classes.
 
-In this example we make a very simple method change, adding more methods is not a problem but most of the time you will need to add new fields related to new classes,
-because `GreetingServiceDelegateImpl` is a singleton we cannot add, remove or change names and types of the fields of this class, to overcome this limitation
-create new classes avoiding the singleton pattern and move the code to them. Code like this:
+In this example we made a very simple method change, adding more methods is not a problem but most of the time you will need to add new fields related to new classes,
+because `GreetingServiceDelegateImpl` is a singleton we cannot add, remove or change names and types of the fields of this class, to overcome this severe limitation
+create new classes avoiding the singleton pattern and move the code to them. Code something like this:
 
 [source,java]
 .GreetingServiceDelegateImpl
@@ -1449,29 +1487,33 @@ create new classes avoiding the singleton pattern and move the code to them. Cod
 	}
 ----
 
-Declared fields of `GreetingServiceProcessor` can change with no problem because this class can be reloaded and instantiated by any call to 
-`GreetingServiceDelegateImpl.greetServer()`
+Declared fields of `GreetingServiceProcessor` can change with no problem because this class can be reloaded and is instantiated by any call to 
+`GreetingServiceDelegateImpl.greetServer()` with fresh data.
+
 
 
 == A new shell scripting language named Java
 
-When we think on a shell scripting language we think on sh or csh, or maybe on the scripting language of Windows console (based on the old MSDOS), or maybe you know
+When we think on a shell scripting language we think on `sh` or `csh`, or maybe on the scripting language of Windows Console (based on the old MSDOS), or maybe you know
 your preferred conventional dynamic language usually can be executed like another shell language, for instance http://groovy.codehaus.org/Running[Groovy], 
 http://www.linuxjournal.com/content/python-scripts-replacement-bash-utility-scripts[Python], http://stackoverflow.com/questions/166347/how-do-i-use-ruby-for-shell-scripting[Ruby]
 or http://www.2ality.com/2011/12/nodejs-shell-scripting.html[JavaScript].
 
 But when you think Java like a new shell scripting language sure you say "it's impossible".
 
-No, it is possible, RelProxy includes a tool named *`jproxysh`* to make possible executing Java like another shell scripting language.
+No, it is possible, RelProxy includes a tool named *`jproxysh`* to make possible executing pure Java code like another shell scripting language. 
 
 The principle is simple and is very similar to Groovy scripting, Groovy compiles on the fly Groovy code saving in memory the compiled bytecode, by this way developers
 think Groovy script is interpreted and is not, the same approach is applied to Java through RelProxy. In the case of RelProxy, bytecode can be optionally saved as .class
-files to avoid compiling on the fly every time the script is executed. When the JVM is able to load .class files instead of compiling execution maybe extremely faster
+files to avoid compiling on the fly every time the script is executed. When the JVM is able to load .class files instead of compiling, code execution maybe extremely faster
 than conventional scripting languages interpreted line by line from sources, this is why the affirmation of Java as the fastest scripting language of the world is accurate.
+
+Because pure Java is used and the standard compiler API, nothing prevents using Java scripting in the less verbose Java 8 (v1.8).
+
 
 === Defining a Java based shell scripting file
 
-Let's see the first example (some background of UNIX shell is supposed):
+Let's see the first example (some background of UNIX shell is required):
 
 [source,java]
 .example_java_shell
@@ -1508,21 +1550,19 @@ The hierarchy is:
 
 
 {nbsp} +
-Yes, you are right, mentally adding the .java extension to `example_java_shell` you get the typical file hierarchy of a JavaSE program. 
-
+Yes, you are right, mentally add the .java extension to `example_java_shell` and you get the typical file hierarchy of a JavaSE program, in fact JProxy is ready to execute a conventional
+JavaSE program with no explicit compilation, this will be shown later.
 
 The first requisite is that `jproxysh` must be accessible by the environment variable `PATH`, anyway executing this script is not direct, it requires some previous configuration:
 
 * First of all the `JAVA_HOME` environment variable is required. 
 * The `CLASSPATH` environment variable must locate the `relproxy-X.X.jar` file and other folders and jars required by your Java application, conventions are the same than a typical JavaSE program.
-* Optionally you may specify `JAVA_OPTS` to provide options for the JVM.
+* Optionally you may specify `JAVA_OPTS` to provide runtime options for the JVM.
 
 There are other _optional_ environment variables in this case RelProxy specific:
 
-* JPROXYSH_SCAN_PERIOD : defines the milliseconds between source code change checking, by default is -1 (no check) but a positive value is interesting when the script loads a 
-server and JProxy (already configured) is used inside.
 * JPROXYSH_CACHE_CLASS_FOLDER : defines where to save the .class files resulting of compiling on the fly the scripting code, this folder is automatically added to the class path, 
-so when the script is loaded the second time the .class are used instead of source code according to the typical source-binary timestamp rules (if source code is more recent the 
+so when the script is loaded the second time the .class files are used instead of source code according to the typical source-binary timestamp rules (if source code is more recent the 
 class is ignored and replaced with a new file).
 * JPROXYSH_COMPILATION_OPTIONS : compilations passed to the JDK compiler, the format is the same as the command line `javac`.
 
@@ -1533,7 +1573,7 @@ The following is an example of shell code (into a script file) to execute the pr
 ----
 #!/bin/sh
 
-RELPROXY_JAR=relproxy-0.8.jar
+RELPROXY_JAR=relproxy-0.8.2.jar
 
 PROJECT=`dirname $0`/..
 
@@ -1553,7 +1593,6 @@ export CLASSPATH=$PROJECT/lib/$RELPROXY_JAR
 export JAVA_OPTS="-client -Xmx100m"
 # Nothing really required in JAVA_OPTS, just to test
 
-export JPROXYSH_SCAN_PERIOD=-1
 export JPROXYSH_CACHE_CLASS_FOLDER="$PROJECT/tmp/java_shell_test_classes"
 export JPROXYSH_COMPILATION_OPTIONS="-source 1.6 -target 1.6"
 
@@ -1574,8 +1613,7 @@ jproxysh $PROJECT/cmd_examples/code/example_java_shell "HELLO " "WORLD!"
 As you have seen in `example_java_shell` example, you can access to other Java "scripting" classes from the initial scripting file, this is really interesting when your scripts 
 become too large and you need state (attributes) more methods and so on, that is, you need more classes.
 
-But in case most of or completely your code can be in just one class, or the main scripting file needs to be more structured, you have the option of defining a conventional class
-in the scripting main file.
+If you need your scripting code more structured, you have the option of defining a conventional class in the scripting main file.
 
 Take a look to this example also included in RelProxy distribution (slightly modified):
 
@@ -1601,7 +1639,7 @@ public class example_java_shell_complete_class
 ----
 
 `example_java_shell_complete_class` is a conventional class, you can add methods, attributes and so on, the only limitation is the name of the class, it must be the same as the 
-container file that is, the same as conventional JavaSE programming.
+container file (in this case the container file has not the .java extension).
 
 You can execute this script by the same ways we executed `example_java_shell`, directly or as a parameter of `jproxysh`.
 
@@ -1609,7 +1647,8 @@ You can execute this script by the same ways we executed `example_java_shell`, d
 
 The differences between the `example_java_shell_complete_class` script and a conventional Java source file are just the extension (missing) and the hash bang to execute jproxysh.
 
-We can remove the hashbang and set a `.java` extension to the main scripting file, in this scenario the source code is the same as a conventional JavaSE application.
+We can remove the hashbang and add the `.java` extension to the main scripting file, in this scenario the source code is the same as a conventional JavaSE application.
+
 Instead of compiling with `javac` and executing with `java` command, you just must execute it with `jproxysh`
 
 [source,sh]
@@ -1620,8 +1659,9 @@ jproxysh $PROJECT/cmd_examples/code/example_normal_class.java "HELLO " "WORLD!"
 
 === Executing a Java code snippet
 
-You have done some powerful Java methods, these Java methods allows some combinations to make easily amazing things, you just need one, or two or just three sentences... 
-you don't need to create a Java shell scripting file, you just want to write down and execute. RelProxy through `jproxy` allows executing Java code snippets on the fly.
+We have seen how much overcomplex can be our scripting files, what if you just need to execute one, or two or three sentences...
+You don't need to create a Java shell scripting file, you can write down your script as a parameter and execute. RelProxy through `jproxy` allows executing Java code snippets 
+on the fly.
 
 The following is a shell script included in RelProxy distribution which executes a simple code snippet (the param `-c` indicates you are going to execute inline code):
 
@@ -1658,8 +1698,8 @@ jproxysh -c 'System.out.print("This code snippet says: ");' \
 
 You can execute a single code block (into a string parameter) or several blocks in several lines separated with "\", every block can contain several Java sentences.
 
-Alternatively you can execute a complete class with a standard `main` method, RelProxy detects when you are specifying a sentence block or a complete class, because there 
-is no file holding the code the class name must be known by default and must be `_jproxyMainClass_`. For instance:
+Alternatively you can execute a complete class with a standard `main` method, RelProxy detects when you are specifying a sentence block or a complete class, in this case because there 
+is no file holding the code, the class name must be known by default and must be `_jproxyMainClass_`. For instance:
 
 [source,sh]
 ----
@@ -1684,7 +1724,7 @@ To launch the interactive shell define the required environment variables like t
 jproxysh
 ----
 
-A message info is shown and a prompt is shown waiting for your commands and or code. Write 'help' to know the shell options, if the text written is not recognized like a command
+A message info is shown and a prompt is shown waiting for your commands and or code. Write `help` to know the shell options, if the text written is not recognized like a command
 it is interpreted as Java code and saved in a buffer to be executed when you want writing the 'exec' command.
 
 The interactive Java shell accepts a block of sentences or a complete class with a standard `main` method and name `_jproxyMainClass_`.
@@ -1698,7 +1738,21 @@ Install MinGW/MSYS, you must be able to locate the shell launcher `msys.bat` in 
 Execute `msys.bat` and you will get a simple Linux shell environment, in this environment you can execute your typical Linux commands like `ls`, `ps`, `find` etc and of course
 launch the previous script files documented in this manual and included in RelProxy distribution.
 
-MSYS console is enough for most of purposes, if you also install `mintty` using the MinGW GUI or command based installer, calling `mintty&` in MSYS opens an even more sophisticated
+You can go to your required folder in MSYS with a `cd` command like this:
+
+[source,sh]
+----
+cd "C:\Program Files\MyProgram"
+----
+
+Or using a Unix format:
+
+[source,sh]
+----
+cd "/c/Program Files/MyProgram"
+----
+
+MSYS console is enough for most of purposes, if you can also install `mintty` using the MinGW GUI or command based installer, calling `mintty&` in MSYS opens an even more sophisticated
 Linux console. Mintty has some problem with some keyboard characters editing Java code in the RelProxy interactive console, back to basic MSYS console when necesssary.
 
 If you need to execute Linux shell scripts (for instance RelProxy based) from Windows without a Linux like interactive console, do something like this in your Windows script or console:
@@ -1759,10 +1813,13 @@ System.out.println("RETURNED: " + result);
 ((JProxyScriptEngine)engine).stop(); // Necessary if scanPeriod > 0 was defined
 ----
 
-As you can see initialization code is the same as in `JProxy` examples, the main difference between `JProxy` and `ScriptEngine` is that `JProxy` is like a singleton and
-you get a new `ScriptEngine` instance every time you call `manager.getEngineByName("Java")`. In spite a new `ScriptEngine` instance is ever created only one instance
-is recommended because for instance you have the option of saving .class files as cache, some concurrent conflicting saving can happen when competing
-two `ScriptEngine` (with the same configuration).
+
+
+As you can see initialization code is the same as in `JProxy` examples, returned `ScriptEngine` implements `JProxyScriptEngine`, this interface defines the same methods you are going to find in `JProxy`,
+the main difference between `JProxy` and `JProxyScriptEngine` (implementing `ScriptEngine`) is that `JProxy` use is based on static methods and `JProxyScriptEngine` in practice 
+is a singleton. In theory you get a new `ScriptEngine` instance every time you call `manager.getEngineByName("Java")`, just call once, use the returned object as a singleton 
+and you will get a similar environment to `JProxy` plus the capability of executing code snipets otherwise concurrent conflicting can happen when competing several `ScriptEngine` 
+objects (unless configured folders are different).
 
 Inside the `eval` method, compilation phase is thread safe but not code execution, you can use several threads to call `eval` and execute concurrent lengthy tasks without 
 execution blocking.
@@ -1774,12 +1831,12 @@ The last line:
 ((JProxyScriptEngine)engine).stop(); // Necessary if scanPeriod > 0 was defined
 ----
 
-Shows that returned `ScriptEngine` implements `JProxyScriptEngine`, this interface defines the same methods you are going to find in `JProxy`, for instance
-the `stop()` method is necessary whether you define a `scanPeriod` and you want to dispose the `ScriptEngine` (otherwise the `ScriptEngine` is looking for
-source changes forever). 
+The interface `JProxyScriptEngine` defines the same methods you are going to find in `JProxy`, for instance
+the `stop()` method, this method is necessary whether you define a `scanPeriod` and you want to dispose the `ScriptEngine` (otherwise the `ScriptEngine` is looking for
+source changes forever), you can also register reloadable singletons calling `JProxyScriptEngine.create(...)` like in JProxy`. 
 
 As said before two `ScriptEngine` objects created using the same factory, just share the same configuration but they are different instances, for instance,
-the `stop()` method just affect to the concrete instance used to call.
+the `stop()` method just affect to the concrete instance being used.
 
 You can directly call the `JProxyScriptEngineFactory.getScriptEngine()` method without registering on a `ScriptEngineManager`, in this case avoid calling 
 `ServiceContext.getBindings(javax.script.ScriptContext.GLOBAL_SCOPE)` use because the default global scope `Bindings` object is not defined. In fact the method
@@ -1806,12 +1863,5 @@ public class _jproxyMainClass_ {
     // ...
   }
 }
-----
-
-Because you have access to the `ScriptEngine` inside your code, you can define a hot reloadable server using RelProxy in a similar form to using the static `JProxy` class: 
-
-[source,java]
-----
-JProxyShellExampleListener listener = ((JProxyScriptEngine)engine).create(new JProxyShellExampleListenerImpl(), JProxyShellExampleListener.class);
 ----
 

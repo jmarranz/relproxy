@@ -11,7 +11,7 @@ import java.net.URL;
 public class JProxyTestUtil
 {
     public static final String RESOURCES_FOLDER = "src/test/resources";
-    public static final String CACHE_CLASS_FOLDER = "tmp/java_shell_test_classes";  
+    public static final String CACHE_CLASS_FOLDER = "tmp/java_shell_test_classes";     
     
     public static File getProjectFolder()
     {

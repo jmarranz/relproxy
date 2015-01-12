@@ -4,7 +4,6 @@ package example.javaex;
  *
  * @author jmarranz
  */
-import example.javaex.FalseDB;
 import org.itsnat.core.event.ItsNatServletRequestListener;
 import org.itsnat.core.ItsNatServletRequest;
 import org.itsnat.core.ItsNatServletResponse;

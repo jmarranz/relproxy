@@ -3,8 +3,7 @@ package com.innowhere.relproxy.jproxy;
 import com.innowhere.relproxy.RelProxyOnReloadListener;
 import static com.innowhere.relproxy.jproxy.util.JProxyTestUtil.RESOURCES_FOLDER;
 import static com.innowhere.relproxy.jproxy.util.JProxyTestUtil.getProjectFolder;
-import example.javashellex.JProxyShellExampleListener;
-import example.javashellex.JProxyShellExampleListenerImpl;
+
 
 import java.io.File;
 import java.lang.reflect.Method;
@@ -67,13 +66,11 @@ public class JProxyJavaScriptEngineTest
          
          File inputFolderFile = new File(projectFolder,RESOURCES_FOLDER);
          // File classFolderFile = new File(projectFolder,"tmp/java_shell_test_classes");
-
-
         String inputPath = inputFolderFile.getAbsolutePath();
         String classFolder = null; // Optional
         Iterable<String> compilationOptions = Arrays.asList(new String[]{"-source","1.6","-target","1.6"});
-        long scanPeriod = -1;
-
+        long scanPeriod = 300;  
+        
         RelProxyOnReloadListener proxyListener = new RelProxyOnReloadListener() {
             @Override
             public void onReload(Object objOld, Object objNew, Object proxy, Method method, Object[] args) {
@@ -180,6 +177,8 @@ public class JProxyJavaScriptEngineTest
 
             result = (String)engine.eval( code.toString() , bindings);
             assertEquals("SUCCESS 2",result);
+            
+            
         }
         catch(ScriptException ex)
         {

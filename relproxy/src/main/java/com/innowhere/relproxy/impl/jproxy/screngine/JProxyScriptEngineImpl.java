@@ -1,7 +1,7 @@
 package com.innowhere.relproxy.impl.jproxy.screngine;
 
+import com.innowhere.relproxy.RelProxyException;
 import com.innowhere.relproxy.impl.jproxy.JProxyConfigImpl;
-import com.innowhere.relproxy.impl.jproxy.JProxyDefaultImpl;
 import com.innowhere.relproxy.impl.jproxy.JProxyUtil;
 import com.innowhere.relproxy.jproxy.JProxyScriptEngine;
 import java.io.Reader;
@@ -29,6 +29,9 @@ public class JProxyScriptEngineImpl extends AbstractScriptEngine implements JPro
     @Override
     public Object eval(String script, ScriptContext context) throws ScriptException
     {
+        if (!delegate.isEnabled()) 
+            throw new RelProxyException("Engine is disabled");
+        
         return delegate.execute(script,context);
     }
 
@@ -54,6 +57,8 @@ public class JProxyScriptEngineImpl extends AbstractScriptEngine implements JPro
     @Override
     public <T> T create(T obj,Class<T> clasz)
     {
+        if (!delegate.isEnabled()) 
+            return obj; // Así el footprint es 0 simplemente poniendo "false" al setEnabled() y así es coherente con el uso de JProxy.create y GProxy.create, como no hay métodos estáticos tenemos que hacerlo aquí
         return delegate.create(obj, clasz);
     }
 

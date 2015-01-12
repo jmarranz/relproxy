@@ -19,6 +19,7 @@ public abstract class JProxyImpl extends GenericProxyImpl
 {
     public static JProxyImpl SINGLETON;      
     protected JProxyEngine engine;
+    protected boolean enabled;
     
     protected JProxyImpl()
     {
@@ -45,9 +46,11 @@ public abstract class JProxyImpl extends GenericProxyImpl
         long scanPeriod = config.getScanPeriod();
         Iterable<String> compilationOptions = config.getCompilationOptions();
         JProxyDiagnosticsListener diagnosticsListener = config.getJProxyDiagnosticsListener();
+        boolean enabled = config.isEnabled();
         
         classLoader = classLoader != null ? classLoader : getDefaultClassLoader();      
         this.engine = new JProxyEngine(this,scriptFile,classLoader,folderSourceList,classFolder,scanPeriod,excludedListener,compilerListener,compilationOptions,diagnosticsListener);          
+        this.enabled = enabled;
         
         return engine.init();
     }    
@@ -55,6 +58,11 @@ public abstract class JProxyImpl extends GenericProxyImpl
     public JProxyEngine getJProxyEngine()
     {
         return engine;
+    }
+    
+    public boolean isEnabled()
+    {
+        return enabled;
     }
     
     public boolean isRunning()

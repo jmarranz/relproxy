@@ -41,7 +41,7 @@ public abstract class GenericProxyImpl
     
     public <T> T create(T obj,Class<T> clasz)
     {       
-        if (obj == null) return null;
+        if (obj == null) return null;   
         
         InvocationHandler handler = createGenericProxyInvocationHandler(obj);
         
