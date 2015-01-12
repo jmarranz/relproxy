@@ -10,6 +10,7 @@ import com.innowhere.relproxy.impl.jproxy.core.clsmgr.ClassDescriptorSourceFileR
 import com.innowhere.relproxy.impl.jproxy.core.clsmgr.ClassDescriptorSourceScript;
 import com.innowhere.relproxy.impl.jproxy.core.clsmgr.JProxyClassLoader;
 import com.innowhere.relproxy.impl.jproxy.core.clsmgr.JProxyEngine;
+import com.innowhere.relproxy.impl.jproxy.core.clsmgr.JProxyEngineChangeDetectorAndCompiler;
 import com.innowhere.relproxy.jproxy.JProxyDiagnosticsListener;
 import java.io.File;
 import java.util.ArrayList;
@@ -28,14 +29,14 @@ import javax.tools.ToolProvider;
  */
 public class JProxyCompilerInMemory
 {
-    protected JProxyEngine engine;
+    protected JProxyEngineChangeDetectorAndCompiler parent;
     protected JavaCompiler compiler;
     protected Iterable<String> compilationOptions; // puede ser null
     protected JProxyDiagnosticsListener diagnosticsListener; // puede ser null
 
-    public JProxyCompilerInMemory(JProxyEngine engine,Iterable<String> compilationOptions,JProxyDiagnosticsListener diagnosticsListener)
+    public JProxyCompilerInMemory(JProxyEngineChangeDetectorAndCompiler engine,Iterable<String> compilationOptions,JProxyDiagnosticsListener diagnosticsListener)
     {
-        this.engine = engine;
+        this.parent = engine;
         this.compilationOptions = compilationOptions;
         this.diagnosticsListener = diagnosticsListener;
         this.compiler = ToolProvider.getSystemJavaCompiler();       
@@ -93,7 +94,7 @@ public class JProxyCompilerInMemory
                         // También puede ser un caso de clase excluida por el listener de exclusión, no debería ocurrir, tengo un caso de test en donde ocurre a posta 
                         // (caso de JProxyExampleAuxIgnored cuando se cambia la JProxyExampleDocument que la usa) pero en programación normal no.
 
-                        if (engine.getJProxyInputSourceFileExcludedListener() == null)
+                        if (parent.getJProxyInputSourceFileExcludedListener() == null)
                             throw new RelProxyException("Unexpected class when compiling: " + currClassName + " maybe it is an autonomous private class declared in the same java file of the principal class, this kind of classes are not supported in hot reload");
                         else
                             System.out.println("Unexpected class when compiling: " + currClassName + " maybe it is an excluded class or is an autonomous private class declared in the same java file of the principal class, this kind of classes are not supported in hot reload");
@@ -161,7 +162,7 @@ public class JProxyCompilerInMemory
         if (compilationOptions != null)        
             for(String option : compilationOptions) finalCompilationOptions.add(option);
         
-        FileExt[] folderSourceList = engine.getFolderSourceList().getArray();
+        FileExt[] folderSourceList = parent.getFolderSourceList().getArray();
         if (folderSourceList != null)
         {
             finalCompilationOptions.add("-classpath");

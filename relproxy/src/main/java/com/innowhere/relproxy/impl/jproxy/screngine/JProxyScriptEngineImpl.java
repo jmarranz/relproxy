@@ -1,6 +1,7 @@
 package com.innowhere.relproxy.impl.jproxy.screngine;
 
 import com.innowhere.relproxy.impl.jproxy.JProxyConfigImpl;
+import com.innowhere.relproxy.impl.jproxy.JProxyDefaultImpl;
 import com.innowhere.relproxy.impl.jproxy.JProxyUtil;
 import com.innowhere.relproxy.jproxy.JProxyScriptEngine;
 import java.io.Reader;
@@ -56,6 +57,12 @@ public class JProxyScriptEngineImpl extends AbstractScriptEngine implements JPro
         return delegate.create(obj, clasz);
     }
 
+    @Override    
+    public boolean isRunning()
+    {
+        return delegate.isRunning();
+    }        
+    
     @Override
     public boolean start()
     {

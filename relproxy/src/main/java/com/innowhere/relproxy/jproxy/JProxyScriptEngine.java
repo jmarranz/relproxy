@@ -1,5 +1,6 @@
 package com.innowhere.relproxy.jproxy;
 
+import com.innowhere.relproxy.impl.jproxy.JProxyDefaultImpl;
 import javax.script.ScriptEngine;
 
 /**
@@ -21,6 +22,13 @@ public interface JProxyScriptEngine extends ScriptEngine
      */
     public <T> T create(T obj,Class<T> clasz);
 
+    /**
+     * Informs whether <code>JProxy</code> is configured and started.
+     * 
+     * @return true if running. 
+     */    
+    public boolean isRunning();        
+    
     /**
      * This method is the same as {@link JProxy#stop()} but applied to this <code>JProxyScriptEngine</code>
      * 

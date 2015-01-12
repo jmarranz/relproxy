@@ -14,17 +14,22 @@ import java.util.LinkedList;
  */
 public class JavaSourcesSearch 
 {
-    protected JProxyEngine engine;
+    protected JProxyEngineChangeDetectorAndCompiler parent;
     
-    public JavaSourcesSearch(JProxyEngine engine)
+    public JavaSourcesSearch(JProxyEngineChangeDetectorAndCompiler parent)
     {
-        this.engine = engine;
+        this.parent = parent;
     }
 
+    public JProxyEngineChangeDetectorAndCompiler getJProxyEngineChangeDetectorAndCompiler()
+    {
+        return parent;
+    }
+    
     public ClassDescriptorSourceScript sourceFileSearch(SourceScriptRoot scriptFile,ClassDescriptorSourceFileRegistry oldSourceFileMap,ClassDescriptorSourceFileRegistry newSourceFileMap,LinkedList<ClassDescriptorSourceUnit> updatedSourceFiles,LinkedList<ClassDescriptorSourceUnit> newSourceFiles,LinkedList<ClassDescriptorSourceUnit> deletedSourceFiles)
     {
         ClassDescriptorSourceScript scriptFileDesc = (scriptFile == null) ? null : processSourceFileScript(scriptFile,oldSourceFileMap,newSourceFileMap,updatedSourceFiles,newSourceFiles,deletedSourceFiles);
-        FileExt[] folderSourceList = engine.getFolderSourceList().getArray();
+        FileExt[] folderSourceList = parent.getFolderSourceList().getArray();
         if (folderSourceList == null) // Es el caso de shell interactivo o code snippet
             return scriptFileDesc;
         
@@ -54,8 +59,8 @@ public class JavaSourcesSearch
     
     private void recursiveSourceFileJavaSearch(String scriptFileJavaCannonPath,int rootFolderOfSourcesIndex,FileExt parentPath,String[] relPathList,ClassDescriptorSourceFileRegistry oldSourceFileMap,ClassDescriptorSourceFileRegistry newSourceFileMap,LinkedList<ClassDescriptorSourceUnit> updatedSourceFiles,LinkedList<ClassDescriptorSourceUnit> newSourceFiles,LinkedList<ClassDescriptorSourceUnit> deletedSourceFiles)
     {
-        FileExt rootFolderOfSources = engine.getFolderSourceList().getArray()[rootFolderOfSourcesIndex];           
-        JProxyInputSourceFileExcludedListener listener = engine.getJProxyInputSourceFileExcludedListener();        
+        FileExt rootFolderOfSources = parent.getFolderSourceList().getArray()[rootFolderOfSourcesIndex];           
+        JProxyInputSourceFileExcludedListener listener = parent.getJProxyInputSourceFileExcludedListener();        
         
         for(String relPath : relPathList)
         {
@@ -100,6 +105,7 @@ public class JavaSourcesSearch
     
     private ClassDescriptorSourceUnit processSourceFile(SourceUnit file,boolean script,ClassDescriptorSourceFileRegistry oldSourceFileMap,ClassDescriptorSourceFileRegistry newSourceFileMap,LinkedList<ClassDescriptorSourceUnit> updatedSourceFiles,LinkedList<ClassDescriptorSourceUnit> newSourceFiles,LinkedList<ClassDescriptorSourceUnit> deletedSourceFiles)
     {
+        JProxyEngine engine = parent.getJProxyEngine();
         String className = file.getClassName(); 
         
         long timestampSourceFile = file.lastModified();

@@ -142,6 +142,8 @@ RelProxy is an alternative to context reloading, use of both has no sense and ma
 
 === In Eclipse and Tomcat
 
+In this manual Eclipse 4.4 (Luna) has been used, behaviour of previous and future versions may be the same but not tested.
+
 In Eclipse the Tomcat associated can have a configuration controlled only by Eclipse (the default mode), this configuration is only valid inside the Eclipse environment and the original configuration
 of Tomcat is untouched. By default Eclipse is configured to "Automatically publish when resources changed" for your concrete associated Tomcat, this option is required, to review this option go to
 menu `Window / Show View / Servers`, this menu option opens a view listing your servers, double click on the concrete Tomcat to show a configuration panel (if no server is associated
@@ -164,6 +166,8 @@ Disable the `Auto Reload` feature selecting the required module and clicking `Ed
 image:edit_web_module.png[Edit Web Module, title="Edit Web Module"]
 
 === In NetBeans
+
+In this manual NetBeans 8.0.2 has been used, behaviour of previous and future versions may be the same but not tested.
 
 The author of this manual has not been able to disable context reloading feature of Tomcat in NetBeans environment. The xml archive with the `<Context>` descriptor in Tomcat installation is
 replaced with the content of `META-INF/contex.xml`, in theory just adding `reloadable=true` to `<Context>` in this file would make the job... no sucess, is ignored.
@@ -725,7 +729,7 @@ and reloaded by Groovy when changed. When the `processRequest` method of the pro
 the singleton has been reloaded and recreates the `GroovyExampleLoadListener` object with the new +Class+ re-setting the fields and finally 
 the `processRequest` method is called and method processing is done using the new version of dependent classes.
 
-Finally we have been able to reload Groovy classes mixed in a Java environment without using the strongly intrusive instrument of Java agents.
+Finally we have been able to reload Groovy classes mixed in a Java environment.
 
 == JProxy or how to be able to reload Java classes without using Java agents
 
@@ -1014,7 +1018,7 @@ You can call several times to `JProxy.start()` and `JProxy.stop()` methods, if n
 when a state change was effective), and they are thread safe.
 
 
-== How JProxy can help you only in development time with no need of publishing code (a GWT example) 
+== Using JProxy only in development time with no need of publishing code (a GWT example) 
 
 In previous chapters we have added new source code folders below `WEB-INF/` folder, this configuration is very useful in production to be able to hot change 
 your Java code, of course in production time you can remove these folders avoiding publishing source code before packaging to `war` and with a simple call `setEnabled(false)` 
@@ -1026,7 +1030,14 @@ With JProxy is not necessary to put the source code going to be reloaded under `
 Because JProxy is going to directly access to original source code, the folder synchronizing problems are gone in this use case. 
 
 We are going to illustrate this capability with a GWT RPC example using Eclipse. Besides how to use JProxy in a GWT-RPC project, in this chapter we are going to learn
-how we can exclude source files from the hot class reload system of RelProxy/JProxy, we are going to need this feature.
+how we can exclude source files from the hot class reload system of RelProxy/JProxy because we are going to need this feature.
+
+This example is for development phase only, nothing prevents of appliying both strategies because JProxy allows multiple source folders to monitor by using `JProxyConfig.setInputPaths(String[])`. 
+
+
+
+
+
 
 
 
@@ -1036,8 +1047,8 @@ how we can exclude source files from the hot class reload system of RelProxy/JPr
 
 In GWT, JProxy only can be used to reload Java code executed in server, this is why we are going to apply JProxy to a GWT-RPC project (that is a client-server web application).
 
-Install http://eclipse.org[Eclipse] (Eclipse 4.4 Luna was used fot this example), install the https://developers.google.com/eclipse/docs/download[Google Plugin for Eclipse], 
-only install GWT dependencies if you want (there is no need of Android and Google App Engine parts) and `relproxy-x.y.z.jar` dependency.
+Install http://eclipse.org[Eclipse] (Eclipse 4.4 Luna was used fot this example), install the https://developers.google.com/eclipse/docs/download[Google Plugin for Eclipse] (version 4.4 was used), 
+only install GWT dependencies if you want (there is no need of Android and Google App Engine parts), download RelProxy distribution file and copy the `relproxy-x.y.z.jar`.
 
 Select in Eclipse the menu option `New / Other / Google/ Web Application Project` to create a GWT-RPC sample project (Google App Engine is not needed).
 
@@ -1726,7 +1737,7 @@ manager.registerEngineName("Java", factory);
 
 manager.getBindings().put("msg","HELLO GLOBAL WORLD!");
 
-ScriptEngine engine = manager.getEngineByName("Java");
+ScriptEngine engine = (JProxyScriptEngine)manager.getEngineByName("Java");
 
 Bindings bindings = engine.createBindings();
 bindings.put("msg","HELLO SCOPE WORLD!");
