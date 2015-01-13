@@ -41,17 +41,14 @@ public class JProxyScriptEngineFactoryImpl extends JProxyScriptEngineFactory
         n.add("text/plain");      
         mimeTypes = Collections.unmodifiableList(n);        
     }
- 
-    protected JProxyConfigImpl config;    
-    
-    public JProxyScriptEngineFactoryImpl(JProxyConfigImpl config)
+
+    public JProxyScriptEngineFactoryImpl()
     {
-        this.config = config;
     }
     
-    public static JProxyScriptEngineFactory create(JProxyConfig config)
+    public static JProxyScriptEngineFactory create()
     {
-        return new JProxyScriptEngineFactoryImpl((JProxyConfigImpl)config);
+        return new JProxyScriptEngineFactoryImpl();
     }    
     
     @Override
@@ -179,6 +176,6 @@ public class JProxyScriptEngineFactoryImpl extends JProxyScriptEngineFactory
     @Override
     public ScriptEngine getScriptEngine()
     {
-        return new JProxyScriptEngineImpl(this,config);
+        return new JProxyScriptEngineImpl(this);
     }    
 }

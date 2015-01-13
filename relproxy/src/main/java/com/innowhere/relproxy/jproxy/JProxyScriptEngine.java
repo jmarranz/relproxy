@@ -1,6 +1,5 @@
 package com.innowhere.relproxy.jproxy;
 
-import com.innowhere.relproxy.impl.jproxy.JProxyDefaultImpl;
 import javax.script.ScriptEngine;
 
 /**
@@ -12,6 +11,13 @@ import javax.script.ScriptEngine;
  */
 public interface JProxyScriptEngine extends ScriptEngine
 {  
+    /**
+     * Initializes this <code>JProxyScriptEngine</code> instance with the provided configuration object.
+     * 
+     * @param config the configuration object.
+     */    
+    public void init(JProxyConfig config);
+    
     /**
      * This method is the same as {@link JProxy#create(java.lang.Object, java.lang.Class)} but applied to this <code>JProxyScriptEngine</code>
      * 

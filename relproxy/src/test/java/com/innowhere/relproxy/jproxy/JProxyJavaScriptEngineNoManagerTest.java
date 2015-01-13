@@ -29,10 +29,10 @@ import org.junit.Test;
  *
  * @author jmarranz
  */
-public class JProxyJavaScriptEngineTest
+public class JProxyJavaScriptEngineNoManagerTest
 {
    
-    public JProxyJavaScriptEngineTest()
+    public JProxyJavaScriptEngineNoManagerTest()
     {
     }
     
@@ -129,12 +129,7 @@ public class JProxyJavaScriptEngineTest
 
         JProxyScriptEngineFactory factory = JProxyScriptEngineFactory.create();
 
-        ScriptEngineManager manager = new ScriptEngineManager();
-        manager.registerEngineName("Java", factory);
-
-        manager.getBindings().put("msg","HELLO GLOBAL WORLD!");
-
-        ScriptEngine engine = manager.getEngineByName("Java");
+        ScriptEngine engine = factory.getScriptEngine();
 
         ((JProxyScriptEngine)engine).init(jpConfig);
         
@@ -143,17 +138,17 @@ public class JProxyJavaScriptEngineTest
         try
         {
 
+            // El javax.script.ScriptContext.GLOBAL_SCOPE no está disponible porque no hemos usado el ScriptEngineManager para obtener el JProxyScriptEngine
+            // pero si podemos crear un javax.script.ScriptContext.ENGINE_SCOPE:
+            
             Bindings bindings = engine.createBindings();
             bindings.put("msg","HELLO ENGINE SCOPE WORLD!");
 
 
-            StringBuilder code = new StringBuilder();
+            StringBuilder code = new StringBuilder();        
             code.append( " javax.script.Bindings bindings = context.getBindings(javax.script.ScriptContext.ENGINE_SCOPE); \n");
             code.append( " String msg = (String)bindings.get(\"msg\"); \n");
-            code.append( " System.out.println(msg); \n");
-            code.append( " bindings = context.getBindings(javax.script.ScriptContext.GLOBAL_SCOPE); \n");
-            code.append( " msg = (String)bindings.get(\"msg\"); \n");
-            code.append( " System.out.println(msg); \n");            
+            code.append( " System.out.println(msg); \n");                          
             code.append( " example.javashellex.JProxyShellExample.exec(engine); \n");
             code.append( " return \"SUCCESS\";");
 
@@ -168,10 +163,7 @@ public class JProxyJavaScriptEngineTest
             code.append( "  public static Object main(javax.script.ScriptEngine engine,javax.script.ScriptContext context) {  \n");           
             code.append( "   javax.script.Bindings bindings = context.getBindings(javax.script.ScriptContext.ENGINE_SCOPE); \n");
             code.append( "   String msg = (String)bindings.get(\"msg\"); \n");
-            code.append( "   System.out.println(msg); \n");
-            code.append( "   bindings = context.getBindings(javax.script.ScriptContext.GLOBAL_SCOPE); \n");
-            code.append( "   msg = (String)bindings.get(\"msg\"); \n");
-            code.append( "   System.out.println(msg); \n");            
+            code.append( "   System.out.println(msg); \n");               
             code.append( "   example.javashellex.JProxyShellExample.exec(engine); \n");
             code.append( "   return \"SUCCESS 2\";");            
             code.append( "  }");   
@@ -188,7 +180,7 @@ public class JProxyJavaScriptEngineTest
         finally
         {
             boolean res = ((JProxyScriptEngine)engine).stop(); // Necessary if scanPeriod > 0 was defined                     
-            assertTrue(res);                    
+            assertTrue(res);
         }
      }
 }

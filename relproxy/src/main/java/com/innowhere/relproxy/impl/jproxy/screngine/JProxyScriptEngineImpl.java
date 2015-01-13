@@ -1,8 +1,10 @@
 package com.innowhere.relproxy.impl.jproxy.screngine;
 
 import com.innowhere.relproxy.RelProxyException;
+import com.innowhere.relproxy.impl.GenericProxyImpl;
 import com.innowhere.relproxy.impl.jproxy.JProxyConfigImpl;
 import com.innowhere.relproxy.impl.jproxy.JProxyUtil;
+import com.innowhere.relproxy.jproxy.JProxyConfig;
 import com.innowhere.relproxy.jproxy.JProxyScriptEngine;
 import java.io.Reader;
 import javax.script.AbstractScriptEngine;
@@ -12,27 +14,39 @@ import javax.script.ScriptEngineFactory;
 import javax.script.ScriptException;
 
 /**
- *
+ * Methods of this class are similar to JProxyDefaultImpl
+ * 
  * @author jmarranz
  */
 public class JProxyScriptEngineImpl extends AbstractScriptEngine implements JProxyScriptEngine
 {
+    protected JProxyScriptEngineDelegateImpl jproxy;
     protected JProxyScriptEngineFactoryImpl factory;
-    protected JProxyScriptEngineDelegateImpl delegate;
 
-    public JProxyScriptEngineImpl(JProxyScriptEngineFactoryImpl factory,JProxyConfigImpl config)
+    public JProxyScriptEngineImpl(JProxyScriptEngineFactoryImpl factory)
     {
         this.factory = factory;
-        this.delegate = new JProxyScriptEngineDelegateImpl(this,config);
     }
+
+    @Override    
+    public void init(JProxyConfig config)    
+    {
+        JProxyConfigImpl configImpl = (JProxyConfigImpl)config;
+        if (!configImpl.isEnabled()) return; // jproxy quedará null       
+
+        GenericProxyImpl.checkSingletonNull(jproxy);        
+        this.jproxy = new JProxyScriptEngineDelegateImpl(this);
+        jproxy.init(configImpl);        
+    }
+    
 
     @Override
     public Object eval(String script, ScriptContext context) throws ScriptException
     {
-        if (!delegate.isEnabled()) 
+        if (jproxy == null) 
             throw new RelProxyException("Engine is disabled");
         
-        return delegate.execute(script,context);
+        return jproxy.execute(script,context);
     }
 
     @Override
@@ -57,26 +71,35 @@ public class JProxyScriptEngineImpl extends AbstractScriptEngine implements JPro
     @Override
     public <T> T create(T obj,Class<T> clasz)
     {
-        if (!delegate.isEnabled()) 
-            return obj; // Así el footprint es 0 simplemente poniendo "false" al setEnabled() y así es coherente con el uso de JProxy.create y GProxy.create, como no hay métodos estáticos tenemos que hacerlo aquí
-        return delegate.create(obj, clasz);
+        if (jproxy == null) 
+            return obj; // No se ha llamado al init o enabled = false
+        return jproxy.create(obj, clasz);
     }
 
     @Override    
     public boolean isRunning()
     {
-        return delegate.isRunning();
+        if (jproxy == null) 
+            return false;
+        
+        return jproxy.isRunning();
     }        
     
     @Override
     public boolean start()
     {
-        return delegate.start();
+        if (jproxy == null) 
+            return false;
+        
+        return jproxy.start();
     }
 
     @Override
     public boolean stop()
     {
-        return delegate.stop();
+        if (jproxy == null) 
+            return false;
+        
+        return jproxy.stop();
     }
 }

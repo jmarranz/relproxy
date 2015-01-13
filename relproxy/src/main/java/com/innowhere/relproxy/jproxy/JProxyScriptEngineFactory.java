@@ -11,15 +11,12 @@ import javax.script.ScriptEngineFactory;
 public abstract class JProxyScriptEngineFactory implements ScriptEngineFactory
 {
     /**
-     * Factory method to create a <code>JProxyScriptEngineFactory</code> based on the provided configuration.
-     * 
-     * <p><code>javax.script.ScriptEngine</code> returned by the same factory object calling <code>ScriptEngineFactory.getScriptEngine()</code> will be using the provided configuration.</p>
-     * 
-     * @param config the configuration object.
-     * @return the new factory initialized with the provided configuration.
+     * Factory method to create a <code>JProxyScriptEngineFactory</code> implementing <code>ScriptEngineFactory</code>.
+     *       
+     * @return the new factory.
      */
-    public static JProxyScriptEngineFactory create(JProxyConfig config)
+    public static JProxyScriptEngineFactory create()
     {
-        return JProxyScriptEngineFactoryImpl.create(config);
+        return JProxyScriptEngineFactoryImpl.create();
     }
 }

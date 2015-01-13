@@ -17,7 +17,7 @@ public abstract class GenericProxyImpl
     {
     }
 
-    protected static void checkSingletonNull(GenericProxyImpl singleton)
+    public static void checkSingletonNull(GenericProxyImpl singleton)
     {
         if (singleton != null) 
             throw new RelProxyException("Already initialized");

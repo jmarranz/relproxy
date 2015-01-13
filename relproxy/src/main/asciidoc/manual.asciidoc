@@ -1377,6 +1377,10 @@ in folder are asked for excluding calling `isExcluded`, the class `GreetingServi
 because is already in use by the JavaEE servlet system and cannot be registered on JProxy. Finally `GreetingServiceDelegate.java` cannot be reloaded because is the 
 interface exposed to the non-reloadable world. In summary only `server/` classes can be reloaded excluding the servlet class `GreetingServiceImpl.java` and `GreetingServiceDelegate.java`.
 
+In this example there is only specified a root source code folder, RelProxy allows several root source code folder `JProxyConfig.setInputPahts(String[])` instead of `JProxyConfig.setInputPaht(String)`,
+the parameter `File rootFolder` specify the root source code folder containing the folder or file to apply excluding rules, this parameter can help you to define very complex
+excluding scenarios with several root source code folders. The web application `relproxy_test_itsnat` used to test RelProxy contains a complex excluding scenario with three root source folders.
+
 This is the code of `GreetingServiceDelegate` :
 
 [source,java]
@@ -1770,7 +1774,7 @@ Where `<path to the shell file>` can have Windows or Linux format (e.g. `/c/deve
 RelProxy implements the official JSR-223 http://docs.oracle.com/javase/6/docs/technotes/guides/scripting/programmer_guide/index.html[Java Scripting API] as found
 in Java 1.6.
 
-The following Java code shows how to initialize the Java Scripting factory, get an engine instance and execute some code:
+The following Java code shows how to create the Java Scripting factory, get an engine instance and execute some code:
 
 [source,java]
 ----
@@ -1784,7 +1788,7 @@ jpConfig.setEnabled(true)
         .setCompilationOptions(compilationOptions)
         .setJProxyDiagnosticsListener(diagnosticsListener);
 
-JProxyScriptEngineFactory factory = JProxyScriptEngineFactory.create(jpConfig);
+JProxyScriptEngineFactory factory = JProxyScriptEngineFactory.create();
 
 ScriptEngineManager manager = new ScriptEngineManager();
 manager.registerEngineName("Java", factory);
@@ -1793,8 +1797,10 @@ manager.getBindings().put("msg","HELLO GLOBAL WORLD!");
 
 ScriptEngine engine = (JProxyScriptEngine)manager.getEngineByName("Java");
 
+((JProxyScriptEngine)engine).init(jpConfig);
+
 Bindings bindings = engine.createBindings();
-bindings.put("msg","HELLO SCOPE WORLD!");
+bindings.put("msg","HELLO ENGINE SCOPE WORLD!");
 
 
 StringBuilder code = new StringBuilder();
@@ -1818,7 +1824,7 @@ System.out.println("RETURNED: " + result);
 As you can see initialization code is the same as in `JProxy` examples, returned `ScriptEngine` implements `JProxyScriptEngine`, this interface defines the same methods you are going to find in `JProxy`,
 the main difference between `JProxy` and `JProxyScriptEngine` (implementing `ScriptEngine`) is that `JProxy` use is based on static methods and `JProxyScriptEngine` in practice 
 is a singleton. In theory you get a new `ScriptEngine` instance every time you call `manager.getEngineByName("Java")`, just call once, use the returned object as a singleton 
-and you will get a similar environment to `JProxy` plus the capability of executing code snipets otherwise concurrent conflicting can happen when competing several `ScriptEngine` 
+and you will get a similar environment to `JProxy` plus the capability of executing code snipets, otherwise concurrent conflicting can happen when competing several `ScriptEngine` 
 objects (unless configured folders are different).
 
 Inside the `eval` method, compilation phase is thread safe but not code execution, you can use several threads to call `eval` and execute concurrent lengthy tasks without 
@@ -1835,16 +1841,6 @@ The interface `JProxyScriptEngine` defines the same methods you are going to fin
 the `stop()` method, this method is necessary whether you define a `scanPeriod` and you want to dispose the `ScriptEngine` (otherwise the `ScriptEngine` is looking for
 source changes forever), you can also register reloadable singletons calling `JProxyScriptEngine.create(...)` like in JProxy`. 
 
-As said before two `ScriptEngine` objects created using the same factory, just share the same configuration but they are different instances, for instance,
-the `stop()` method just affect to the concrete instance being used.
-
-You can directly call the `JProxyScriptEngineFactory.getScriptEngine()` method without registering on a `ScriptEngineManager`, in this case avoid calling 
-`ServiceContext.getBindings(javax.script.ScriptContext.GLOBAL_SCOPE)` use because the default global scope `Bindings` object is not defined. In fact the method
-`ScriptEngineManager.getEngineByName(String)` calls `JProxyScriptEngineFactory.getScriptEngine()` and may return null if the `JProxyScriptEngineFactory.getScriptEngine()` 
-method throws an exception for instance when some configuration data is wrong, because there is no log info of this exception you have no way to know what is happening, in 
-this case directly call `JProxyScriptEngineFactory.getScriptEngine()` to know what is happening.
-
-If you need two or more different configurations, create one `JProxyScriptEngineFactory` per configuration, use them standalone or create several `ScriptEngineManager` instances.
 
 The scripting code can be the content of a `main` method with this signature:
 
@@ -1865,3 +1861,38 @@ public class _jproxyMainClass_ {
 }
 ----
 
+You can directly call the `JProxyScriptEngineFactory.getScriptEngine()` method without registering on a `ScriptEngineManager`, in this case avoid calling 
+`ServiceContext.getBindings(javax.script.ScriptContext.GLOBAL_SCOPE)` because the default global scope `Bindings` object is not defined. In fact the method
+`ScriptEngineManager.getEngineByName(String)` calls `JProxyScriptEngineFactory.getScriptEngine()` and may return null if the `JProxyScriptEngineFactory.getScriptEngine()` 
+method throws an exception for instance when some configuration data is wrong, because there is no log info of this exception you have no way to know what is happening, in 
+this case directly call `JProxyScriptEngineFactory.getScriptEngine()` to know what is happening.
+
+Example:
+
+[source,java]
+----
+// ...
+
+JProxyScriptEngineFactory factory = JProxyScriptEngineFactory.create();
+
+ScriptEngine engine = factory.getScriptEngine();
+
+((JProxyScriptEngine)engine).init(jpConfig);
+
+Bindings bindings = engine.createBindings();
+bindings.put("msg","HELLO ENGINE SCOPE WORLD!");
+
+StringBuilder code = new StringBuilder();
+code.append( " javax.script.Bindings bindings = context.getBindings(javax.script.ScriptContext.ENGINE_SCOPE); \n");
+code.append( " String msg = (String)bindings.get(\"msg\"); \n");
+code.append( " System.out.println(msg); \n");            
+code.append( " example.javashellex.JProxyShellExample.exec(engine); \n");
+code.append( " return \"SUCCESS\";");
+
+String result = (String)engine.eval( code.toString() , bindings);
+System.out.println("RETURNED: " + result);
+
+((JProxyScriptEngine)engine).stop(); // Necessary if scanPeriod > 0 was defined
+----
+
+If you need two or more different configurations, create two or more `JProxyScriptEngine` with different configurations.
