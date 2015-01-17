@@ -16,7 +16,6 @@ public class JProxy
      * 
      * @return a new configuration object.
      * @see #init(JProxyConfig)
-     * @see JProxyScriptEngineFactory#create(JProxyConfig)
      */
     public static JProxyConfig createJProxyConfig()
     {

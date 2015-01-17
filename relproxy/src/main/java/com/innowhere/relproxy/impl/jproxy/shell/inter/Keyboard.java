@@ -1,5 +1,6 @@
 package com.innowhere.relproxy.impl.jproxy.shell.inter;
 
+
 import com.innowhere.relproxy.RelProxyException;
 import java.awt.AWTException;
 import java.awt.Robot;
@@ -15,7 +16,6 @@ import static java.awt.event.KeyEvent.VK_8;
 import static java.awt.event.KeyEvent.VK_9;
 import static java.awt.event.KeyEvent.VK_A;
 import static java.awt.event.KeyEvent.VK_B;
-import static java.awt.event.KeyEvent.VK_BACK_QUOTE;
 import static java.awt.event.KeyEvent.VK_C;
 import static java.awt.event.KeyEvent.VK_D;
 import static java.awt.event.KeyEvent.VK_E;
@@ -28,6 +28,16 @@ import static java.awt.event.KeyEvent.VK_K;
 import static java.awt.event.KeyEvent.VK_L;
 import static java.awt.event.KeyEvent.VK_M;
 import static java.awt.event.KeyEvent.VK_N;
+import static java.awt.event.KeyEvent.VK_NUMPAD0;
+import static java.awt.event.KeyEvent.VK_NUMPAD1;
+import static java.awt.event.KeyEvent.VK_NUMPAD2;
+import static java.awt.event.KeyEvent.VK_NUMPAD3;
+import static java.awt.event.KeyEvent.VK_NUMPAD4;
+import static java.awt.event.KeyEvent.VK_NUMPAD5;
+import static java.awt.event.KeyEvent.VK_NUMPAD6;
+import static java.awt.event.KeyEvent.VK_NUMPAD7;
+import static java.awt.event.KeyEvent.VK_NUMPAD8;
+import static java.awt.event.KeyEvent.VK_NUMPAD9;
 import static java.awt.event.KeyEvent.VK_O;
 import static java.awt.event.KeyEvent.VK_P;
 import static java.awt.event.KeyEvent.VK_Q;
@@ -48,15 +58,25 @@ import java.nio.charset.Charset;
 /**
  * http://stackoverflow.com/questions/1248510/convert-string-to-keyevents
  * http://en.wikipedia.org/wiki/Unicode_input#Hexadecimal_code_input
+ * http://stackoverflow.com/questions/9814701/accent-with-robot-keypress
  * 
  * @author jmarranz
  */
 public abstract class Keyboard
 {
     protected final Robot robot;
-
-    public Keyboard() 
+    protected Charset cs;
+    
+    public static void test(String arg)
     {
+    	Charset charset = Charset.defaultCharset();
+    	Keyboard kbd = create(charset);
+    	kbd.type(arg);
+    }
+    
+    public Keyboard(Charset cs) 
+    {
+        this.cs = cs;
         try
         {
             this.robot = new Robot();
@@ -75,6 +95,66 @@ public abstract class Keyboard
         else return new LinuxUnicodeKeyboard(cs);
     }    
 
+    private int[] getUnicodeInt(char character)
+    {
+        if (isUseCodePoint())
+        {      
+        	char[] charArray = new char[]{character};
+        	int count = Character.codePointCount(charArray, 0,charArray.length);
+        	int[] res = new int[count];
+        	for(int i = 0; i < count; i++)
+        		res[i] = Character.codePointAt(charArray,i);
+        	return res;
+        }  
+        else
+        {
+            ByteBuffer buffer = cs.encode("" + character);
+            int size = buffer.limit();
+            int[] res = new int[size];
+            for(int i = 0; i < size; i++)
+            {
+	            byte b = buffer.get();
+	            int bi = b & 0x000000FF;    
+	            res[i] = bi;
+            }
+            return res;
+        }
+    }
+       
+    protected String getUnicodeDigits(char character,int radix)
+    {
+        int[] uds = getUnicodeInt(character);
+        StringBuilder res = new StringBuilder();
+        for(int i = 0; i < uds.length; i++)
+        {
+        	int ud = uds[i];
+        	String digits;
+	        if (radix == 10)
+	        	digits = Integer.toString(ud);
+	        else
+	        	digits = Integer.toString(ud,radix); // Si es 16 es hexadecimal
+	        res.append(digits);
+        }
+        return res.toString();
+    }    
+
+    protected void typeNumPad(int digit) {
+        switch (digit) {
+        case 0: doType(VK_NUMPAD0); break;
+        case 1: doType(VK_NUMPAD1); break;
+        case 2: doType(VK_NUMPAD2); break;
+        case 3: doType(VK_NUMPAD3); break;
+        case 4: doType(VK_NUMPAD4); break;
+        case 5: doType(VK_NUMPAD5); break;
+        case 6: doType(VK_NUMPAD6); break;
+        case 7: doType(VK_NUMPAD7); break;
+        case 8: doType(VK_NUMPAD8); break;
+        case 9: doType(VK_NUMPAD9); break;
+        default:  // Para que se calle el FindBugs
+        }
+    }    
+    
+    
     public void type(CharSequence characters) {
         int length = characters.length();
         for (int i = 0; i < length; i++) {
@@ -142,7 +222,7 @@ public abstract class Keyboard
         case 'X': doType(VK_SHIFT, VK_X); break;
         case 'Y': doType(VK_SHIFT, VK_Y); break;
         case 'Z': doType(VK_SHIFT, VK_Z); break;
-        case '`': doType(VK_BACK_QUOTE); break;
+        // case '`': doType(VK_BACK_QUOTE); break;
         case '0': doType(VK_0); break;
         case '1': doType(VK_1); break;
         case '2': doType(VK_2); break;
@@ -222,12 +302,6 @@ public abstract class Keyboard
         robot.keyRelease(keyCode);           
     }    
     
-    public static int getUnicodeInt(Charset cs,char character)
-    {
-        ByteBuffer buffer = cs.encode("" + character);
-
-        byte b = buffer.get();
-        int bi = b & 0x000000FF;    
-        return bi;
-    }
+    public abstract boolean isUseCodePoint();
+            
 }

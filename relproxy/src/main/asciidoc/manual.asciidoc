@@ -625,10 +625,11 @@ def reloadListener = {
       } as RelProxyOnReloadListener;
 ----
 
-Defines an optional listener to be called when Groovy classes have been reloaded because some change has happened in the source code managed by RelProxy.
+Defines an optional `RelProxyOnReloadListener` listener to be called when Groovy classes have been reloaded because some change has happened in the source code managed by RelProxy.
 
-An object implementing this interface can optionally be registered on RelProxy to listen when the method of a proxy object has been called
-and the class of the original object associated has been reloaded (and a new "original" object based on the new class was created to replace it).
+An object implementing this interface may be registered on RelProxy to listen when a method of the proxy object has been called (this example only includes one method
+exposed by the interface, but nothing prevents of adding more methods to the interface/implementation) and the class of the original object associated has been reloaded 
+(a new "original" object based on the new class was created to replace it).
   
 When you perform a source code change in source code managed by RelProxy the first time this method is called is the signal that changes has been detected and reloaded 
 accordingly.
@@ -1088,6 +1089,8 @@ Install http://eclipse.org[Eclipse] (Eclipse 4.4 Luna was used for this example)
 only install GWT dependencies if you want (there is no need of Android and Google App Engine parts), download RelProxy distribution file and copy the `relproxy-x.y.z.jar`.
 
 Select in Eclipse the menu option `New / Other... / Google/ Web Application Project` to create a GWT-RPC sample project (Google App Engine is not needed).
+
+There is no need of disabling context reloading, it seems is already disabled in the default configuration of GWT.
 
 In this example we have created the project with name `relproxy_ex_gwt` and package `com.innowhere.relproxyexgwt`, this is
 the structure of the generated source code:
