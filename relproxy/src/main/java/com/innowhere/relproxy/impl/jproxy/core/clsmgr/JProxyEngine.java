@@ -27,11 +27,13 @@ public class JProxyEngine
     public volatile boolean stop = false;
     protected TimerTask task;
     protected boolean needReload;     
+    protected boolean enabled;    
     
-    public JProxyEngine(JProxyImpl parent,SourceScriptRoot scriptFile,ClassLoader rootClassLoader,FolderSourceList folderSourceList,String folderClasses,long scanPeriod,JProxyInputSourceFileExcludedListener excludedListener,
+    public JProxyEngine(JProxyImpl parent,boolean enabled,SourceScriptRoot scriptFile,ClassLoader rootClassLoader,FolderSourceList folderSourceList,String folderClasses,long scanPeriod,JProxyInputSourceFileExcludedListener excludedListener,
                 JProxyCompilerListener compilerListener,Iterable<String> compilationOptions,JProxyDiagnosticsListener diagnosticsListener)
     {
         this.parent = parent;
+        this.enabled = enabled;        
         this.rootClassLoader = rootClassLoader;
         this.scanPeriod = scanPeriod;
         this.delegateChangeDetector = new JProxyEngineChangeDetectorAndCompiler(this,scriptFile,folderSourceList,folderClasses,excludedListener,compilationOptions,diagnosticsListener,compilerListener);        
@@ -44,6 +46,10 @@ public class JProxyEngine
         return parent;
     }
        
+    public boolean isEnabled()
+    {
+        return enabled;
+    }    
     
     public synchronized ClassDescriptorSourceScript init()
     {

@@ -5,12 +5,15 @@
 
     - Optimization: method JProxyInputSourceFileExcludedListener.isExcluded(File file,File) is called being parameter file also a directory, if the directory is fully
       excluded, RelProxy doesn't call isExcluded for files into the folder. Useful for big source code bases and used RelProxy for normal source code folders.
-    - Reload using a new ClassLoader is done when calling the exposed methods of the singletons registered on JProxy.
-    - Configuration API of JProxyScriptEngineFactory and JProxyScriptEngine has changed.
+    - Reload reloadable classes using a new ClassLoader is done only when a exposed method of a singleton registered on JProxy is called.
+    - Added JProxy.isEnabled()
+    - API for configuration of JProxyScriptEngineFactory and JProxyScriptEngine has changed.
+    - JProxyScriptEngine has now the same methods (and same behavior) as JProxy.
     - Removed JPROXYSH_SCAN_PERIOD, has no sense in shell scripting.
-    - Bug fix in case of paths with spaces in JProxy
-    - Bug fix in case of ".." in paths in JProxy
+    - Bug fix in case of paths with spaces in JProxy.
+    - Bug fix in case of ".." in paths in JProxy.
     - Manual has been very improved documenting new features and new chapters.
+    - A lot of examples of using RelProxy with popular Java web frameworks.
 
 * 0.8.1
 

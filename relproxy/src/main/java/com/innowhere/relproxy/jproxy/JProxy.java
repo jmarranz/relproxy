@@ -52,9 +52,19 @@ public class JProxy
     {
         return JProxyDefaultImpl.createStatic(obj, clasz);
     }
+   
+    /**
+     * Informs whether <code>JProxy</code> is configured and enabled.
+     * 
+     * @return true if enabled. 
+     */    
+    public static boolean isEnabled()
+    {
+        return JProxyDefaultImpl.isEnabledStatic();
+    }          
     
     /**
-     * Informs whether <code>JProxy</code> is configured and started.
+     * Informs whether <code>JProxy</code> is enabled and started (timed checking for changes).
      * 
      * @return true if running. 
      */    

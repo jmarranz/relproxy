@@ -77,6 +77,15 @@ public class JProxyScriptEngineImpl extends AbstractScriptEngine implements JPro
     }
 
     @Override    
+    public boolean isEnabled()
+    {
+        if (jproxy == null) 
+            return false;
+        
+        return jproxy.isEnabled();
+    }    
+    
+    @Override    
     public boolean isRunning()
     {
         if (jproxy == null) 
