@@ -4,13 +4,13 @@ RelProxy
 News
 ------
 
-- 2015-12-29 v0.8.1 Released! [Release Notes](https://github.com/jmarranz/relproxy/blob/master/relproxy/CHANGES.txt)
+- 2015-1-23 v0.8.2 Released! [Release Notes](https://github.com/jmarranz/relproxy/blob/master/relproxy/CHANGES.txt)
 
 
 Download Binaries and Docs
 ------
 
-Last version: v0.8.1
+Last version: v0.8.2
 
 [Download](https://sourceforge.net/projects/relproxy/files/)
 
@@ -19,17 +19,38 @@ Distribution file includes binaries, examples, manual and javadocs.
 Overview
 ------
 
-RelProxy is a simple Java and Groovy hot class reloader for Java and Groovy providing transparent compilation and class reload on the fly, and scripting support and shell of pure Java code
+RelProxy is a simple Java and Groovy hot class reloader for Java and Groovy providing transparent compilation and class reload on the fly, and scripting support and shell of pure 
+Java code.
+
+RelProxy is:
+
+1) A simple Java and Groovy hot class reloader for Java and Groovy providing transparent compilation and class reload on the fly with no need of a bootstrap class loader agent and 
+avoiding context reloading. Reloading happens only in memory. Class reloading can be used in development phase and optionally in production (if source code can be uploaded to 
+production).
+
+2) A scripting environment to execute Java code snippets the same as a shell script. There is no new language, is Java compiled on the fly, code in the initial archive can call 
+to other normal Java files. Optionally .class can be saved in a cache to provide the fastest "scripting" language of the world.
+
+3) Execution of Java code snippets in command line (no need of packaging into an archive).
+
+4) A simple shell to code, edit and execute code snippets in Java interactively.
+
+5) JSR 223 Scripting API implementation for "Java" as the target scripting language. You can embed and execute Java code as scripting into your Java program.
+
+
 
 In case of Java "scripting", there is no a new language, is pure Java code with compilation on the fly.
 
-In spite of RelProxy is a general purpose tool it was conceived for [ItsNat web framework](http://www.itsnat.org) to provide hot class reload in development time... and if you want also in production.
+In spite of RelProxy is a general purpose tool it was conceived for [ItsNat web framework](http://www.itsnat.org) to provide hot class reload in development time... 
+and if you want also in production. RelProxy is standalone and has no dependency on ItsNat.
 
-Take a look to the source code of RelProxy and [ItsNat Experiments](https://github.com/jmarranz/itsnat/tree/master/inexperiments) for Maven and Ant configurations (for NetBeans) and code examples of how to use with ItsNat (Java and Groovy code) and standalone shell. ItsNat examples are just an example of use case of RelProxy, RelProxy has no dependency on ItsNat and is not part of ItsNat.
+RelProxy Manual explains how to configure and use RelProxy in NetBeans and Eclipse avoiding class reloading (of course other IDEs are possible).
 
-An [example of RelProxy applied to GWT-RPC](https://github.com/jmarranz/relproxy/tree/master/relproxy_ex_gwt) is also in the repository.
+There are several examples of how to use RelProxy with most popular Java web frameworks ready to run into [RelProxy Examples](https://github.com/jmarranz/relproxy_examples) 
+repository. Also [ItsNat Experiments](https://github.com/jmarranz/itsnat/tree/master/inexperiments) includes an ItsNat example using NetBeans with Ant, to reload Java and Groovy code. 
+The most complex example is [relproxy_test_itsnat](https://github.com/jmarranz/relproxy/tree/master/relproxy_test_itsnat) created for internal testing.
 
-As bonus, RelProxy provides a shell scripting environment to execute:
+Besides fast and custom Java (and Groovy) class reloading, RelProxy provides a Java shell scripting environment to execute:
 
 1) A pure Java archive packaged like a shell script file with no need of previous compilation, compilation is done on the fly and optionally .class can be saved in a 
 cache to provide the fastest "scripting" language of the world. Code in the initial archive can call to other normal Java files, again with compilation on the fly 
