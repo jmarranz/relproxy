@@ -66,11 +66,7 @@ public class JProxyShellInteractiveImpl extends JProxyShellImpl
         super.processConfigParams(args, argsToScript, config);
         
         String classFolder = config.getClassFolder();
-        if (classFolder != null && !classFolder.trim().isEmpty()) throw new RelProxyException("cacheClassFolder is useless to execute in interactive mode");        
-        
-        // No tiene sentido especificar un tiempo de scan porque no hay directorio de entrada en el que escanear archivos
-        if (config.getScanPeriod() >= 0) // 0 no puede ser porque da error antes pero lo ponemos para reforzar la idea
-            throw new RelProxyException("scanPeriod positive value has no sense in interactive execution");        
+        if (classFolder != null && !classFolder.trim().isEmpty()) throw new RelProxyException("cacheClassFolder is useless to execute in interactive mode");                
     }    
 
     @Override    

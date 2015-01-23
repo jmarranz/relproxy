@@ -17,7 +17,7 @@ public abstract class GenericProxyImpl
     {
     }
 
-    protected static void checkSingletonNull(GenericProxyImpl singleton)
+    public static void checkSingletonNull(GenericProxyImpl singleton)
     {
         if (singleton != null) 
             throw new RelProxyException("Already initialized");
@@ -41,7 +41,7 @@ public abstract class GenericProxyImpl
     
     public <T> T create(T obj,Class<T> clasz)
     {       
-        if (obj == null) return null;
+        if (obj == null) return null;   
         
         InvocationHandler handler = createGenericProxyInvocationHandler(obj);
         

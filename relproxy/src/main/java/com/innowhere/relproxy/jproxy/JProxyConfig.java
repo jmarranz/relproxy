@@ -7,7 +7,7 @@ import com.innowhere.relproxy.RelProxyOnReloadListener;
  * Interface implemented by the configuration object needed to initialize <code>JProxy</code> and {@link JProxyScriptEngineFactory}.
  * 
  * @see JProxy#init(JProxyConfig)  
- * @see JProxyScriptEngineFactory#create(JProxyConfig) 
+ * @see JProxyScriptEngine#init(JProxyConfig) 
  * @author Jose Maria Arranz Santamaria
  */
 public interface JProxyConfig

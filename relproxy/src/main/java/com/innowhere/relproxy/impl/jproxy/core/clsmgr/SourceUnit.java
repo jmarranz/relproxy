@@ -1,7 +1,6 @@
 package com.innowhere.relproxy.impl.jproxy.core.clsmgr;
 
-import com.innowhere.relproxy.RelProxyException;
-import java.io.File;
+import com.innowhere.relproxy.impl.FileExt;
 
 /**
  *
@@ -18,12 +17,12 @@ public abstract class SourceUnit
     
     public abstract long lastModified();
     
-    protected static String buildClassNameFromFile(File sourceFile,FolderSourceList sourceList)
+    protected static String buildClassNameFromFile(FileExt sourceFile,FolderSourceList sourceList)
     {
         return sourceList.buildClassNameFromFile(sourceFile);
     }               
     
-    protected static String buildClassNameFromFile(File sourceFile,File rootFolderOfSources)
+    protected static String buildClassNameFromFile(FileExt sourceFile,FileExt rootFolderOfSources)
     {
         return FolderSourceList.buildClassNameFromFile(sourceFile,rootFolderOfSources);
     }                   

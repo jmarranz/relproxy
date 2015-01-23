@@ -1,6 +1,6 @@
 #!/bin/sh
 
-RELPROXY_JAR=relproxy-0.8.1.jar
+RELPROXY_JAR=relproxy-0.8.2.jar
 
 PROJECT=`dirname $0`/..
 
@@ -20,7 +20,6 @@ export CLASSPATH=$PROJECT/lib/$RELPROXY_JAR
 export JAVA_OPTS="-client -Xmx100m"
 # Nothing really required in JAVA_OPTS, just to test
 
-export JPROXYSH_SCAN_PERIOD=-1
 export JPROXYSH_CACHE_CLASS_FOLDER="$PROJECT/tmp/java_shell_test_classes"
 export JPROXYSH_COMPILATION_OPTIONS="-source 1.6 -target 1.6"
 

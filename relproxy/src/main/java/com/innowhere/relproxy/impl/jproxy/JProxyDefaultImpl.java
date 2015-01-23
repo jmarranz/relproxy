@@ -42,6 +42,16 @@ public class JProxyDefaultImpl extends JProxyImpl
         return SINGLETON.create(obj, clasz);
     }    
 
+    
+    public static boolean isEnabledStatic()
+    {
+        if (SINGLETON == null) 
+            return false;
+        
+        return SINGLETON.isEnabled();
+    }                
+        
+        
     public static boolean isRunningStatic()
     {
         if (SINGLETON == null) 

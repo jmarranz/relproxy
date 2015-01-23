@@ -183,7 +183,7 @@ public class JProxyShellProcessor
             ClassDescriptorSourceScript classDescSourceScript2 = null;
             try
             {
-                classDescSourceScript2 = engine.detectChangesInSources();
+                classDescSourceScript2 = engine.detectChangesInSourcesAndReload();
             }
             catch(JProxyCompilationException ex) 
             {

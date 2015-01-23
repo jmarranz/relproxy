@@ -14,9 +14,6 @@ import org.junit.Test;
  */
 public class JProxyJavaShellNormalClassTest
 {
-   
-     
-    
     public JProxyJavaShellNormalClassTest()
     {
     }
@@ -49,7 +46,7 @@ public class JProxyJavaShellNormalClassTest
      {          
         File projectFolder = JProxyTestUtil.getProjectFolder();         
         File inputFolderFile = new File(projectFolder,JProxyTestUtil.RESOURCES_FOLDER);         
-        File cacheClassFolderFile = new File(projectFolder,JProxyTestUtil.CACHE_CLASS_FOLDER);         
+        File cacheClassFolderFile = new File(projectFolder,JProxyTestUtil.CACHE_CLASS_FOLDER);                 
         
         String inputPath = inputFolderFile.getAbsolutePath();                       
         String cacheClassFolder = cacheClassFolderFile.getAbsolutePath();
@@ -60,9 +57,8 @@ public class JProxyJavaShellNormalClassTest
             inputPath + "/example_normal_class.java",
             "HELLO ",
             "WORLD!",
-            "-DscanPeriod=-1",
             "-DcacheClassFolder=" + cacheClassFolder,
-            "-DcompilationOptions=" + compilationOptions                
+            "-DcompilationOptions=" + compilationOptions       
         };
 
         JProxyShell.main(args);

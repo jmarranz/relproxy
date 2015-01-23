@@ -67,6 +67,7 @@ public class JProxyCodeSnippetCompleteClassTest
 
         JProxyShell.main(args);
         
-        assertTrue(RESULT);        
+        assertTrue(RESULT);    
+        
      }     
 }

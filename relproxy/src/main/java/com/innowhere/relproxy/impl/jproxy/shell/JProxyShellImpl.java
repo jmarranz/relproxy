@@ -3,11 +3,12 @@ package com.innowhere.relproxy.impl.jproxy.shell;
 import com.innowhere.relproxy.RelProxyException;
 import com.innowhere.relproxy.RelProxyOnReloadListener;
 import com.innowhere.relproxy.impl.jproxy.JProxyConfigImpl;
+import com.innowhere.relproxy.impl.jproxy.JProxyUtil;
 import com.innowhere.relproxy.impl.jproxy.core.JProxyImpl;
 import com.innowhere.relproxy.impl.jproxy.core.clsmgr.ClassDescriptorSourceScript;
 import com.innowhere.relproxy.impl.jproxy.core.clsmgr.FolderSourceList;
 import com.innowhere.relproxy.impl.jproxy.core.clsmgr.SourceScriptRoot;
-import com.innowhere.relproxy.jproxy.JProxyCompilerListener;
+import com.innowhere.relproxy.jproxy.JProxyInputSourceFileExcludedListener;
 import java.io.File;
 import java.lang.reflect.Method;
 import java.util.LinkedList;
@@ -19,6 +20,7 @@ import java.util.LinkedList;
  */
 public abstract class JProxyShellImpl extends JProxyImpl
 {
+   
     public static void main(String[] args)
     {
         if (args[0].isEmpty()) 
@@ -60,8 +62,8 @@ public abstract class JProxyShellImpl extends JProxyImpl
         config.setInputPath(inputPath);
         config.setJProxyInputSourceFileExcludedListener(null);        
         config.setJProxyCompilerListener(null);
-        config.setJProxyDiagnosticsListener(null); // Nos vale el log por defecto y no hay manera de espeficar otra cosa via comando
-
+        config.setJProxyDiagnosticsListener(null); // Nos vale el log por defecto y no hay manera de espeficar otra cosa via comando      
+        
         LinkedList<String> argsToScript = new LinkedList<String>();
         processConfigParams(args,argsToScript,config);
         
@@ -100,12 +102,14 @@ public abstract class JProxyShellImpl extends JProxyImpl
         }
         return opCol;
     }
-
+  
+    
     protected void processConfigParams(String[] args,LinkedList<String> argsToScript,JProxyConfigImpl config)
     {
         String classFolder = null;
         long scanPeriod = -1;
         Iterable<String> compilationOptions = null;
+
         boolean test = false;
         
         for(int i = 1; i < args.length; i++)
@@ -124,10 +128,6 @@ public abstract class JProxyShellImpl extends JProxyImpl
                 if ("cacheClassFolder".equals(name))
                 {
                     classFolder = value;
-                }
-                else if ("scanPeriod".equals(name))
-                {
-                    scanPeriod = Long.parseLong(value);
                 }
                 else if ("compilationOptions".equals(name))
                 {
@@ -151,4 +151,5 @@ public abstract class JProxyShellImpl extends JProxyImpl
         config.setTest(test);        
     }
 
+    
 }

@@ -4,6 +4,7 @@ import com.innowhere.relproxy.RelProxyOnReloadListener;
 import static com.innowhere.relproxy.jproxy.util.JProxyTestUtil.RESOURCES_FOLDER;
 import static com.innowhere.relproxy.jproxy.util.JProxyTestUtil.getProjectFolder;
 
+
 import java.io.File;
 import java.lang.reflect.Method;
 import java.util.Arrays;
@@ -65,13 +66,11 @@ public class JProxyJavaScriptEngineTest
          
          File inputFolderFile = new File(projectFolder,RESOURCES_FOLDER);
          // File classFolderFile = new File(projectFolder,"tmp/java_shell_test_classes");
-
-
         String inputPath = inputFolderFile.getAbsolutePath();
         String classFolder = null; // Optional
         Iterable<String> compilationOptions = Arrays.asList(new String[]{"-source","1.6","-target","1.6"});
-        long scanPeriod = -1;
-
+        long scanPeriod = 300;  
+        
         RelProxyOnReloadListener proxyListener = new RelProxyOnReloadListener() {
             @Override
             public void onReload(Object objOld, Object objNew, Object proxy, Method method, Object[] args) {
@@ -128,7 +127,7 @@ public class JProxyJavaScriptEngineTest
                 .setCompilationOptions(compilationOptions)
                 .setJProxyDiagnosticsListener(diagnosticsListener);
 
-        JProxyScriptEngineFactory factory = JProxyScriptEngineFactory.create(jpConfig);
+        JProxyScriptEngineFactory factory = JProxyScriptEngineFactory.create();
 
         ScriptEngineManager manager = new ScriptEngineManager();
         manager.registerEngineName("Java", factory);
@@ -137,13 +136,15 @@ public class JProxyJavaScriptEngineTest
 
         ScriptEngine engine = manager.getEngineByName("Java");
 
+        ((JProxyScriptEngine)engine).init(jpConfig);
+        
         assertNotNull(engine);
 
         try
         {
 
             Bindings bindings = engine.createBindings();
-            bindings.put("msg","HELLO SCOPE WORLD!");
+            bindings.put("msg","HELLO ENGINE SCOPE WORLD!");
 
 
             StringBuilder code = new StringBuilder();
@@ -160,7 +161,7 @@ public class JProxyJavaScriptEngineTest
             assertEquals("SUCCESS",result);
 
             bindings = engine.createBindings();
-            bindings.put("msg","HELLO SCOPE WORLD 2!");
+            bindings.put("msg","HELLO ENGINE SCOPE WORLD 2!");
 
             code = new StringBuilder();
             code.append( "public class _jproxyMainClass_ { \n");                 
@@ -186,7 +187,8 @@ public class JProxyJavaScriptEngineTest
         }
         finally
         {
-            ((JProxyScriptEngine)engine).stop(); // Necessary if scanPeriod > 0 was defined                     
+            boolean res = ((JProxyScriptEngine)engine).stop(); // Necessary if scanPeriod > 0 was defined                     
+            assertTrue(res);                    
         }
      }
 }

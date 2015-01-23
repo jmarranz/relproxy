@@ -19,7 +19,19 @@ import java.net.URLConnection;
  * @author jmarranz
  */
 public class JProxyUtil 
-{    
+{   
+    public static String getCanonicalPath(File file)
+    {
+        try
+        {
+            return file.getCanonicalPath();
+        }
+        catch (IOException ex)
+        {
+            throw new RelProxyException(ex);
+        }
+    }
+        
     public static String getFileExtension(File file)
     {
         String path = file.getAbsolutePath();
@@ -32,18 +44,6 @@ public class JProxyUtil
     public static File getParentDir(File file)
     {
         return file.getParentFile();
-        /*
-        File file = new File(absFilePath);
-        if (!file.isAbsolute() && !absFilePath.startsWith("\\") && !absFilePath.startsWith("/"))
-            return null; // Las comprobaciones startsWith son para intentar soportar MSYS (y cygwin) en Windows para paths que empiezan por "/" o por "\" por ejemplo
-        
-        
-        String absFilePath = file.getAbsolutePath(); // Nos devuelve el path normalizado, ej si empieza por "/" (MSYS) lo convierte bien en "C:\..."
-        int pos = absFilePath.lastIndexOf(File.separatorChar);
-        if (pos == -1)
-            return null; // no nos esperamos esto
-        return new File(absFilePath.substring(0,pos)); // Sin el terminador
-        */        
     }
     
     public static byte[] readURL(URL url)

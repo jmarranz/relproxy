@@ -1,6 +1,8 @@
 package example.javaex;
 
 import example.javaex.hotreload.JProxyExampleAux2;
+import example.javaex.nothotreload.JProxyExampleAuxIgnored2;
+import example.javaex.nothotreload.JProxyExampleAuxIgnored3;
 import org.itsnat.comp.ItsNatComponentManager;
 import org.itsnat.comp.text.ItsNatHTMLInputText;
 import org.itsnat.core.ItsNatServletRequest;
@@ -56,7 +58,8 @@ public class JProxyExampleDocument extends JProxyExampleDocumentBase
             public void handleEvent(Event evt) 
             {
                 String text = textInput.getText(); 
-                resultsElem.setTextContent(text);
+                String comment = " YES I SAID THIS";
+                resultsElem.setTextContent(text + comment);
             }
         };
         
@@ -69,7 +72,9 @@ public class JProxyExampleDocument extends JProxyExampleDocumentBase
         new AuxMemberInMethod().log();
         AuxMember.log();
         JProxyExampleAux.log();
+        JProxyExampleAux2.log();          
         JProxyExampleAuxIgnored.log();
-        JProxyExampleAux2.log();        
+        JProxyExampleAuxIgnored2.log();        
+        JProxyExampleAuxIgnored3.log();               
     }
 }

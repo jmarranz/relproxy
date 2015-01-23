@@ -60,6 +60,8 @@ public class ClassDescriptorSourceFileRegistry
             inner = false;
         }
         ClassDescriptorSourceUnit sourceDesc = sourceUnitMapByClassName.get(parentClassName);        
+        if (sourceDesc == null)
+            return null;
         if (!inner) return sourceDesc;
         return sourceDesc.getInnerClassDescriptor(className,true);
     }    

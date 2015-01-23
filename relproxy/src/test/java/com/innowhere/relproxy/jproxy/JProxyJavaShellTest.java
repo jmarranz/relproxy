@@ -55,14 +55,14 @@ public class JProxyJavaShellTest
         String cacheClassFolder = cacheClassFolderFile.getAbsolutePath();
         String compilationOptions = "-source 1.6  -target 1.6";
 
+        
         String[] args = new String[] 
         { 
             inputPath + "/example_java_shell",
             "HELLO ",
             "WORLD!",
-            "-DscanPeriod=-1",
             "-DcacheClassFolder=" + cacheClassFolder,
-            "-DcompilationOptions=" + compilationOptions                
+            "-DcompilationOptions=" + compilationOptions
         };
 
         JProxyShell.main(args);

@@ -1,7 +1,7 @@
 package com.innowhere.relproxy.impl.jproxy.core.clsmgr;
 
+import com.innowhere.relproxy.impl.FileExt;
 import com.innowhere.relproxy.impl.jproxy.JProxyUtil;
-import java.io.File;
 
 /**
  *
@@ -9,7 +9,7 @@ import java.io.File;
  */
 public class SourceScriptRootFileJavaExt extends SourceScriptRootFile
 {
-    public SourceScriptRootFileJavaExt(File sourceFile,FolderSourceList folderSourceList)
+    public SourceScriptRootFileJavaExt(FileExt sourceFile,FolderSourceList folderSourceList)
     {
         super(sourceFile,folderSourceList);
     }   
@@ -18,6 +18,6 @@ public class SourceScriptRootFileJavaExt extends SourceScriptRootFile
     public String getScriptCode(String encoding,boolean[] hasHashBang)
     {
         hasHashBang[0] = false;        
-        return JProxyUtil.readTextFile(sourceFile,encoding);         
+        return JProxyUtil.readTextFile(sourceFile.getFile(),encoding);         
     }       
 }

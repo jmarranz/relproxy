@@ -1,6 +1,6 @@
 package com.innowhere.relproxy.impl.jproxy.core.clsmgr;
 
-import java.io.File;
+import com.innowhere.relproxy.impl.FileExt;
 
 /**
  *
@@ -18,9 +18,9 @@ public class ClassDescriptorSourceFileJava extends ClassDescriptorSourceUnit
         return (SourceFileJavaNormal)sourceUnit;
     }
     
-    public File getSourceFile()
+    public FileExt getSourceFile()
     {
-        return getSourceFileJavaNormal().getFile();
+        return getSourceFileJavaNormal().getFileExt();
     }    
      
 }

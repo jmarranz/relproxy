@@ -35,11 +35,18 @@ public class JProxyClassLoader extends ClassLoader
     {
         synchronized(engine)
         {        
+            return loadClass(name,true); 
+        	
+        	/*
             Class<?> cls = findLoadedClass(name);
             if (cls == null)
-                return getParent().loadClass(name); // Dará un ClassNotFoundException si no puede cargarla
+            	return loadClass(name,true);            
+            
+            //if (cls == null)
+            //    return getParent().loadClass(name); // DarÃ¡ un ClassNotFoundException si no puede cargarla
 
             return cls;
+            */
         }
     }    
 

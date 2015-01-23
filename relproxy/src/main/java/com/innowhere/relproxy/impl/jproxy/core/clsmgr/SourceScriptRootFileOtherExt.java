@@ -1,7 +1,7 @@
 package com.innowhere.relproxy.impl.jproxy.core.clsmgr;
 
+import com.innowhere.relproxy.impl.FileExt;
 import com.innowhere.relproxy.impl.jproxy.JProxyUtil;
-import java.io.File;
 
 /**
  *
@@ -9,7 +9,7 @@ import java.io.File;
  */
 public class SourceScriptRootFileOtherExt extends SourceScriptRootFile
 {
-    public SourceScriptRootFileOtherExt(File sourceFile,FolderSourceList folderSourceList)
+    public SourceScriptRootFileOtherExt(FileExt sourceFile,FolderSourceList folderSourceList)
     {
         super(sourceFile,folderSourceList);
     }  
@@ -17,7 +17,7 @@ public class SourceScriptRootFileOtherExt extends SourceScriptRootFile
     @Override
     public String getScriptCode(String encoding,boolean[] hasHashBang)
     {
-        String codeBody = JProxyUtil.readTextFile(sourceFile,encoding);         
+        String codeBody = JProxyUtil.readTextFile(sourceFile.getFile(),encoding);         
         // Eliminamos la primera línea #!  (debe estar en la primera línea y sin espacios antes)
         if (codeBody.startsWith("#!"))
         {

@@ -13,12 +13,16 @@ import java.nio.charset.Charset;
  */
 public class MacOSXUnicodeKeyboard extends Keyboard
 {
-    protected Charset cs;
-    
     public MacOSXUnicodeKeyboard(Charset cs)
     {
-        this.cs = cs;
+        super(cs);
     }
+    
+    @Override
+    public boolean isUseCodePoint()
+    {
+        return true;
+    }        
     
     @Override
     public boolean type(char character) 
@@ -26,9 +30,7 @@ public class MacOSXUnicodeKeyboard extends Keyboard
         if (super.type(character))
             return true;
 
-        int bi = getUnicodeInt(cs,character);
-
-        String unicodeDigits = Integer.toString(bi,16); // En hexadecimal
+        String unicodeDigits = getUnicodeDigits(character,16); // En hexadecimal
 
         robot.keyPress(ALT_MASK);  // "Since the ALT_MASK modifier is the Option key in OS X" https://developer.apple.com/library/mac/documentation/java/conceptual/java14development/07-NativePlatformIntegration/NativePlatformIntegration.html     
             

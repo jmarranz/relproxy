@@ -25,10 +25,14 @@ public class JProxyScriptEngineDelegateImpl extends JProxyImpl
     protected long codeBufferModTimestamp = 0;     
     protected long lastCodeCompiledTimestamp = 0;
     
-    public JProxyScriptEngineDelegateImpl(JProxyScriptEngineImpl parent,JProxyConfigImpl config)
+    public JProxyScriptEngineDelegateImpl(JProxyScriptEngineImpl parent)
     {
-        this.parent = parent;
-        
+        this.parent = parent;              
+    }    
+    
+    @Override    
+    public ClassDescriptorSourceScript init(JProxyConfigImpl config)
+    {               
         SourceScriptRoot sourceFileScript = SourceScriptRootInMemory.createSourceScriptInMemory("");
 
         JProxyShellClassLoader classLoader = null;
@@ -36,8 +40,9 @@ public class JProxyScriptEngineDelegateImpl extends JProxyImpl
         if (classFolder != null)
             classLoader = new JProxyShellClassLoader(getDefaultClassLoader(),new File(classFolder));    
 
-        this.classDescSourceScript = init(config,sourceFileScript,classLoader);       
-    }    
+        this.classDescSourceScript = init(config,sourceFileScript,classLoader);        
+        return classDescSourceScript;
+    }
     
     @Override
     public Class getMainParamClass()
@@ -67,7 +72,7 @@ public class JProxyScriptEngineDelegateImpl extends JProxyImpl
                 ClassDescriptorSourceScript classDescSourceScript2 = null;
                 try
                 {
-                    classDescSourceScript2 = jproxyEngine.detectChangesInSources();
+                    classDescSourceScript2 = jproxyEngine.detectChangesInSourcesAndReload();
                 }
                 catch(JProxyCompilationException ex) 
                 {

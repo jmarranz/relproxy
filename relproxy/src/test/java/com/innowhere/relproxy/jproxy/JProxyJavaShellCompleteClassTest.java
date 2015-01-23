@@ -60,9 +60,8 @@ public class JProxyJavaShellCompleteClassTest
             inputPath + "/example_java_shell_complete_class",
             "HELLO ",
             "WORLD!",
-            "-DscanPeriod=-1",
             "-DcacheClassFolder=" + cacheClassFolder,
-            "-DcompilationOptions=" + compilationOptions                
+            "-DcompilationOptions=" + compilationOptions,         
         };
 
         JProxyShell.main(args);

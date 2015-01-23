@@ -12,12 +12,16 @@ import java.nio.charset.Charset;
  * @author jmarranz
  */
 public class LinuxUnicodeKeyboard extends Keyboard
-{
-    protected Charset cs;
-    
+{  
     public LinuxUnicodeKeyboard(Charset cs)
     {
-        this.cs = cs;
+        super(cs);
+    }
+    
+    @Override
+    public boolean isUseCodePoint()
+    {
+        return true;
     }
     
     @Override
@@ -26,9 +30,7 @@ public class LinuxUnicodeKeyboard extends Keyboard
         if (super.type(character))
             return true;
 
-        int bi = getUnicodeInt(cs,character);
-
-        String unicodeDigits = Integer.toString(bi,16); // En hexadecimal
+        String unicodeDigits = getUnicodeDigits(character,16); // En hexadecimal
 
         robot.keyPress(VK_CONTROL);        
         robot.keyPress(VK_SHIFT);
@@ -36,10 +38,16 @@ public class LinuxUnicodeKeyboard extends Keyboard
         doType(VK_U); // 'u' indica que después viene un valor unicode hexadecimal
             
         // Pero dejamos pulsadas CTRL y SHIFT mientras 
+        // Ejemplo: 266A es una nota de solfeo
         try
-        {
-            for (int i = 0; i < unicodeDigits.length(); i++) {
-                type(unicodeDigits.charAt(i)); 
+        {        
+            for (int i = 0; i < unicodeDigits.length(); i++)
+            {
+                char c = unicodeDigits.charAt(i);
+                if (Character.isDigit(c))
+                    typeNumPad(Integer.parseInt(unicodeDigits.substring(i, i + 1)));
+                else
+                    type(c); 
             }
         }
         finally
