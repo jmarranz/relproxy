@@ -1,7 +1,7 @@
 
  RELEASE CHANGES
 
-* 0.8.2 (UNPUBLISHED)
+* 0.8.2
 
     - Optimization: method JProxyInputSourceFileExcludedListener.isExcluded(File file,File) is called being parameter file also a directory, if the directory is fully
       excluded, RelProxy doesn't call isExcluded for files into the folder. Useful for big source code bases and used RelProxy for normal source code folders.
