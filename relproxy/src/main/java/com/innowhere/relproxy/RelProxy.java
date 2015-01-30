@@ -14,6 +14,6 @@ public class RelProxy
      */
     public static String getVersion()
     {
-        return "0.8.2";
+        return "0.8.3";
     }
 }
