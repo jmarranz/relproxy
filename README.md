@@ -4,6 +4,7 @@ RelProxy
 News
 ------
 
+- 2015-1-30 [Slides](http://www.slideshare.net/jmarranz/relproxy-class-reload-and-easy-java-scripting) in English and [video](http://autentia.com/2015/01/30/relproxy-easy-class-reload-and-scripting-with-java-por-jose-maria-arranz/#) in Spanish of the RelProxy presentation in MadridJUG on January 28!
 - 2015-1-23 v0.8.2 Released! [Release Notes](https://github.com/jmarranz/relproxy/blob/master/relproxy/CHANGES.txt)
 
 
@@ -96,9 +97,11 @@ You can read the [in progress latest documentation here](https://github.com/jmar
 Articles/Presentations
 ------
 
-Dec 31,2014 [RelProxy v0.8.1 reduce el número de redeploys en GWT-RPC y otros Java web frameworks](http://www.javahispano.org/portada/2014/12/31/relproxy-v081-reduce-el-numero-de-redeploys-en-gwt-rpc-y-otr.html) Published at javaHispano
+- Jan 28,2015 [Slides](http://www.slideshare.net/jmarranz/relproxy-class-reload-and-easy-java-scripting) in English and [video](http://autentia.com/2015/01/30/relproxy-easy-class-reload-and-scripting-with-java-por-jose-maria-arranz/#) in Spanish of the RelProxy presentation in MadridJUG
 
-Feb 15,2014 [v0.8 announce at JavaLobby](http://java.dzone.com/articles/presenting-relproxy-hot-class)
+- Dec 31,2014 [RelProxy v0.8.1 reduce el número de redeploys en GWT-RPC y otros Java web frameworks](http://www.javahispano.org/portada/2014/12/31/relproxy-v081-reduce-el-numero-de-redeploys-en-gwt-rpc-y-otr.html) Published at javaHispano
 
-Feb 12,2014 [v0.8 announce at javaHispano](http://www.javahispano.org/portada/2014/2/12/publicado-relproxy-v08-hot-class-reloader-y-scripting-para-j.html)
+- Feb 15,2014 [v0.8 announce at JavaLobby](http://java.dzone.com/articles/presenting-relproxy-hot-class)
+
+- Feb 12,2014 [v0.8 announce at javaHispano](http://www.javahispano.org/portada/2014/2/12/publicado-relproxy-v08-hot-class-reloader-y-scripting-para-j.html)
 
