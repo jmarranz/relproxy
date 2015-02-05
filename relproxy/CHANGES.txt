@@ -1,6 +1,16 @@
 
  RELEASE CHANGES
 
+* 0.8.3
+
+    - First release published on bintray.com/JCenter and Maven Central. In Maven just add to your POM: 
+    
+      <dependency>
+        <groupId>com.innowhere</groupId>
+        <artifactId>relproxy</artifactId>
+        <version>0.8.3</version>
+      </dependency>
+
 * 0.8.2
 
     - Optimization: method JProxyInputSourceFileExcludedListener.isExcluded(File file,File) is called being parameter file also a directory, if the directory is fully

@@ -9,9 +9,9 @@
     <property file="conf/conf_local.properties"/>  <!-- just define property: maven_folder -->
     <property file="conf/conf.properties"/>
 
-
-    <property name="distribution_tmp_folder" value="${program}/../relproxy_dist/relproxy" />
-    <property name="maven_dist_folder" value="${program}/../relproxy_dist/maven_dist" />    
+    <property name="distribution_folder" value="${program}/../relproxy_gen_dist" />
+    <property name="distribution_tmp_folder" value="${distribution_folder}/relproxy" />
+    <property name="maven_dist_folder" value="${distribution_folder}/maven_dist" />    
     <property name="pom" value="${program}/pom.xml" />   
     
     <target name="deploy_to_distribute" depends="deploy_binaries_and_manual,deploy_cmd_examples,deploy_javadoc,deploy_sources">  <!-- ,deploy_manual -->
@@ -153,6 +153,13 @@
           
         <delete file="${maven_dist_folder}/${test_sources_jar}" />        
         <copy file="${test_sources_jar_path}" todir="${maven_dist_folder}" preservelastmodified="true"   />        
+        
+        <!-- El POM -->
+        <property name="pom_source_path" value="${program}/pom.xml" />  
+        <property name="pom_target_path" value="${maven_dist_folder}/relproxy-${program.version}.pom" /> 
+                       
+        <delete file="${pom_target_path}" />
+        <copy file="${pom_source_path}" tofile="${pom_target_path}" preservelastmodified="true"   />         
     </target>    
     
 </project>

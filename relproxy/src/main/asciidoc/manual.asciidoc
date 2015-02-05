@@ -19,7 +19,7 @@
 ++++
 
 (C) Jose María Arranz Santamaría
-v0.8.3 .January 23, 2015
+v0.8.3 .February 5, 2015
 
 _Because Java is also a dynamic language and Groovy can still be a dynamic language in a Java based environment._
 
@@ -137,6 +137,33 @@ The distribution file has two important files:
 
 The distribution file includes some example scripts into the folder `cmd_examples` to test the shell capabilities or RelProxy Java, executing the script
 `sh fixesforunix.sh` is recommended to define the appropriated executable permissions, then define the environment variable `JAVA_HOME` with the location of your 1.6+ JDK installation.
+
+=== Add RelProxy jar as Maven or Gradle dependency
+
+As of v0.8.3 RelProxy is registered in https://bintray.com/bintray/jcenter/[Bintray/JCenter] and Maven Central repositories.
+Add JCenter repository to your POM or Maven settings if you want to import from JCenter, in Gradle just add `jcenter()` to `repositories`.
+
+Examples for version 0.8.3:
+
+Maven:
+
+[source,xml]
+----
+      <dependency>
+        <groupId>com.innowhere</groupId>
+        <artifactId>relproxy</artifactId>
+        <version>0.8.3</version>
+      </dependency>
+----
+
+Gradle:
+
+[source,groovy]
+----
+dependencies {
+  runtime 'com.innowhere:relproxy:0.8.3'
+}
+----
 
 
 == Disabling automatic context reload
@@ -296,8 +323,8 @@ to be also included in compilation and copied to the final war, this configurati
 At the time of writing RelProxy is not in Maven Central repository, you must manually include it in your dependencies as a `system` dependency, and copy the jar to the `WEB-INF/lib` 
 folder.
 
-The following POM is a simple example of a ItsNat web application using RelProxy (v0.8.2) and including a published source code folder, `src/main/webapp/WEB-INF/code`, able to 
-contain reloadable source code (remember to add `ItsNat-1.3.1.jar` and `relproxy-0.8.2.jar` to the `WEB-INF/lib` folder):
+The following POM is a simple example of a ItsNat web application using RelProxy (v0.8.3) and including a published source code folder, `src/main/webapp/WEB-INF/code`, able to 
+contain reloadable source code (remember to add `ItsNat-1.3.1.jar` to the `WEB-INF/lib` folder):
 
 [source,xml]
 .pom.xml
@@ -345,9 +372,7 @@ contain reloadable source code (remember to add `ItsNat-1.3.1.jar` and `relproxy
       <dependency>
           <groupId>com.innowhere</groupId>
           <artifactId>relproxy</artifactId>
-          <version>0.8.2</version>
-          <scope>system</scope>
-          <systemPath>${basedir}/src/main/webapp/WEB-INF/lib/relproxy-0.8.2.jar</systemPath>
+          <version>0.8.3</version>
       </dependency>    
 
       <dependency>
@@ -1587,7 +1612,7 @@ The following is an example of shell code (into a script file) to execute the pr
 ----
 #!/bin/sh
 
-RELPROXY_JAR=relproxy-0.8.2.jar
+RELPROXY_JAR=relproxy-0.8.3.jar
 
 PROJECT=`dirname $0`/..
 
