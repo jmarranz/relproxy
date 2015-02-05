@@ -24,7 +24,7 @@ public class JProxyShellProcessor
     protected JProxyShellInteractiveImpl parent;
     protected Charset encoding = Charset.defaultCharset();
     protected ArrayList<String> codeBuffer = new ArrayList<String>(20);   
-    protected Keyboard keyboard = Keyboard.create(encoding);
+    protected Keyboard keyboard = KeyboardNotUsingClipboard.create(encoding);
     protected int lastLine = -1; // Indice respecto a codeBuffer
     protected int lineEditing = -1;  // Indice respecto a codeBuffer
     protected long codeBufferModTimestamp = 0;     

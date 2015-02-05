@@ -18,7 +18,7 @@ import java.nio.charset.Charset;
  * 
  * @author jmarranz
  */
-public class WindowUnicodeKeyboard extends Keyboard
+public class WindowUnicodeKeyboard extends KeyboardNotUsingClipboard
 {   
     public WindowUnicodeKeyboard(Charset cs)
     {

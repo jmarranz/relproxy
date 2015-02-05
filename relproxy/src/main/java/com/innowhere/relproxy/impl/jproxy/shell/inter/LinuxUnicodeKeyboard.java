@@ -11,7 +11,7 @@ import java.nio.charset.Charset;
  * 
  * @author jmarranz
  */
-public class LinuxUnicodeKeyboard extends Keyboard
+public class LinuxUnicodeKeyboard extends KeyboardNotUsingClipboard
 {  
     public LinuxUnicodeKeyboard(Charset cs)
     {

@@ -11,7 +11,7 @@ import java.nio.charset.Charset;
  * 
  * @author jmarranz
  */
-public class MacOSXUnicodeKeyboard extends Keyboard
+public class MacOSXUnicodeKeyboard extends KeyboardNotUsingClipboard
 {
     public MacOSXUnicodeKeyboard(Charset cs)
     {
