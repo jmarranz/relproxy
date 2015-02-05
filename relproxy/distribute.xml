@@ -8,91 +8,80 @@
     
     <property file="conf/conf_local.properties"/>  <!-- just define property: maven_folder -->
     <property file="conf/conf.properties"/>
-    <!--
-    <property name="java.source.version" value="1.5" />
-    <property name="java.target.version" value="1.5" /> 
-    -->
 
-    <path id="classPath">
-        <!--<pathelement location="${program.lib}/ow2-jta-1.1-spec.jar"/>-->
-    </path>
 
-    <property name="distribution_project" value="${program}/../relproxy_dist/relproxy" />
-   
+    <property name="distribution_tmp_folder" value="${program}/../relproxy_dist/relproxy" />
+    <property name="maven_dist_folder" value="${program}/../relproxy_dist/maven_dist" />    
+    <property name="pom" value="${program}/pom.xml" />   
     
-    <target name="deploy_to_distribute" depends="deploy_binaries_and_manual,deploy_cmd_examples,deploy_javadoc">  <!-- ,deploy_manual -->
+    <target name="deploy_to_distribute" depends="deploy_binaries_and_manual,deploy_cmd_examples,deploy_javadoc,deploy_sources">  <!-- ,deploy_manual -->
 
         <echo message="DO NOT FORGET TO CHANGE version num in conf.properties, RelProxy.getVersion()" />
 
-        <copy file="${program}/LICENSE-2.0.txt" tofile="${distribution_project}/LICENSE-2.0.txt" />
-        <!-- <copy file="${program}/README.md" tofile="${distribution_project}/README.md" /> -->
-        <copy file="${program}/CHANGES.txt" tofile="${distribution_project}/CHANGES.txt" />
+        <copy file="${program}/LICENSE-2.0.txt" tofile="${distribution_tmp_folder}/LICENSE-2.0.txt" />
+        <!-- <copy file="${program}/README.md" tofile="${distribution_tmp_folder}/README.md" /> -->
+        <copy file="${program}/CHANGES.txt" tofile="${distribution_tmp_folder}/CHANGES.txt" />
 
-        <delete dir="${distribution_project}/tmp" />        
+        <delete dir="${distribution_tmp_folder}/tmp" />        
         
-        <property name="distribution_file" value="${distribution_project}/../RelProxy_dist_${program.version}.zip" />        
+        <property name="distribution_file" value="${distribution_tmp_folder}/../RelProxy_dist_${program.version}.zip" />        
         <delete file="${distribution_file}" />
-        <zip basedir="${distribution_project}" destfile="${distribution_file}" />        
-        <!--<tar basedir="${distribution_project}" destfile="${distribution_file}" compression="gzip" />-->      
+        <zip basedir="${distribution_tmp_folder}" destfile="${distribution_file}" />        
+        <!--<tar basedir="${distribution_tmp_folder}" destfile="${distribution_file}" compression="gzip" />-->      
     </target>
 
     <target name="deploy_binaries_and_manual">  <!-- ,deploy_manual -->
 
-        <property name="pom" value="${program}/pom.xml" />
+        <property name="relproxy_jar" value="relproxy-${program.version}.jar" />
+        <property name="relproxy_jar_path" value="${program.target}/${relproxy_jar}" />  
+
         <artifact:mvn pom="${pom}" mavenHome="${maven_folder}" fork="true"> <!-- fork="true" is needed: https://netbeans.org/bugzilla/show_bug.cgi?format=multiple&id=47645 -->
             <arg value="clean"/>
-        </artifact:mvn>          
+        </artifact:mvn>
         <artifact:mvn pom="${pom}" mavenHome="${maven_folder}" fork="true"> <!-- fork="true" is needed: https://netbeans.org/bugzilla/show_bug.cgi?format=multiple&id=47645 -->
             <arg value="compile"/>
+        </artifact:mvn>                  
+        <artifact:mvn pom="${pom}" mavenHome="${maven_folder}" fork="true"> <!-- fork="true" is needed: https://netbeans.org/bugzilla/show_bug.cgi?format=multiple&id=47645 -->
+            <arg value="jar:jar"/>
         </artifact:mvn>        
         
-        <property name="distribution_project_lib" value="${distribution_project}/lib" />
-        <delete dir="${distribution_project_lib}" />
+        <property name="distribution_tmp_folder_lib" value="${distribution_tmp_folder}/lib" />
+        <delete dir="${distribution_tmp_folder_lib}" />
         
-        <!-- Copying compiled classes -->
-        <jar basedir="${program.target}/classes"
-             destfile="${distribution_project_lib}/relproxy-${program.version}.jar"
-             includes="com/**">
-            <manifest>
-                <attribute name="Built-By" value="${user.name} - Jose Maria Arranz"/>
-                <attribute name="Implementation-Title" value="${program.name}" />
-                <attribute name="Implementation-Vendor" value="Jose Maria Arranz Santamaria" />
-                <attribute name="Implementation-Version" value="${program.version}" />
-            </manifest>
-            <!--
-            <service type="javax.script.ScriptEngineFactory"
-                     provider="org.acme.PinkyLanguage"/>            
-            -->
-        </jar>
+        <copy file="${program.target}/${relproxy_jar}" todir="${distribution_tmp_folder_lib}" preservelastmodified="true"   />
 
-        <property name="distribution_project_bin" value="${distribution_project}/bin" />
-        <delete dir="${distribution_project_bin}" />
+        <property name="distribution_tmp_folder_bin" value="${distribution_tmp_folder}/bin" />
+        <delete dir="${distribution_tmp_folder_bin}" />
 
-        <copy file="${program}/bin/jproxysh" todir="${distribution_project_bin}" preservelastmodified="true"   />
+        <copy file="${program}/bin/jproxysh" todir="${distribution_tmp_folder_bin}" preservelastmodified="true"   />
 
-        <fixcrlf srcdir="${distribution_project_bin}" includes="jproxysh" eol="lf" eof="remove" />   <!-- Goodbye Windows encoding -->        
+        <fixcrlf srcdir="${distribution_tmp_folder_bin}" includes="jproxysh" eol="lf" eof="remove" />   <!-- Goodbye Windows encoding -->        
         
-        <chmod file="${distribution_project_bin}/jproxysh" perm="+x"/>        
+        <chmod file="${distribution_tmp_folder_bin}/jproxysh" perm="+x"/>        
         
         <!-- Manual is also generated by Maven -->
                 
-        <property name="distribution_project_manual" value="${distribution_project}/docs/manual" />        
+        <property name="distribution_tmp_folder_manual" value="${distribution_tmp_folder}/docs/manual" />        
         
-        <delete dir="${distribution_project_manual}" />
+        <delete dir="${distribution_tmp_folder_manual}" />
                 
-        <copy todir="${distribution_project_manual}" preservelastmodified="true">
+        <copy todir="${distribution_tmp_folder_manual}" preservelastmodified="true">
           <fileset dir="${program.target}/generated-docs/"/>
         </copy>        
+
+        <!-- Para subir a Maven Central/JCenter -->
+        <delete file="${maven_dist_folder}/${relproxy_jar}" />        
+        <copy file="${relproxy_jar_path}" todir="${maven_dist_folder}" preservelastmodified="true"   /> 
 
     </target>
 
     <target name="deploy_cmd_examples">
 
         <property name="src_cmd_examples" value="${program}/src/main/cmd_examples" />
-        <property name="distribution_cmd_examples" value="${distribution_project}/cmd_examples" />
+        <property name="distribution_cmd_examples" value="${distribution_tmp_folder}/cmd_examples" />
         
         <property name="src_shell_ex_code" value="${program}/src/test/resources" />
-        <property name="distribution_shell_ex_code" value="${distribution_project}/cmd_examples/code" />        
+        <property name="distribution_shell_ex_code" value="${distribution_tmp_folder}/cmd_examples/code" />        
         
         <delete dir="${distribution_cmd_examples}" />        
         
@@ -117,33 +106,53 @@
 
 
     <target name="deploy_javadoc">
-        <property name="javadoc_dir" value="${distribution_project}/docs/javadoc" />
-        <delete dir="${javadoc_dir}" />
-        <javadoc packagenames="com.innowhere.relproxy.*"
-               sourcepath="${program.src}"
-               excludepackagenames="com.innowhere.relproxy.impl.*"
-               defaultexcludes="yes"
-               destdir="${javadoc_dir}"
-               author="true"
-               version="true"
-               use="true"
-               windowtitle="${program.name} v${program.javadoc.prog.version}, doc. version v${program.javadoc.doc.version}">
-
-            <classpath>
-                <path refid="classPath"/>
-            </classpath>
-
-            <doctitle>
-                <![CDATA[
-                <h1>${program.name} v${program.javadoc.prog.version} <font size="-1">(doc. version ${program.javadoc.doc.version})</font></h1>
-                ]]>
-            </doctitle>
-            <bottom>
-                <![CDATA[
-                Copyright © Jose Maria Arranz Santamaria.
-                ]]>
-            </bottom>
-        </javadoc>
+        <property name="javadoc_jar" value="relproxy-${program.version}-javadoc.jar" />              
+        <property name="javadoc_jar_path" value="${program.target}/${javadoc_jar}" />         
+        <property name="javadoc_dir_target" value="${distribution_tmp_folder}/docs/javadoc" />
+                
+        <artifact:mvn pom="${pom}" mavenHome="${maven_folder}" fork="true"> <!-- fork="true" is needed: https://netbeans.org/bugzilla/show_bug.cgi?format=multiple&id=47645 -->
+            <arg value="clean"/> <!-- necesario, la mierda del Maven genera el javadoc encima de lo que ya hubiera pudiendo mezclarse con archivos anteriores -->
+        </artifact:mvn>        
+        
+        <delete dir="${javadoc_dir_target}" />        
+        <artifact:mvn pom="${pom}" mavenHome="${maven_folder}" fork="true"> <!-- fork="true" is needed: https://netbeans.org/bugzilla/show_bug.cgi?format=multiple&id=47645 -->
+            <arg value="javadoc:jar"/>
+        </artifact:mvn>            
+        <unzip src="${javadoc_jar_path}" dest="${javadoc_dir_target}"/>
+          
+        <!-- Para subir a Maven Central/JCenter -->
+        <delete file="${maven_dist_folder}/${javadoc_jar}" />        
+        <copy file="${javadoc_jar_path}" todir="${maven_dist_folder}" preservelastmodified="true"   />        
     </target>
+    
+    <target name="deploy_sources">
+        <!-- Para subir a Maven Central/JCenter -->               
+                
+        <artifact:mvn pom="${pom}" mavenHome="${maven_folder}" fork="true"> <!-- fork="true" is needed: https://netbeans.org/bugzilla/show_bug.cgi?format=multiple&id=47645 -->
+            <arg value="clean"/> <!-- necesario, la mierda del Maven genera los sources encima de lo que ya hubiera pudiendo mezclarse con archivos anteriores -->
+        </artifact:mvn>        
+                
+        <!-- Sources sin test -->        
+        <property name="sources_jar" value="relproxy-${program.version}-sources.jar" />              
+        <property name="sources_jar_path" value="${program.target}/${sources_jar}" />         
+                
+        <artifact:mvn pom="${pom}" mavenHome="${maven_folder}" fork="true"> <!-- fork="true" is needed: https://netbeans.org/bugzilla/show_bug.cgi?format=multiple&id=47645 -->
+            <arg value="source:jar"/>
+        </artifact:mvn>            
+          
+        <delete file="${maven_dist_folder}/${sources_jar}" />        
+        <copy file="${sources_jar_path}" todir="${maven_dist_folder}" preservelastmodified="true"   />        
+        
+        <!-- Source de los tests -->
+        <property name="test_sources_jar" value="relproxy-${program.version}-test-sources.jar" />              
+        <property name="test_sources_jar_path" value="${program.target}/${test_sources_jar}" />
+                
+        <artifact:mvn pom="${pom}" mavenHome="${maven_folder}" fork="true"> <!-- fork="true" is needed: https://netbeans.org/bugzilla/show_bug.cgi?format=multiple&id=47645 -->
+            <arg value="source:test-jar"/>
+        </artifact:mvn>            
+          
+        <delete file="${maven_dist_folder}/${test_sources_jar}" />        
+        <copy file="${test_sources_jar_path}" todir="${maven_dist_folder}" preservelastmodified="true"   />        
+    </target>    
     
 </project>

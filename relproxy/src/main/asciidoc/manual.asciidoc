@@ -1086,7 +1086,9 @@ This example is for development phase only, nothing prevents of appliying both s
 In GWT, JProxy only can be used to reload Java code executed in server, this is why we are going to apply JProxy to a GWT-RPC project (that is a client-server web application).
 
 Install http://eclipse.org[Eclipse] (Eclipse 4.4 Luna was used for this example), install the https://developers.google.com/eclipse/docs/download[Google Plugin for Eclipse] (version 4.4 was used), 
-only install GWT dependencies if you want (there is no need of Android and Google App Engine parts), download RelProxy distribution file and copy the `relproxy-x.y.z.jar`.
+only install GWT dependencies if you want (there is no need of Android and Google App Engine parts). 
+
+Download RelProxy distribution file and copy the `relproxy-x.y.z.jar` to `/war/WEB-INF/lib/`.
 
 Select in Eclipse the menu option `New / Other... / Google/ Web Application Project` to create a GWT-RPC sample project (Google App Engine is not needed).
 
@@ -1372,13 +1374,18 @@ Registered on:
         .setJProxyInputSourceFileExcludedListener(excludedListener)
 ----
 
-This listener filters the Java source files that need to be ignored by RelProxy/JProxy even when modified, because JProxy creates a new `ClassLoader` and reloads on it all 
-hot-reloadable classes. Classes inside `client/` and `shared/` folders must not be reloadable because has no sense in GWT, when a folder inside a declared source folder of reloadable 
-classes specified in configuration is going to be inspected for changed classes, the method `isExcluded` is called to check whether the complete folder must be excluded, this 
-is very useful for big projects with a lot of files not reloadable. In this case classes inside `client/` or `shared/` are excluded. If a folder is not excluded, files
-in folder are asked for excluding calling `isExcluded`, the class `GreetingServiceImpl` cannot be reloaded because it is a servlet and cannot be registered in JProxy 
-because is already in use by the JavaEE servlet system and cannot be registered on JProxy. Finally `GreetingServiceDelegate.java` cannot be reloaded because is the 
-interface exposed to the non-reloadable world. In summary only `server/` classes can be reloaded excluding the servlet class `GreetingServiceImpl.java` and `GreetingServiceDelegate.java`.
+This listener filters the Java source files that must be ignored by RelProxy/JProxy even when modified.
+
+Because JProxy creates a new ClassLoader and reloads on it all hot-reloadable classes when someone is modified, classes inside `client/` and `shared/` folders must not be reloadable 
+because has no sense in GWT.
+
+When a folder inside a declared source folder of reloadable classes specified in configuration is going to be inspected for changed classes, the method `isExcluded` is called to 
+check whether the complete folder must be excluded, this is very useful for big projects with a lot of not reloadable files. In this case classes inside `client/` or `shared/` 
+are excluded. If a folder is not excluded, child files and folders into this folder are asked for excluding calling `isExcluded`, the class `GreetingServiceImpl` cannot be reloaded 
+because it is a servlet and cannot be registered in JProxy because is already in use by the JavaEE servlet system. Finally `GreetingServiceDelegate.java` cannot be reloaded 
+because is the interface exposed to the non-reloadable world. 
+
+In summary only server/ classes can be reloaded excluding the servlet class `GreetingServiceImpl.java` and `GreetingServiceDelegate.java`.
 
 In this example there is only specified a root source code folder, RelProxy allows several root source code folder `JProxyConfig.setInputPahts(String[])` instead of `JProxyConfig.setInputPaht(String)`,
 the parameter `File rootFolder` specify the root source code folder containing the folder or file to apply excluding rules, this parameter can help you to define very complex
@@ -1480,7 +1487,7 @@ Back to browser, click again on "Send to Server":
 
 image:browser_3.png[Fig 3, title="Fig 3"]
 
-As you can see in this case no reload has been necessary because the requisite is to call the proxied method to reload classes.
+As you can see in this case no page reload has been necessary because the requisite is to call the proxied method to reload classes, this call was made by a AJAX/RPC call.
 
 In this example we made a very simple method change, adding more methods is not a problem but most of the time you will need to add new fields related to new classes,
 because `GreetingServiceDelegateImpl` is a singleton we cannot add, remove or change names and types of the fields of this class, to overcome this severe limitation
