@@ -145,7 +145,7 @@ Add JCenter repository to your POM or Maven settings if you want to import from 
 
 Examples for version 0.8.3:
 
-Maven:
+Maven POM:
 
 [source,xml]
 ----
@@ -156,7 +156,19 @@ Maven:
       </dependency>
 ----
 
-Gradle:
+To add JCenter to your POM:
+
+[source,xml]
+----
+      <repositories>
+        <repository>
+          <id>jcenter</id>
+          <url>http://jcenter.bintray.com</url>
+        </repository>	
+      </repositories>
+----
+
+Gradle build:
 
 [source,groovy]
 ----
@@ -165,6 +177,14 @@ dependencies {
 }
 ----
 
+To add JCenter:
+
+[source,groovy]
+----
+repositories {  
+   jcenter()  
+}
+----
 
 == Disabling automatic context reload
 

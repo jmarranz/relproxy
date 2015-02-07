@@ -4,6 +4,7 @@ RelProxy
 News
 ------
 
+- 2015-1-23 v0.8.3 Released. First release in JCenter and Maven Central [Release Notes](https://github.com/jmarranz/relproxy/blob/master/relproxy/CHANGES.txt)
 - 2015-2-5 [Java Hot Class Reloading with RelProxy in Development Mode, a GWT Example](http://java.dzone.com/articles/java-hot-class-reloading) JavaLobby article
 - 2015-1-30 [Slides](http://www.slideshare.net/jmarranz/relproxy-class-reload-and-easy-java-scripting) in English and [video](http://autentia.com/2015/01/30/relproxy-easy-class-reload-and-scripting-with-java-por-jose-maria-arranz/#) in Spanish of the RelProxy presentation in MadridJUG on January 28!
 - 2015-1-23 v0.8.2 Released! [Release Notes](https://github.com/jmarranz/relproxy/blob/master/relproxy/CHANGES.txt)
