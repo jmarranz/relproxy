@@ -1,13 +1,9 @@
 package com.innowhere.relproxy.impl.jproxy.core.clsmgr;
 
-import com.innowhere.relproxy.impl.jproxy.JProxyUtil;
 import com.innowhere.relproxy.impl.jproxy.core.JProxyImpl;
-import com.innowhere.relproxy.impl.jproxy.core.clsmgr.comp.JProxyCompilerContext;
-import com.innowhere.relproxy.impl.jproxy.core.clsmgr.comp.JProxyCompilerInMemory;
 import com.innowhere.relproxy.jproxy.JProxyCompilerListener;
 import com.innowhere.relproxy.jproxy.JProxyDiagnosticsListener;
 import com.innowhere.relproxy.jproxy.JProxyInputSourceFileExcludedListener;
-import java.io.File;
 import java.util.LinkedList;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -29,16 +25,16 @@ public class JProxyEngine
     protected boolean needReload;     
     protected boolean enabled;    
     
-    public JProxyEngine(JProxyImpl parent,boolean enabled,SourceScriptRoot scriptFile,ClassLoader rootClassLoader,FolderSourceList folderSourceList,String folderClasses,long scanPeriod,JProxyInputSourceFileExcludedListener excludedListener,
+    public JProxyEngine(JProxyImpl parent,boolean enabled,SourceScriptRoot scriptFile,ClassLoader rootClassLoader,FolderSourceList folderSourceList,FolderSourceList requiredExtraJarPaths,
+                String folderClasses,long scanPeriod,JProxyInputSourceFileExcludedListener excludedListener,
                 JProxyCompilerListener compilerListener,Iterable<String> compilationOptions,JProxyDiagnosticsListener diagnosticsListener)
     {
         this.parent = parent;
         this.enabled = enabled;        
         this.rootClassLoader = rootClassLoader;
         this.scanPeriod = scanPeriod;
-        this.delegateChangeDetector = new JProxyEngineChangeDetectorAndCompiler(this,scriptFile,folderSourceList,folderClasses,excludedListener,compilationOptions,diagnosticsListener,compilerListener);        
+        this.delegateChangeDetector = new JProxyEngineChangeDetectorAndCompiler(this,scriptFile,folderSourceList,requiredExtraJarPaths,folderClasses,excludedListener,compilationOptions,diagnosticsListener,compilerListener);        
         this.customClassLoader = new JProxyClassLoader(this);
-      
     }
     
     public JProxyImpl getJProxy()

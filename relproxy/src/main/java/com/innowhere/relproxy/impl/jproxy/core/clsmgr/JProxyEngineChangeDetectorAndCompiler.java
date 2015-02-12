@@ -18,6 +18,7 @@ public class JProxyEngineChangeDetectorAndCompiler
     protected JProxyEngine engine;
     protected JProxyCompilerInMemory compiler; 
     protected FolderSourceList folderSourceList;    
+    protected FolderSourceList requiredExtraJarPaths;
     protected SourceScriptRoot scriptFile; // Puede ser nulo
     protected String folderClasses; // Puede ser nulo (es decir NO salvar como .class los cambios)    
     protected JProxyInputSourceFileExcludedListener excludedListener;    
@@ -25,13 +26,14 @@ public class JProxyEngineChangeDetectorAndCompiler
     protected JProxyCompilerListener compilerListener;    
     protected ClassDescriptorSourceFileRegistry sourceRegistry;
     
-    public JProxyEngineChangeDetectorAndCompiler(JProxyEngine engine,SourceScriptRoot scriptFile,FolderSourceList folderSourceList,String folderClasses,
-            JProxyInputSourceFileExcludedListener excludedListener,Iterable<String> compilationOptions,JProxyDiagnosticsListener diagnosticsListener,
+    public JProxyEngineChangeDetectorAndCompiler(JProxyEngine engine,SourceScriptRoot scriptFile,FolderSourceList folderSourceList,FolderSourceList requiredExtraJarPaths,
+            String folderClasses, JProxyInputSourceFileExcludedListener excludedListener,Iterable<String> compilationOptions,JProxyDiagnosticsListener diagnosticsListener,
             JProxyCompilerListener compilerListener)
     {
         this.engine = engine;
         this.scriptFile = scriptFile;
-        this.folderSourceList = folderSourceList;        
+        this.folderSourceList = folderSourceList; 
+        this.requiredExtraJarPaths = requiredExtraJarPaths;
         this.folderClasses = folderClasses;
         this.excludedListener = excludedListener;
         this.compiler = new JProxyCompilerInMemory(this,compilationOptions,diagnosticsListener);         
@@ -48,6 +50,11 @@ public class JProxyEngineChangeDetectorAndCompiler
     {
         return folderSourceList;
     }    
+    
+    public FolderSourceList getRequiredExtraJarPaths()
+    {
+        return requiredExtraJarPaths;
+    }        
     
     public JProxyInputSourceFileExcludedListener getJProxyInputSourceFileExcludedListener()
     {

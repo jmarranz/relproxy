@@ -18,6 +18,7 @@ public class JProxyConfigImpl extends GenericProxyConfigBaseImpl implements JPro
 {
     protected File folderSources; 
     protected FolderSourceList folderSourceList;
+    protected FolderSourceList requiredExtraJarPaths;
     protected JProxyInputSourceFileExcludedListener excludedListener;
     protected JProxyCompilerListener compilerListener;
     protected String classFolder;
@@ -54,6 +55,13 @@ public class JProxyConfigImpl extends GenericProxyConfigBaseImpl implements JPro
         return this;
     }    
 
+    @Override    
+    public JProxyConfig setRequiredExtraJarPaths(String[] inputJarPaths)  
+    {
+        this.requiredExtraJarPaths = new FolderSourceList(inputJarPaths); // inputPaths es null en el caso de shell interactive
+        return this;
+    }    
+    
     @Override    
     public JProxyConfig setJProxyInputSourceFileExcludedListener(JProxyInputSourceFileExcludedListener excludedListener)    
     {
@@ -101,6 +109,11 @@ public class JProxyConfigImpl extends GenericProxyConfigBaseImpl implements JPro
     {
         return folderSourceList;
     }
+    
+    public FolderSourceList getRequiredExtraJarPaths()
+    {
+        return requiredExtraJarPaths;
+    }        
     
     public JProxyInputSourceFileExcludedListener getJProxyInputSourceFileExcludedListener()
     {

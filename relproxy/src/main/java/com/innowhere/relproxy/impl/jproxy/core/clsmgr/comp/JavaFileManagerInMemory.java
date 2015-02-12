@@ -2,6 +2,7 @@ package com.innowhere.relproxy.impl.jproxy.core.clsmgr.comp;
 
 import com.innowhere.relproxy.impl.jproxy.core.clsmgr.ClassDescriptorSourceUnit;
 import com.innowhere.relproxy.impl.jproxy.core.clsmgr.ClassDescriptorSourceFileRegistry;
+import com.innowhere.relproxy.impl.jproxy.core.clsmgr.FolderSourceList;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
@@ -31,11 +32,11 @@ public class JavaFileManagerInMemory extends ForwardingJavaFileManager
     private final JavaFileObjectInputClassFinderByClassLoader classFinder;    
     private final ClassDescriptorSourceFileRegistry sourceRegistry;
     
-    public JavaFileManagerInMemory(StandardJavaFileManager standardFileManager,ClassLoader classLoader,ClassDescriptorSourceFileRegistry sourceRegistry) 
+    public JavaFileManagerInMemory(StandardJavaFileManager standardFileManager,ClassLoader classLoader,ClassDescriptorSourceFileRegistry sourceRegistry,FolderSourceList requiredExtraJarPaths) 
     {
         super(standardFileManager);
         this.sourceRegistry = sourceRegistry;
-        this.classFinder = new JavaFileObjectInputClassFinderByClassLoader(classLoader);        
+        this.classFinder = new JavaFileObjectInputClassFinderByClassLoader(classLoader,requiredExtraJarPaths);        
     }
 
     public LinkedList<JavaFileObjectOutputClass> getJavaFileObjectOutputClassList()
@@ -59,7 +60,7 @@ public class JavaFileManagerInMemory extends ForwardingJavaFileManager
             return super.list(location, packageName, kinds, recurse);  // En este caso nunca (con PLATFORM_CLASS_PATH) va a encontrar nuestros sources ni .class
         else if (location == StandardLocation.CLASS_PATH && kinds.contains(JavaFileObject.Kind.CLASS)) 
         {
-            if (packageName.startsWith("java."))  // a hack to let standard manager handle locations like "java.lang" or "java.util", clases sólo cargables por el system class loader. Estrictamente no es necesario pero derivamos la inmensa mayoría de las clases estándar al método por defecto, NO añadimos "javax." pues hay extensiones tal y como el estándar servlet que no forma parte del Java core
+            if (packageName.equals("java") || packageName.startsWith("java."))  // a hack to let standard manager handle locations like "java.lang" or "java.util", clases sólo cargables por el system class loader. Estrictamente no es necesario pero derivamos la inmensa mayoría de las clases estándar al método por defecto, NO añadimos "javax." pues hay extensiones tal y como el estándar servlet que no forma parte del Java core
                 return super.list(location, packageName, kinds, recurse);
             else
             {

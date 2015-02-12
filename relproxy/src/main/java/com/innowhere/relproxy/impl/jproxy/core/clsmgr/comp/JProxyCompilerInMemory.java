@@ -8,6 +8,7 @@ import com.innowhere.relproxy.impl.jproxy.core.clsmgr.ClassDescriptorSourceUnit;
 import com.innowhere.relproxy.impl.jproxy.core.clsmgr.ClassDescriptorSourceFileJava;
 import com.innowhere.relproxy.impl.jproxy.core.clsmgr.ClassDescriptorSourceFileRegistry;
 import com.innowhere.relproxy.impl.jproxy.core.clsmgr.ClassDescriptorSourceScript;
+import com.innowhere.relproxy.impl.jproxy.core.clsmgr.FolderSourceList;
 import com.innowhere.relproxy.impl.jproxy.core.clsmgr.JProxyClassLoader;
 import com.innowhere.relproxy.impl.jproxy.core.clsmgr.JProxyEngine;
 import com.innowhere.relproxy.impl.jproxy.core.clsmgr.JProxyEngineChangeDetectorAndCompiler;
@@ -142,14 +143,13 @@ public class JProxyCompilerInMemory
             throw new RelProxyException("Internal error");
         }
 
-        JavaFileManagerInMemory fileManagerInMemory = new JavaFileManagerInMemory(standardFileManager,classLoader,sourceRegistry);
+        JavaFileManagerInMemory fileManagerInMemory = new JavaFileManagerInMemory(standardFileManager,classLoader,sourceRegistry,parent.getRequiredExtraJarPaths());
 
         boolean success = compile(compilationUnits,fileManagerInMemory,context);
         if (!success) return null;
 
         LinkedList<JavaFileObjectOutputClass> classObj = fileManagerInMemory.getJavaFileObjectOutputClassList();
         return classObj;
-
     }
 
     private boolean compile(Iterable<? extends JavaFileObject> compilationUnits,JavaFileManager fileManager,JProxyCompilerContext context)

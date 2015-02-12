@@ -56,8 +56,24 @@ public interface JProxyConfig
      * @param inputPaths the folder roots to locate source code Java files.
      * @return this object for flow API use.
      * @see #setJProxyInputSourceFileExcludedListener(JProxyInputSourceFileExcludedListener)       
+     * @see #setRequiredExtraJarPaths(String[])
      */
     public JProxyConfig setInputPaths(String[] inputPaths);    
+    
+    /**
+     * Defines the extra required jars providing the absolute paths to them.
+     * 
+     * <p>In some circunstances RelProxy is not able to find some required classes by the compiler because the jar containing them is not found in spite of existing in classpath,
+     * the reason may be due some conflictive configuration of <code>META-INF/MANIFEST.MF</code> of the jar. This problem can be fixed modifying accordingly the <code>META-INF/MANIFEST.MF</code>
+     * file, or alternatively providing the paths to the conflictive jars calling to this method, in this case RelProxy will find the required classes searching on them by using brute force
+     * avoiding the jar modification (not recommended).
+     * </p>
+     * 
+     * @param inputJarPaths the paths of the required extra jars.
+     * @return this object for flow API use.
+     * @see #setInputPaths(String[])       
+     */
+    public JProxyConfig setRequiredExtraJarPaths(String[] inputJarPaths);      
     
     /**
      * Registers the listener implementing excluding rules to filter source files not to be part of the hot reloading system in spite of included in input paths.

@@ -40,6 +40,7 @@ public abstract class JProxyImpl extends GenericProxyImpl
         super.init(config);
         
         FolderSourceList folderSourceList = config.getFolderSourceList();
+        FolderSourceList requiredExtraJarPaths = config.getRequiredExtraJarPaths();
         JProxyInputSourceFileExcludedListener excludedListener = config.getJProxyInputSourceFileExcludedListener();
         JProxyCompilerListener compilerListener = config.getJProxyCompilerListener();
         String classFolder = config.getClassFolder();
@@ -49,7 +50,7 @@ public abstract class JProxyImpl extends GenericProxyImpl
         boolean enabled = config.isEnabled();
         
         classLoader = classLoader != null ? classLoader : getDefaultClassLoader();      
-        this.engine = new JProxyEngine(this,enabled,scriptFile,classLoader,folderSourceList,classFolder,scanPeriod,excludedListener,compilerListener,compilationOptions,diagnosticsListener);          
+        this.engine = new JProxyEngine(this,enabled,scriptFile,classLoader,folderSourceList,requiredExtraJarPaths,classFolder,scanPeriod,excludedListener,compilerListener,compilationOptions,diagnosticsListener);          
         
         return engine.init();
     }    
