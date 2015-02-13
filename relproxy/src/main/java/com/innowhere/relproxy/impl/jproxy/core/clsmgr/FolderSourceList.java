@@ -13,7 +13,7 @@ public class FolderSourceList
 {
     protected FileExt[] sourceList;
     
-    public FolderSourceList(String[] sourcePathList)
+    public FolderSourceList(String[] sourcePathList,boolean expectedDirectory)
     {
         if (sourcePathList != null) // En el caso de shell interactivo es null
         {
@@ -24,8 +24,17 @@ public class FolderSourceList
                 File folder = new File(sourcePathList[i]);
                 if (!folder.exists())
                     throw new RelProxyException("Source folder does not exist: " + folder.getAbsolutePath());
-                if (!folder.isDirectory())
-                    throw new RelProxyException("Source folder is not a folder: " + folder.getAbsolutePath());                
+                boolean isDirectory = folder.isDirectory();
+                if (expectedDirectory)
+                {
+                    if (!isDirectory)
+                        throw new RelProxyException("Source folder is not a directory: " + folder.getAbsolutePath());                
+                }
+                else
+                {
+                    if (isDirectory)
+                        throw new RelProxyException("Expected a file not a directory: " + folder.getAbsolutePath());                    
+                }
                 sourceList[i] = new FileExt(folder);                
             }
         }

@@ -51,14 +51,14 @@ public class JProxyConfigImpl extends GenericProxyConfigBaseImpl implements JPro
     @Override
     public JProxyConfig setInputPaths(String[] inputPaths)
     {
-        this.folderSourceList = new FolderSourceList(inputPaths); // inputPaths es null en el caso de shell interactive
+        this.folderSourceList = new FolderSourceList(inputPaths,true); // inputPaths es null en el caso de shell interactive
         return this;
     }    
 
     @Override    
     public JProxyConfig setRequiredExtraJarPaths(String[] inputJarPaths)  
     {
-        this.requiredExtraJarPaths = new FolderSourceList(inputJarPaths); // inputPaths es null en el caso de shell interactive
+        this.requiredExtraJarPaths = new FolderSourceList(inputJarPaths,false); // inputPaths es null en el caso de shell interactive
         return this;
     }    
     

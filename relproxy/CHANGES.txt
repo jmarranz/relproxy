@@ -1,5 +1,10 @@
 
- RELEASE CHANGES
+RELEASE CHANGES
+
+* 0.8.4
+
+    - Added the method JProxyConfig.setRequiredExtraJarPaths(String[] inputJarPaths) to workaround a problem with Liferay 6.2.
+    - Added to Manual "Solving jar manifest configuration problems in JProxy"
 
 * 0.8.3
 
