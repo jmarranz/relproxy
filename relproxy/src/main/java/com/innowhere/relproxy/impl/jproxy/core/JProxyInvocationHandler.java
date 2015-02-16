@@ -7,12 +7,12 @@ import com.innowhere.relproxy.impl.GenericProxyInvocationHandler;
  *
  * @author jmarranz
  */
-public class JProxyInvocationHandler<T> extends GenericProxyInvocationHandler
+public class JProxyInvocationHandler extends GenericProxyInvocationHandler
 {  
-    public JProxyInvocationHandler(T obj,JProxyImpl root)
+    public JProxyInvocationHandler(Object obj,JProxyImpl root)
     {
         super(root);
-        this.verObj = new JProxyVersionedObject<T>(obj,this);
+        this.verObj = new JProxyVersionedObject(obj,this);
     }
 
     public JProxyImpl getJProxyImpl()

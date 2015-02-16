@@ -52,10 +52,10 @@ public class JProxyCompilerInMemory
         return new JProxyCompilerContext(standardFileManager,diagnostics,diagnosticsListener);
     }
     
-    public void compileSourceFile(ClassDescriptorSourceUnit sourceFileDesc,JProxyCompilerContext context,JProxyClassLoader customClassLoader,ClassDescriptorSourceFileRegistry sourceRegistry)
+    public void compileSourceFile(ClassDescriptorSourceUnit sourceFileDesc,JProxyCompilerContext context,ClassLoader currentClassLoader,ClassDescriptorSourceFileRegistry sourceRegistry)
     {
         //File sourceFile = sourceFileDesc.getSourceFile();
-        LinkedList<JavaFileObjectOutputClass> outClassList = compile(sourceFileDesc,context,customClassLoader,sourceRegistry);
+        LinkedList<JavaFileObjectOutputClass> outClassList = compile(sourceFileDesc,context,currentClassLoader,sourceRegistry);
         
         if (outClassList == null) 
             throw new JProxyCompilationException(sourceFileDesc);
@@ -107,7 +107,7 @@ public class JProxyCompilerInMemory
         }
     }        
     
-    private LinkedList<JavaFileObjectOutputClass> compile(ClassDescriptorSourceUnit sourceFileDesc,JProxyCompilerContext context,ClassLoader classLoader,ClassDescriptorSourceFileRegistry sourceRegistry)
+    private LinkedList<JavaFileObjectOutputClass> compile(ClassDescriptorSourceUnit sourceFileDesc,JProxyCompilerContext context,ClassLoader currentClassLoader,ClassDescriptorSourceFileRegistry sourceRegistry)
     {
         // http://stackoverflow.com/questions/12173294/compiling-fully-in-memory-with-javax-tools-javacompiler
         // http://www.accordess.com/wpblog/an-overview-of-java-compilation-api-jsr-199/
@@ -145,7 +145,7 @@ public class JProxyCompilerInMemory
             throw new RelProxyException("Internal error");
         }
 
-        JavaFileManagerInMemory fileManagerInMemory = new JavaFileManagerInMemory(standardFileManager,classLoader,sourceRegistry,parent.getRequiredExtraJarPaths());
+        JavaFileManagerInMemory fileManagerInMemory = new JavaFileManagerInMemory(standardFileManager,currentClassLoader,sourceRegistry,parent.getRequiredExtraJarPaths());
 
         boolean success = compile(compilationUnits,fileManagerInMemory,context);
         if (!success) return null;

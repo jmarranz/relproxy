@@ -76,6 +76,14 @@ public class JProxyScriptEngineImpl extends AbstractScriptEngine implements JPro
         return jproxy.create(obj, clasz);
     }
 
+    @Override
+    public Object create(Object obj,Class<?>[] classes)
+    {
+        if (jproxy == null) 
+            return obj; // No se ha llamado al init o enabled = false
+        return jproxy.create(obj, classes);
+    }    
+    
     @Override    
     public boolean isEnabled()
     {

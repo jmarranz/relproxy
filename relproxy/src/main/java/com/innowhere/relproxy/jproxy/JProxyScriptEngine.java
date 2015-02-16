@@ -30,6 +30,15 @@ public interface JProxyScriptEngine extends ScriptEngine
     public <T> T create(T obj,Class<T> clasz);
 
     /**
+     * This method is the same as {@link JProxy#create(java.lang.Object, java.lang.Class[])} but applied to this <code>JProxyScriptEngine</code>
+     * 
+     * @param obj the original object to proxy.
+     * @param classes the classes of the interfaces implemented by the original object and proxy object returned.
+     * @return the <code>java.lang.reflect.Proxy</code> object associated or the original object when <code>JProxy</code> is disabled.
+     */   
+    public Object create(Object obj,Class<?>[] classes);   
+    
+    /**
      * This method is the same as {@link JProxy#isEnabled()} but applied to this <code>JProxyScriptEngine</code>
      * 
      * @return true if enabled. 

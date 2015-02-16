@@ -9,21 +9,15 @@ import java.lang.reflect.Field;
  * @author jmarranz
  * @param <T>
  */
-public class JProxyVersionedObject<T> extends GenericProxyVersionedObject<T>
+public class JProxyVersionedObject extends GenericProxyVersionedObject
 {    
     protected String className;    
 
-    public JProxyVersionedObject(T obj,JProxyInvocationHandler parent)
+    public JProxyVersionedObject(Object obj,JProxyInvocationHandler parent)
     {
         super(obj,parent);
         this.className = obj.getClass().getName();
     }        
-
-    @Override
-    public T getCurrent()
-    {
-        return obj;
-    }
 
     public JProxyInvocationHandler getJProxyInvocationHandler()
     {
@@ -31,11 +25,11 @@ public class JProxyVersionedObject<T> extends GenericProxyVersionedObject<T>
     }    
     
     @Override
-    protected <T> Class<T> reloadClass() 
+    protected Class<?> reloadClass() 
     {
         JProxyEngine engine = getJProxyInvocationHandler().getJProxyImpl().getJProxyEngine();        
         engine.reloadWhenChanged();
-        return (Class<T>)engine.findClass(className);           
+        return (Class<?>)engine.findClass(className);           
     }
    
     @Override

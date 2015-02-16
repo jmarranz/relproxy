@@ -40,7 +40,7 @@ public class JProxyEngine
         this.rootClassLoader = rootClassLoader;
         this.scanPeriod = scanPeriod;
         this.delegateChangeDetector = new JProxyEngineChangeDetectorAndCompiler(this,scriptFile,folderSourceList,requiredExtraJarPaths,folderClasses,excludedListener,compilationOptions,diagnosticsListener,compilerListener);        
-        this.customClassLoader = new JProxyClassLoader(this);
+        this.customClassLoader = null; //new JProxyClassLoader(this);
     }
     
     public JProxyImpl getJProxy()
@@ -64,15 +64,19 @@ public class JProxyEngine
         return scriptFileDesc;
     }
     
+    /*
     public JProxyClassLoader getJProxyClassLoader()
     {
         return customClassLoader;
     }
+    */
     
-    public JProxyClassLoader getCurrentClassLoader()
+    public ClassLoader getCurrentClassLoader()
     {
-        return customClassLoader;
-    }    
+        if (customClassLoader != null)
+            return customClassLoader;
+        return rootClassLoader;
+    }       
     
     private boolean startScanner()
     {
@@ -168,7 +172,10 @@ public class JProxyEngine
         // Si ya está cargada la devuelve, y si no se cargó por ningún JProxyClassLoader se intenta cargar por el parent ClassLoader, por lo que siempre devolverá distinto de null si la clase está en el classpath, que debería ser lo normal       
         try 
         { 
-            return customClassLoader.findClass(className); 
+            if (customClassLoader != null)
+                return customClassLoader.findClass(className);             
+            else
+                return rootClassLoader.loadClass(className);
         }
         catch (ClassNotFoundException ex) 
         {

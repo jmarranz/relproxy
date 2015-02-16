@@ -42,6 +42,14 @@ public class JProxyDefaultImpl extends JProxyImpl
         return SINGLETON.create(obj, clasz);
     }    
 
+    public static Object createStatic(Object obj,Class<?>[] classes)
+    {
+        if (SINGLETON == null) 
+            return obj; // No se ha llamado al init o enabled = false
+        
+        return SINGLETON.create(obj, classes);        
+    }        
+    
     
     public static boolean isEnabledStatic()
     {

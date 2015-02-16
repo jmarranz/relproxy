@@ -5,14 +5,13 @@ import com.innowhere.relproxy.impl.GenericProxyInvocationHandler;
 /**
  *
  * @author jmarranz
- * @param <T>
  */
-public class GProxyInvocationHandler<T> extends GenericProxyInvocationHandler
+public class GProxyInvocationHandler extends GenericProxyInvocationHandler
 {
-    public GProxyInvocationHandler(T obj,GProxyImpl root)
+    public GProxyInvocationHandler(Object obj,GProxyImpl root)
     {
         super(root);
-        this.verObj = new GProxyVersionedObject<T>(obj,this);
+        this.verObj = new GProxyVersionedObject(obj,this);
     }
 
     public GProxyImpl getGProxyImpl()

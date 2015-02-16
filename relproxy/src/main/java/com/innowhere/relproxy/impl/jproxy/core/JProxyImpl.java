@@ -81,9 +81,9 @@ public abstract class JProxyImpl extends GenericProxyImpl
     }     
     
     @Override
-    public <T> GenericProxyInvocationHandler<T> createGenericProxyInvocationHandler(T obj)    
+    public GenericProxyInvocationHandler createGenericProxyInvocationHandler(Object obj)    
     {
-        return new JProxyInvocationHandler<T>(obj,this);
+        return new JProxyInvocationHandler(obj,this);
     }
     
     public abstract Class getMainParamClass();

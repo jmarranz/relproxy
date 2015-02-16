@@ -149,11 +149,11 @@ public class JavaSourcesSearch
             if (urlClass != null)
             {
                 String urlClassExt = urlClass.toExternalForm();
+                // Si el .class está en un JAR podríamos obtener el timestamp del archivo dentro del jar pero que haya un .java "fuera" reloadable indica que queremos "reemplazar" el del jar por lo que siempre se considerará que el archivo fuente ha sido modificado más reciente                
                 long timestampCompiledClass = urlClassExt.startsWith("file:") ? new File(urlClass.getPath()).lastModified() : 0;  // 0 cuando está en un JAR
 
                 if (timestampSourceFile > timestampCompiledClass)
                 {
-                    // Si el .class está en un JAR no hay forma de saber si el fuente .java es más actual que el .class por lo que siempre se considerará que el archivo fuente ha sido modificado
                     sourceFile = ClassDescriptorSourceUnit.create(script,engine,className,file,timestampSourceFile);
                     updatedSourceFiles.add(sourceFile);
 //System.out.println("UPDATED: " + className + " " + urlClass.toExternalForm() + " " + (timestampSourceFile - timestampCompiledClass));

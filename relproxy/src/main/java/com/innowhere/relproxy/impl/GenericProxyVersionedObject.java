@@ -8,12 +8,12 @@ import java.util.ArrayList;
  *
  * @author jmarranz
  */
-public abstract class GenericProxyVersionedObject<T>
+public abstract class GenericProxyVersionedObject
 {
-    protected T obj;    
+    protected Object obj;    
     protected GenericProxyInvocationHandler parent;
     
-    public GenericProxyVersionedObject(T obj,GenericProxyInvocationHandler parent)
+    public GenericProxyVersionedObject(Object obj,GenericProxyInvocationHandler parent)
     {
         this.obj = obj;    
         this.parent = parent;
@@ -43,9 +43,14 @@ public abstract class GenericProxyVersionedObject<T>
         }             
     }            
     
-    public T getNewVersion() throws Throwable 
+    public Object getCurrent()
     {
-        Class<T> newClass = reloadClass();
+        return obj;
+    }    
+    
+    public Object getNewVersion() throws Throwable 
+    {
+        Class<?> newClass = reloadClass();
         if (newClass == null)
             return obj;
 
@@ -59,7 +64,7 @@ public abstract class GenericProxyVersionedObject<T>
 
             try
             {
-            this.obj = newClass.getConstructor(new Class[0]).newInstance();            
+                this.obj = newClass.getConstructor(new Class[0]).newInstance();            
             }
             catch(NoSuchMethodException ex)
             {
@@ -90,6 +95,5 @@ public abstract class GenericProxyVersionedObject<T>
     }    
     
     protected abstract <T> Class<T> reloadClass();    
-    protected abstract T getCurrent();   
     protected abstract boolean ignoreField(Field field);    
 }

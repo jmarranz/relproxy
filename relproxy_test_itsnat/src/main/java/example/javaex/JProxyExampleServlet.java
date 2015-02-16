@@ -40,7 +40,7 @@ public class JProxyExampleServlet extends HttpServletWrapper
         ItsNatServletRequestListener original = new example.javaex.JProxyExampleLoadListener(db);
         ItsNatServletRequestListener proxy = JProxy.create(original, ItsNatServletRequestListener.class);        
         ItsNatServletRequestListener proxy2 = JProxy.create(original, ItsNatServletRequestListener.class);         
-        System.out.println("CHECK 2: " + (proxy.equals(proxy2)));
+        System.out.println("EQUALS TEST (true if not reloaded): " + (proxy.equals(proxy2)));
     }    
  
 }

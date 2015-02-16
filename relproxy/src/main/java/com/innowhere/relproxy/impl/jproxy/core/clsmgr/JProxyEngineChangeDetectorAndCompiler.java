@@ -104,7 +104,7 @@ public class JProxyEngineChangeDetectorAndCompiler
         if (sourceFile.getClassBytes() != null)
             return; // Ya ha sido compilado seguramente por dependencia de un archivo compilado inmediatamente antes, recuerda que el atributo classBytes se pone a null antes de compilar los archivos cambiados/nuevos
         
-        compiler.compileSourceFile(sourceFile,context,engine.getJProxyClassLoader(),sourceRegistry);      
+        compiler.compileSourceFile(sourceFile,context,engine.getCurrentClassLoader(),sourceRegistry);      
     }            
     
     public synchronized ClassDescriptorSourceScript detectChangesInSources()

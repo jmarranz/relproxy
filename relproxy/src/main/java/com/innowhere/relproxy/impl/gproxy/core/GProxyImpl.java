@@ -27,8 +27,8 @@ public abstract class GProxyImpl extends GenericProxyImpl
     }   
     
     @Override
-    public <T> GenericProxyInvocationHandler<T> createGenericProxyInvocationHandler(T obj)    
+    public GenericProxyInvocationHandler createGenericProxyInvocationHandler(Object obj)    
     {
-        return new GProxyInvocationHandler<T>(obj,this);
+        return new GProxyInvocationHandler(obj,this);
     }
 }

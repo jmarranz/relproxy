@@ -43,11 +43,19 @@ public abstract class GenericProxyImpl
     {       
         if (obj == null) return null;   
         
+        return (T)create(obj,new Class[] { clasz });
+    }
+  
+    public Object create(Object obj,Class[] classes)
+    {       
+        if (obj == null) return null;   
+        
         InvocationHandler handler = createGenericProxyInvocationHandler(obj);
         
-        T proxy = (T)Proxy.newProxyInstance(obj.getClass().getClassLoader(),new Class[] { clasz }, handler);   
+        Object proxy = Proxy.newProxyInstance(obj.getClass().getClassLoader(),classes, handler);   
         return proxy;
-    }
-
-    public abstract <T> GenericProxyInvocationHandler<T> createGenericProxyInvocationHandler(T obj);    
+    }    
+            
+            
+    public abstract GenericProxyInvocationHandler createGenericProxyInvocationHandler(Object obj);    
 }

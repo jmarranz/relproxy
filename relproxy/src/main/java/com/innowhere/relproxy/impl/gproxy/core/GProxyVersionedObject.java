@@ -7,22 +7,17 @@ import java.lang.reflect.Field;
 /**
  *
  * @author jmarranz
- * @param <T>
  */
-public class GProxyVersionedObject<T> extends GenericProxyVersionedObject<T>
+public class GProxyVersionedObject extends GenericProxyVersionedObject
 {    
     protected String path;    
     
-    public GProxyVersionedObject(T obj,GProxyInvocationHandler parent)
+    public GProxyVersionedObject(Object obj,GProxyInvocationHandler parent)
     {
         super(obj,parent);
         this.path = obj.getClass().getName().replace('.','/');
     }        
 
-    public T getCurrent()
-    {
-        return obj;
-    }
 
     public GProxyInvocationHandler getGProxyInvocationHandler()
     {

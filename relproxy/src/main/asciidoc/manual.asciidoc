@@ -1074,7 +1074,10 @@ Registered on your `web.xml`:
 </web-app>
 ----
 
-Finally in your servlets only register your singletons:
+The `stop()` call is used to stop the timer checker of source code changes, useful to avoid memory leaks when the context is reloaded and avoid warnings when the 
+servlet container is stopping.
+
+Finally in your servlet classes only register your singletons:
 
 [source,java]
 ----
@@ -1110,6 +1113,8 @@ call `start` again to detect any source change.
 
 You can call several times to `JProxy.start()` and `JProxy.stop()` methods, if nothing is going to be done nothing is done without errors (both methods return true
 when a state change was effective), and they are thread safe.
+
+Call ever to `stop()` in your `ServletContextListener` in the `contextDestroyed(ServletContextEvent)` method.
 
 
 == Using JProxy only in development time with no need of publishing code (a GWT example) 
@@ -1576,6 +1581,24 @@ This problem has been found in a jar in Liferay, but nothing prevents similar pr
 This problem is uncommon, if JProxy throws an error of a class not found and this class is in a jar known by the `ClassPath` used to load JProxy,
 suspect this problem and try to add explicitly the path of the problematic jar.
 
+== Identity of returned proxies
+
+A proxy object implements the specified interfaces (in practice only one is important), you can call to any methods of the interface, this call is forwarded by RelProxy
+to the original or reloaded object. Because a proxy object is also an `Object`, the methods `equals(Object)` and `hashCode()` may be also called, these calls
+are forwarded to the wrapped object of the proxy. 
+
+When calling `equals(Object)` RelProxy detects the special case of passing a proxy parameter, in this case RelProxy obtain the current associated object to the proxy parameter
+and pass this object to the equals method. By this way we are able to check the identity of two objects indirectly using two proxy objects.
+
+Example:
+
+[source,java]
+----
+    ItsNatServletRequestListener original = new example.javaex.JProxyExampleLoadListener(db);
+    ItsNatServletRequestListener proxy = JProxy.create(original, ItsNatServletRequestListener.class);        
+    ItsNatServletRequestListener proxy2 = JProxy.create(original, ItsNatServletRequestListener.class);         
+    System.out.println("EQUALS TEST (true if not reloaded): " + (proxy.equals(proxy2)));
+----
 
 == A new shell scripting language named Java
 

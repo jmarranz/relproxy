@@ -33,8 +33,24 @@ public class JProxy
     }
      
    
+   
     /**
      * Creates a proxy object using <code>java.lang.reflect.Proxy</code> based on the provided Java object and the class of the implemented Java interface.
+     * 
+     * <p>This method is a simplification for a single interface (the most common case) of {@link #create(Object,Class<?>[])} .</p>
+     * 
+     * @param <T> the interface implemented by the original object and proxy object returned.
+     * @param obj the original object to proxy.
+     * @param clasz the class of the interface implemented by the original object and proxy object returned.
+     * @return the <code>java.lang.reflect.Proxy</code> object associated or the  original object when <code>GProxy</code> is disabled.
+     */        
+    public static <T> T create(T obj,Class<T> clasz)
+    {
+        return JProxyDefaultImpl.createStatic(obj, clasz);
+    }
+   
+    /**
+     * Creates a proxy object using <code>java.lang.reflect.Proxy</code> based on the provided Java object and the classes of the implemented Java interfaces.
      * 
      * <p>If <code>JProxy</code> has been configured and is enabled this method returns a <code>java.lang.reflect.Proxy</code> object implementing instead of 
      * the original object provided. Methods called in proxy object are received by <code>JProxy</code> and forwarded to the original object, if source code
@@ -43,16 +59,15 @@ public class JProxy
      * 
      * <p>If <code>JProxy</code> is disabled returns the original object provided with no performance penalty.</p>
      * 
-     * @param <T> the interface implemented by the original object and proxy object returned.
      * @param obj the original object to proxy.
-     * @param clasz the class of the interface implemented by the original object and proxy object returned.
+     * @param classes the classes of the interfaces implemented by the original object and proxy object returned.
      * @return the <code>java.lang.reflect.Proxy</code> object associated or the original object when <code>JProxy</code> is disabled.
-     */    
-    public static <T> T create(T obj,Class<T> clasz)
+     */        
+    public static Object create(Object obj,Class<?>[] classes)
     {
-        return JProxyDefaultImpl.createStatic(obj, clasz);
-    }
-   
+        return JProxyDefaultImpl.createStatic(obj, classes);
+    }    
+    
     /**
      * Informs whether <code>JProxy</code> is configured and enabled.
      * 
