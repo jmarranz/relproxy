@@ -1,5 +1,7 @@
 package com.innowhere.relproxy.impl.jproxy.core.clsmgr;
 
+import com.innowhere.relproxy.impl.jproxy.core.clsmgr.cldesc.ClassDescriptorSourceUnit;
+import com.innowhere.relproxy.impl.jproxy.core.clsmgr.cldesc.ClassDescriptor;
 import com.innowhere.relproxy.impl.jproxy.JProxyUtil;
 import java.net.URL;
 

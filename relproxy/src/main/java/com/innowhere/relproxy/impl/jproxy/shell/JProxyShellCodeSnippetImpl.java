@@ -2,10 +2,10 @@ package com.innowhere.relproxy.impl.jproxy.shell;
 
 import com.innowhere.relproxy.RelProxyException;
 import com.innowhere.relproxy.impl.jproxy.JProxyConfigImpl;
-import com.innowhere.relproxy.impl.jproxy.core.clsmgr.ClassDescriptorSourceScript;
+import com.innowhere.relproxy.impl.jproxy.core.clsmgr.cldesc.ClassDescriptorSourceScript;
 import com.innowhere.relproxy.impl.jproxy.core.clsmgr.FolderSourceList;
-import com.innowhere.relproxy.impl.jproxy.core.clsmgr.SourceScriptRoot;
-import com.innowhere.relproxy.impl.jproxy.core.clsmgr.SourceScriptRootInMemory;
+import com.innowhere.relproxy.impl.jproxy.core.clsmgr.srcunit.SourceScriptRoot;
+import com.innowhere.relproxy.impl.jproxy.core.clsmgr.srcunit.SourceScriptRootInMemory;
 import java.util.LinkedList;
 
 /**

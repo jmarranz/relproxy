@@ -1,6 +1,8 @@
-package com.innowhere.relproxy.impl.jproxy.core.clsmgr;
+package com.innowhere.relproxy.impl.jproxy.core.clsmgr.cldesc;
 
 import com.innowhere.relproxy.impl.FileExt;
+import com.innowhere.relproxy.impl.jproxy.core.clsmgr.JProxyEngine;
+import com.innowhere.relproxy.impl.jproxy.core.clsmgr.srcunit.SourceFileJavaNormal;
 
 /**
  *

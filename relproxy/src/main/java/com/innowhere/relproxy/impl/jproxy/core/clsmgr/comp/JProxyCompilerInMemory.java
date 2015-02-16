@@ -1,13 +1,15 @@
 package com.innowhere.relproxy.impl.jproxy.core.clsmgr.comp;
 
+import com.innowhere.relproxy.impl.jproxy.core.clsmgr.comp.jfo.JavaFileObjectInputSourceInMemory;
+import com.innowhere.relproxy.impl.jproxy.core.clsmgr.comp.jfo.JavaFileObjectOutputClass;
 import com.innowhere.relproxy.RelProxyException;
 import com.innowhere.relproxy.impl.FileExt;
-import com.innowhere.relproxy.impl.jproxy.core.clsmgr.ClassDescriptor;
-import com.innowhere.relproxy.impl.jproxy.core.clsmgr.ClassDescriptorInner;
-import com.innowhere.relproxy.impl.jproxy.core.clsmgr.ClassDescriptorSourceUnit;
-import com.innowhere.relproxy.impl.jproxy.core.clsmgr.ClassDescriptorSourceFileJava;
-import com.innowhere.relproxy.impl.jproxy.core.clsmgr.ClassDescriptorSourceFileRegistry;
-import com.innowhere.relproxy.impl.jproxy.core.clsmgr.ClassDescriptorSourceScript;
+import com.innowhere.relproxy.impl.jproxy.core.clsmgr.cldesc.ClassDescriptor;
+import com.innowhere.relproxy.impl.jproxy.core.clsmgr.cldesc.ClassDescriptorInner;
+import com.innowhere.relproxy.impl.jproxy.core.clsmgr.cldesc.ClassDescriptorSourceUnit;
+import com.innowhere.relproxy.impl.jproxy.core.clsmgr.cldesc.ClassDescriptorSourceFileJava;
+import com.innowhere.relproxy.impl.jproxy.core.clsmgr.cldesc.ClassDescriptorSourceFileRegistry;
+import com.innowhere.relproxy.impl.jproxy.core.clsmgr.cldesc.ClassDescriptorSourceScript;
 import com.innowhere.relproxy.impl.jproxy.core.clsmgr.FolderSourceList;
 import com.innowhere.relproxy.impl.jproxy.core.clsmgr.JProxyClassLoader;
 import com.innowhere.relproxy.impl.jproxy.core.clsmgr.JProxyEngine;

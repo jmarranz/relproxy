@@ -45,7 +45,7 @@ public class FolderSourceList
         return sourceList; 
     }
     
-    protected String buildClassNameFromFile(FileExt sourceFile)
+    public String buildClassNameFromFile(FileExt sourceFile)
     {
         for(FileExt rootFolderOfSources : sourceList)
         {
@@ -56,7 +56,7 @@ public class FolderSourceList
         throw new RelProxyException("File not found in source folders: " + sourceFile.getFile().getAbsolutePath());
     }           
     
-    protected static String buildClassNameFromFile(FileExt sourceFile,FileExt rootFolderOfSources)
+    public static String buildClassNameFromFile(FileExt sourceFile,FileExt rootFolderOfSources)
     {        
         String path = sourceFile.getCanonicalPath();
 

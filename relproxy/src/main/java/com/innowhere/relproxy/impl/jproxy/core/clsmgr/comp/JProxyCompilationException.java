@@ -2,7 +2,7 @@
 package com.innowhere.relproxy.impl.jproxy.core.clsmgr.comp;
 
 import com.innowhere.relproxy.RelProxyException;
-import com.innowhere.relproxy.impl.jproxy.core.clsmgr.ClassDescriptorSourceUnit;
+import com.innowhere.relproxy.impl.jproxy.core.clsmgr.cldesc.ClassDescriptorSourceUnit;
 
 /**
  *

@@ -1,7 +1,11 @@
 package com.innowhere.relproxy.impl.jproxy.core.clsmgr.comp;
 
-import com.innowhere.relproxy.impl.jproxy.core.clsmgr.ClassDescriptorSourceUnit;
-import com.innowhere.relproxy.impl.jproxy.core.clsmgr.ClassDescriptorSourceFileRegistry;
+import com.innowhere.relproxy.impl.jproxy.core.clsmgr.comp.jfo.JProxyJavaFileObjectInput;
+import com.innowhere.relproxy.impl.jproxy.core.clsmgr.comp.jfo.JavaFileObjectInputClassInMemory;
+import com.innowhere.relproxy.impl.jproxy.core.clsmgr.comp.jfo.JavaFileObjectInputClassInFileSystem;
+import com.innowhere.relproxy.impl.jproxy.core.clsmgr.comp.jfo.JavaFileObjectOutputClass;
+import com.innowhere.relproxy.impl.jproxy.core.clsmgr.cldesc.ClassDescriptorSourceUnit;
+import com.innowhere.relproxy.impl.jproxy.core.clsmgr.cldesc.ClassDescriptorSourceFileRegistry;
 import com.innowhere.relproxy.impl.jproxy.core.clsmgr.FolderSourceList;
 import java.io.IOException;
 import java.util.Collection;

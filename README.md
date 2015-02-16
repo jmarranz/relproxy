@@ -78,7 +78,10 @@ Online Docs Last Version
 
 [JavaDocs](http://relproxy.sourceforge.net/docs/javadoc/)
 
+Examples
+------
 
+See the GitHub repository [RelProxy Examples](https://github.com/jmarranz/relproxy_examples)
 
 Questions and discussions
 ------
@@ -90,11 +93,6 @@ Bug Reporting
 
 Use this GitHub project.
 
-
-Latest Doc
-------
-
-You can read the [in progress latest documentation here](https://github.com/jmarranz/relproxy/blob/master/relproxy/src/main/asciidoc/manual.asciidoc)
 
 Articles/Presentations
 ------

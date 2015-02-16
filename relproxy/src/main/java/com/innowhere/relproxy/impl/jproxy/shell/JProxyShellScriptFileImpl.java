@@ -4,10 +4,10 @@ import com.innowhere.relproxy.RelProxyException;
 import com.innowhere.relproxy.impl.FileExt;
 import com.innowhere.relproxy.impl.jproxy.JProxyConfigImpl;
 import com.innowhere.relproxy.impl.jproxy.JProxyUtil;
-import com.innowhere.relproxy.impl.jproxy.core.clsmgr.ClassDescriptorSourceScript;
+import com.innowhere.relproxy.impl.jproxy.core.clsmgr.cldesc.ClassDescriptorSourceScript;
 import com.innowhere.relproxy.impl.jproxy.core.clsmgr.FolderSourceList;
-import com.innowhere.relproxy.impl.jproxy.core.clsmgr.SourceScriptRoot;
-import com.innowhere.relproxy.impl.jproxy.core.clsmgr.SourceScriptRootFile;
+import com.innowhere.relproxy.impl.jproxy.core.clsmgr.srcunit.SourceScriptRoot;
+import com.innowhere.relproxy.impl.jproxy.core.clsmgr.srcunit.SourceScriptRootFile;
 import java.io.File;
 import java.util.LinkedList;
 

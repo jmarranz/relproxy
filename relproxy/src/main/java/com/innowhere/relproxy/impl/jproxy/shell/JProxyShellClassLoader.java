@@ -1,7 +1,7 @@
 package com.innowhere.relproxy.impl.jproxy.shell;
 
 import com.innowhere.relproxy.RelProxyException;
-import com.innowhere.relproxy.impl.jproxy.core.clsmgr.ClassDescriptor;
+import com.innowhere.relproxy.impl.jproxy.core.clsmgr.cldesc.ClassDescriptor;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;

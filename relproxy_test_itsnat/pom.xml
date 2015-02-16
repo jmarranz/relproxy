@@ -89,8 +89,8 @@
     <plugins>
         
       <!-- This project is mainly created to test and development help (including source code debug) of relproxy -->        
-<!--
-      <plugin>
+
+      <plugin><!-- Necesario para que el debug de NetBeans funcione con el código del otro proyecto -->
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>build-helper-maven-plugin</artifactId>
         <version>1.9.1</version>
@@ -109,7 +109,7 @@
           </execution>
         </executions>
       </plugin>
--->
+
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-compiler-plugin</artifactId>

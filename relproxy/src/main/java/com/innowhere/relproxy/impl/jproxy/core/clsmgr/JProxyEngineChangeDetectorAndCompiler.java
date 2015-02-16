@@ -1,5 +1,15 @@
 package com.innowhere.relproxy.impl.jproxy.core.clsmgr;
 
+import com.innowhere.relproxy.impl.jproxy.core.clsmgr.srcunit.SourceScriptRootInMemory;
+import com.innowhere.relproxy.impl.jproxy.core.clsmgr.srcunit.SourceScriptRoot;
+import com.innowhere.relproxy.impl.jproxy.core.clsmgr.srcunit.SourceUnit;
+import com.innowhere.relproxy.impl.jproxy.core.clsmgr.srcunit.SourceScriptRootFile;
+import com.innowhere.relproxy.impl.jproxy.core.clsmgr.srcunit.SourceFileJavaNormal;
+import com.innowhere.relproxy.impl.jproxy.core.clsmgr.cldesc.ClassDescriptorSourceUnit;
+import com.innowhere.relproxy.impl.jproxy.core.clsmgr.cldesc.ClassDescriptor;
+import com.innowhere.relproxy.impl.jproxy.core.clsmgr.cldesc.ClassDescriptorSourceFileRegistry;
+import com.innowhere.relproxy.impl.jproxy.core.clsmgr.cldesc.ClassDescriptorInner;
+import com.innowhere.relproxy.impl.jproxy.core.clsmgr.cldesc.ClassDescriptorSourceScript;
 import com.innowhere.relproxy.impl.jproxy.JProxyUtil;
 import com.innowhere.relproxy.impl.jproxy.core.clsmgr.comp.JProxyCompilerContext;
 import com.innowhere.relproxy.impl.jproxy.core.clsmgr.comp.JProxyCompilerInMemory;

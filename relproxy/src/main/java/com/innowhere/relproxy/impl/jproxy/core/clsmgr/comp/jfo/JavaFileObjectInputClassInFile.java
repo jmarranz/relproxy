@@ -1,5 +1,6 @@
-package com.innowhere.relproxy.impl.jproxy.core.clsmgr.comp;
+package com.innowhere.relproxy.impl.jproxy.core.clsmgr.comp.jfo;
 
+import com.innowhere.relproxy.impl.jproxy.core.clsmgr.comp.jfo.JavaFileObjectInputClassInFileSystem;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;

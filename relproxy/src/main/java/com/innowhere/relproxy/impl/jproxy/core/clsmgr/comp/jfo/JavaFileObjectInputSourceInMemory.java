@@ -1,4 +1,4 @@
-package com.innowhere.relproxy.impl.jproxy.core.clsmgr.comp;
+package com.innowhere.relproxy.impl.jproxy.core.clsmgr.comp.jfo;
 
 /**
  * http://www.javablogging.com/dynamic-in-memory-compilation/

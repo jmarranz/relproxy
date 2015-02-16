@@ -1,4 +1,4 @@
-package com.innowhere.relproxy.impl.jproxy.core.clsmgr.comp;
+package com.innowhere.relproxy.impl.jproxy.core.clsmgr.comp.jfo;
 
 import com.innowhere.relproxy.impl.jproxy.JProxyUtil;
 import java.io.File;

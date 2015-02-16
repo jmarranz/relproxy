@@ -1563,7 +1563,7 @@ of this jar is defined in the classpath of the `ClassLoader`, nothing is returne
 `META-INF/MANIFEST.MF` and package again.
 
 As you have realized, this solution is "dirty" and problematic with "jar downloaders" like any build tool downloading Maven artifacts. This is why JProxy provides a workaround
-allowing direct especification of the problematic jars (use absolute paths), when necessary RelProxy uses the "brute force" to locate the .class of the required package "manually" inspecting 
+allowing direct specification of the problematic jars (use absolute paths), when necessary RelProxy uses the "brute force" to locate the .class of the required package "manually" inspecting 
 the provided jars. JProxy adds a new configuration method to specify these jars:
 
 [source,java]
@@ -1571,10 +1571,10 @@ the provided jars. JProxy adds a new configuration method to specify these jars:
     JProxyConfig.setRequiredExtraJarPaths(String[] inputJarPaths)
 ----
 
-To see this problem fixed in Liferay take a look to the `JProxyServletContextListener.java` file of http://github.com/jmarranz/relproxy_examples/tree/master/relproxy_ex_liferay-portlet[Liferay Example] included in http://github.com/jmarranz/relproxy_examples[RelProxy Examples].
+This problem has been found in a jar in Liferay, but nothing prevents similar problematic jars in other tools. To see this problem fixed in Liferay take a look to the `JProxyServletContextListener.java` file of http://github.com/jmarranz/relproxy_examples/tree/master/relproxy_ex_liferay-portlet[Liferay Example] included in http://github.com/jmarranz/relproxy_examples[RelProxy Examples].
 
-This problem is atypical, if JProxy throws an error of a class not found and this class is in a jar known by the `ClassPath` used to load JProxy,
-suspect this problem and try to add the problematic path explicitly.
+This problem is uncommon, if JProxy throws an error of a class not found and this class is in a jar known by the `ClassPath` used to load JProxy,
+suspect this problem and try to add explicitly the path of the problematic jar.
 
 
 == A new shell scripting language named Java

@@ -1,7 +1,9 @@
-package com.innowhere.relproxy.impl.jproxy.core.clsmgr;
+package com.innowhere.relproxy.impl.jproxy.core.clsmgr.cldesc;
 
 import com.innowhere.relproxy.RelProxyException;
 import com.innowhere.relproxy.impl.jproxy.core.JProxyImpl;
+import com.innowhere.relproxy.impl.jproxy.core.clsmgr.JProxyEngine;
+import com.innowhere.relproxy.impl.jproxy.core.clsmgr.srcunit.SourceScriptRoot;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.LinkedList;

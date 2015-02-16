@@ -1,5 +1,11 @@
 package com.innowhere.relproxy.impl.jproxy.core.clsmgr;
 
+import com.innowhere.relproxy.impl.jproxy.core.clsmgr.srcunit.SourceScriptRoot;
+import com.innowhere.relproxy.impl.jproxy.core.clsmgr.cldesc.ClassDescriptorSourceUnit;
+import com.innowhere.relproxy.impl.jproxy.core.clsmgr.cldesc.ClassDescriptor;
+import com.innowhere.relproxy.impl.jproxy.core.clsmgr.cldesc.ClassDescriptorSourceFileRegistry;
+import com.innowhere.relproxy.impl.jproxy.core.clsmgr.cldesc.ClassDescriptorInner;
+import com.innowhere.relproxy.impl.jproxy.core.clsmgr.cldesc.ClassDescriptorSourceScript;
 import com.innowhere.relproxy.impl.jproxy.core.JProxyImpl;
 import com.innowhere.relproxy.jproxy.JProxyCompilerListener;
 import com.innowhere.relproxy.jproxy.JProxyDiagnosticsListener;
@@ -22,7 +28,7 @@ public class JProxyEngine
     protected String sourceEncoding = "UTF-8"; // Por ahora, provisional
     public volatile boolean stop = false;
     protected TimerTask task;
-    protected boolean needReload;     
+    protected boolean needReload = false;     
     protected boolean enabled;    
     
     public JProxyEngine(JProxyImpl parent,boolean enabled,SourceScriptRoot scriptFile,ClassLoader rootClassLoader,FolderSourceList folderSourceList,FolderSourceList requiredExtraJarPaths,
@@ -49,7 +55,7 @@ public class JProxyEngine
     
     public synchronized ClassDescriptorSourceScript init()
     {
-        ClassDescriptorSourceScript scriptFileDesc = delegateChangeDetector.detectChangesInSources(); // Primera vez para detectar cambios en los .java respecto a los .class mientras el servidor estaba parado
+        ClassDescriptorSourceScript scriptFileDesc = detectChangesInSources(); // Primera vez para detectar cambios en los .java respecto a los .class mientras el servidor estaba parado
         
         reloadWhenChanged(); // La primera vez cargamos pues el código fuente manda sobre los .class
 
@@ -62,6 +68,11 @@ public class JProxyEngine
     {
         return customClassLoader;
     }
+    
+    public JProxyClassLoader getCurrentClassLoader()
+    {
+        return customClassLoader;
+    }    
     
     private boolean startScanner()
     {

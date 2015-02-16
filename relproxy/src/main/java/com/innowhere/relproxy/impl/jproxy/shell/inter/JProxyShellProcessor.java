@@ -2,7 +2,7 @@ package com.innowhere.relproxy.impl.jproxy.shell.inter;
 
 import com.innowhere.relproxy.RelProxy;
 import com.innowhere.relproxy.RelProxyException;
-import com.innowhere.relproxy.impl.jproxy.core.clsmgr.ClassDescriptorSourceScript;
+import com.innowhere.relproxy.impl.jproxy.core.clsmgr.cldesc.ClassDescriptorSourceScript;
 import com.innowhere.relproxy.impl.jproxy.core.clsmgr.JProxyEngine;
 import com.innowhere.relproxy.impl.jproxy.core.clsmgr.comp.JProxyCompilationException;
 import com.innowhere.relproxy.impl.jproxy.shell.JProxyShellInteractiveImpl;
