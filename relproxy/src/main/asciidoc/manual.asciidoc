@@ -1587,8 +1587,10 @@ A proxy object implements the specified interfaces (in practice only one is impo
 to the original or reloaded object. Because a proxy object is also an `Object`, the methods `equals(Object)` and `hashCode()` may be also called, these calls
 are forwarded to the wrapped object of the proxy. 
 
-When calling `equals(Object)` RelProxy detects the special case of passing a proxy parameter, in this case RelProxy obtain the current associated object to the proxy parameter
-and pass this object to the equals method. By this way we are able to check the identity of two objects indirectly using two proxy objects.
+When calling `equals(Object)` method RelProxy detects the special case of passing a proxy parameter, in this case RelProxy obtains the current associated object to the proxy parameter
+and passes this object to the equals method. By this way we are able to check the identity of two objects indirectly using two proxy objects. This feature
+is very useful in collections when registering a proxy instead of the original object, if another proxy object associated to the same original object is used for instance to remove
+from collection, the `equals(Object)` method is correctly called passing the original object.
 
 Example:
 
