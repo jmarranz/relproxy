@@ -1,6 +1,6 @@
 #!/bin/sh
 
-RELPROXY_JAR=relproxy-0.8.4.jar
+RELPROXY_JAR=relproxy-0.8.5.jar
 
 PROJECT=`dirname $0`/..
 
