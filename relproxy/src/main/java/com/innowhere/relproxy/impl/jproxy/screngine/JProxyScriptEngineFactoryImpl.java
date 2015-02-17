@@ -1,8 +1,6 @@
 package com.innowhere.relproxy.impl.jproxy.screngine;
 
 import com.innowhere.relproxy.RelProxy;
-import com.innowhere.relproxy.impl.jproxy.JProxyConfigImpl;
-import com.innowhere.relproxy.jproxy.JProxyConfig;
 import com.innowhere.relproxy.jproxy.JProxyScriptEngineFactory;
 import java.util.ArrayList;
 import java.util.Collections;

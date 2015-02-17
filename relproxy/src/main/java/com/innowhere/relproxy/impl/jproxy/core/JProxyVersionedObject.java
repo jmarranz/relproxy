@@ -7,7 +7,6 @@ import java.lang.reflect.Field;
 /**
  *
  * @author jmarranz
- * @param <T>
  */
 public class JProxyVersionedObject extends GenericProxyVersionedObject
 {    

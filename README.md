@@ -4,6 +4,8 @@ RelProxy
 News
 ------
 
+- 2015-2-17 v0.8.4 Released. Added workaround to support Liferay (6.2 tested) [Release Notes](https://github.com/jmarranz/relproxy/blob/master/relproxy/CHANGES.txt).
+                   New [Liferay 6.2 example](https://github.com/jmarranz/relproxy_examples/tree/master/relproxy_ex_liferay-portlet) using RelProxy.
 - 2015-1-23 v0.8.3 Released. First release in JCenter and Maven Central [Release Notes](https://github.com/jmarranz/relproxy/blob/master/relproxy/CHANGES.txt)
 - 2015-2-5 [Java Hot Class Reloading with RelProxy in Development Mode, a GWT Example](http://java.dzone.com/articles/java-hot-class-reloading) JavaLobby article
 - 2015-1-30 [Slides](http://www.slideshare.net/jmarranz/relproxy-class-reload-and-easy-java-scripting) in English and [video](http://autentia.com/2015/01/30/relproxy-easy-class-reload-and-scripting-with-java-por-jose-maria-arranz/#) in Spanish of the RelProxy presentation in MadridJUG on January 28!
@@ -13,11 +15,20 @@ News
 Download Binaries and Docs
 ------
 
-Last version: v0.8.2
-
 [Download](https://sourceforge.net/projects/relproxy/files/)
 
 Distribution file includes binaries, examples, manual and javadocs.
+
+Artefacts are uploaded to [JCenter](https://bintray.com/jmarranz/maven/relproxy/view) and [Maven Central](http://search.maven.org/#browse%7C-260743618) repositories
+
+Maven: 
+
+```xml
+<groupId>com.innowhere</groupId>
+<artifactId>relproxy</artifactId>
+<version>(version)</version>
+<type>jar</type>
+```
 
 Overview
 ------

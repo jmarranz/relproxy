@@ -8,7 +8,6 @@ import java.lang.reflect.Proxy;
 /**
  *
  * @author jmarranz
- * @param <T>
  */
 public abstract class GenericProxyInvocationHandler implements InvocationHandler
 {

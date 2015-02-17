@@ -5,6 +5,7 @@ RELEASE CHANGES
 
     - Added the method JProxyConfig.setRequiredExtraJarPaths(String[] inputJarPaths) to workaround a problem with Liferay 6.2.
     - Added JProxy.create(Object,Class<?>[]), GProxy.create(Object,Class<?>[]),JProxyScriptEngine.create(Object,Class<?>[]) for classes implementing multiple interfaces
+    - The call proxy.equals(proxy2) returns true if both proxies have associated the same original object and there is no reload.
     - Added to Manual "Solving jar manifest configuration problems in JProxy" and "Identity of returned proxies"
 
 * 0.8.3

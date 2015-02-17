@@ -25,7 +25,7 @@ public interface JProxyScriptEngine extends ScriptEngine
      * @param <T> the interface implemented by the original object and proxy object returned.
      * @param obj the original object to proxy.
      * @param clasz the class of the interface implemented by the original object and proxy object returned.
-     * @return the <code>java.lang.reflect.Proxy</code> object associated or the original object when <code>JProxy</code> is disabled.
+     * @return the <code>java.lang.reflect.Proxy</code> object associated or the original object when is disabled.
      */
     public <T> T create(T obj,Class<T> clasz);
 
@@ -34,7 +34,7 @@ public interface JProxyScriptEngine extends ScriptEngine
      * 
      * @param obj the original object to proxy.
      * @param classes the classes of the interfaces implemented by the original object and proxy object returned.
-     * @return the <code>java.lang.reflect.Proxy</code> object associated or the original object when <code>JProxy</code> is disabled.
+     * @return the <code>java.lang.reflect.Proxy</code> object associated or the original object when is disabled.
      */   
     public Object create(Object obj,Class<?>[] classes);   
     

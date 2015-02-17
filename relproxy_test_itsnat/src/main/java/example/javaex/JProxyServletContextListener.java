@@ -50,7 +50,7 @@ public class JProxyServletContextListener implements ServletContextListener
                 {
                     if (file.isDirectory())
                     {
-                        return absPath.endsWith(File.separatorChar + "com" + File.separatorChar + File.separatorChar + "innowhere") || // El código fuente de RelProxy lo tenemos copiado para testear, tenemos que excluirlo
+                        return absPath.endsWith(File.separatorChar + "innowhere") || // Por si acaso el código fuente de RelProxy lo tenemos copiado para testear, tenemos que excluirlo
                                absPath.endsWith(File.separatorChar + "nothotreload");
                     }
                     else
