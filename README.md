@@ -107,7 +107,7 @@ Use this GitHub project.
 
 Articles/Blogs/Presentations
 ------
-- Feb 19,2015 [No longer virgin, uploaded my first jar to Maven Central, and it was not nice](http://jmarranz.blogspot.com.es/2015/02/no-longer-virgin-uploaded-my-first-jar.html). [Quote](http://blog.bintray.com/2015/02/19/another-one-bites-the-maven-central-dust-and-saved-by-bintray/) from Bintray. 
+- Feb 19,2015 [No longer virgin, uploaded my first jar to Maven Central, and it was not nice](http://jmarranz.blogspot.com.es/2015/02/no-longer-virgin-uploaded-my-first-jar.html). [JavaLobby](http://java.dzone.com/articles/no-longer-virgin-uploaded-my). [Bintray Quote](http://blog.bintray.com/2015/02/19/another-one-bites-the-maven-central-dust-and-saved-by-bintray/). 
 
 - Feb 5,2015 [Java Hot Class Reloading with RelProxy in Development Mode, a GWT Example](http://java.dzone.com/articles/java-hot-class-reloading)
 
