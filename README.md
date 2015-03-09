@@ -1,5 +1,6 @@
 RelProxy
 ========
+RelProxy is a simple Java and Groovy hot class reloader for Java and Groovy providing transparent compilation and class reload on the fly, and scripting support and shell of pure Java code.
 
 News
 ------
@@ -114,7 +115,7 @@ Articles/Blogs/Presentations
 
 - Jan 28,2015 [Slides](http://www.slideshare.net/jmarranz/relproxy-class-reload-and-easy-java-scripting) in English and [video](http://autentia.com/2015/01/30/relproxy-easy-class-reload-and-scripting-with-java-por-jose-maria-arranz/#) ([youtube](https://www.youtube.com/watch?v=dyUhX6t5t-Y)) in Spanish of the RelProxy presentation in MadridJUG 
 
-- Dec 31,2014 [RelProxy v0.8.1 reduce el número de redeploys en GWT-RPC y otros Java web frameworks](http://www.javahispano.org/portada/2014/12/31/relproxy-v081-reduce-el-numero-de-redeploys-en-gwt-rpc-y-otr.html) Published at javaHispano
+- Dec 31,2014 [RelProxy v0.8.1 reduce el nÃºmero de redeploys en GWT-RPC y otros Java web frameworks](http://www.javahispano.org/portada/2014/12/31/relproxy-v081-reduce-el-numero-de-redeploys-en-gwt-rpc-y-otr.html) Published at javaHispano
 
 - Feb 15,2014 [v0.8 announce at JavaLobby](http://java.dzone.com/articles/presenting-relproxy-hot-class)
 
