@@ -16,7 +16,7 @@
     
     <target name="deploy_to_distribute" depends="deploy_binaries_and_manual,deploy_cmd_examples,deploy_javadoc,deploy_sources">  <!-- ,deploy_manual -->
 
-        <echo message="DO NOT FORGET TO CHANGE version num in conf.properties, RelProxy.getVersion()" />
+        <echo message="DO NOT FORGET TO CHANGE version num in conf.properties, RelProxy.getVersion() and Manual (and date)" />
 
         <copy file="${program}/LICENSE-2.0.txt" tofile="${distribution_tmp_folder}/LICENSE-2.0.txt" />
         <!-- <copy file="${program}/README.md" tofile="${distribution_tmp_folder}/README.md" /> -->
