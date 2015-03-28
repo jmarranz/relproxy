@@ -1,6 +1,5 @@
 package com.innowhere.relproxy.impl.jproxy.shell.inter;
 
-import static com.innowhere.relproxy.impl.jproxy.shell.inter.KeyboardNotUsingClipboard.create;
 import java.nio.charset.Charset;
 
 /**

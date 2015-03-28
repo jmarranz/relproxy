@@ -10,9 +10,6 @@ import com.innowhere.relproxy.impl.jproxy.core.clsmgr.cldesc.ClassDescriptorSour
 import com.innowhere.relproxy.impl.jproxy.core.clsmgr.cldesc.ClassDescriptorSourceFileJava;
 import com.innowhere.relproxy.impl.jproxy.core.clsmgr.cldesc.ClassDescriptorSourceFileRegistry;
 import com.innowhere.relproxy.impl.jproxy.core.clsmgr.cldesc.ClassDescriptorSourceScript;
-import com.innowhere.relproxy.impl.jproxy.core.clsmgr.FolderSourceList;
-import com.innowhere.relproxy.impl.jproxy.core.clsmgr.JProxyClassLoader;
-import com.innowhere.relproxy.impl.jproxy.core.clsmgr.JProxyEngine;
 import com.innowhere.relproxy.impl.jproxy.core.clsmgr.JProxyEngineChangeDetectorAndCompiler;
 import com.innowhere.relproxy.jproxy.JProxyDiagnosticsListener;
 import java.io.File;
