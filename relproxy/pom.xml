@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.innowhere</groupId>
     <artifactId>relproxy</artifactId>
-    <version>0.8.4</version>
+    <version>0.8.5-SNAPSHOT</version>
     <packaging>jar</packaging>
     
     <name>relproxy</name>
@@ -21,6 +21,12 @@
             <email>jmarranz@innowhere.com</email>
             <organization>Innowhere Software</organization>
             <organizationUrl>http://www.innowhere.com</organizationUrl>
+        </developer>
+        <developer>
+            <name>Michael Vorburger</name>
+            <email>mike@vorburger.ch</email>
+            <organization>Vorburger.CH</organization>
+            <organizationUrl>http://www.vorburger.ch</organizationUrl>
         </developer>
     </developers>
     <scm>
