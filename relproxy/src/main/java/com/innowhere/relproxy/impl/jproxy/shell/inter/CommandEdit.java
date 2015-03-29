@@ -1,17 +1,5 @@
 package com.innowhere.relproxy.impl.jproxy.shell.inter;
 
-import com.innowhere.relproxy.impl.jproxy.core.clsmgr.cldesc.ClassDescriptorSourceScript;
-import com.innowhere.relproxy.impl.jproxy.core.clsmgr.srcunit.SourceScriptRootInMemory;
-import static com.innowhere.relproxy.impl.jproxy.shell.inter.Command.getParameter;
-import static com.innowhere.relproxy.impl.jproxy.shell.inter.CommandCodeChangerBase.ERROR_LAST_REQUIRED;
-import static com.innowhere.relproxy.impl.jproxy.shell.inter.CommandCodeChangerBase.ERROR_LINE_1_NOT_VALID;
-import static com.innowhere.relproxy.impl.jproxy.shell.inter.CommandCodeChangerBase.ERROR_NOT_A_NUMBER;
-import static com.innowhere.relproxy.impl.jproxy.shell.inter.CommandCodeChangerBase.ERROR_NO_LAST_LINE;
-import static com.innowhere.relproxy.impl.jproxy.shell.inter.CommandCodeChangerBase.ERROR_OUT_OF_RANGE;
-import static com.innowhere.relproxy.impl.jproxy.shell.inter.CommandCodeChangerBase.ERROR_VALUE_NOT_0_OR_NEGATIVE;
-import static com.innowhere.relproxy.impl.jproxy.shell.inter.CommandCodeChangerBase.getLineFromParam;
-import static com.innowhere.relproxy.impl.jproxy.shell.inter.CommandDelete.NAME;
-
 
 /**
  *
