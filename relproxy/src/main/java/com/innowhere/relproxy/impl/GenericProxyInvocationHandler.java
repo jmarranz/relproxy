@@ -39,7 +39,7 @@ public abstract class GenericProxyInvocationHandler implements InvocationHandler
         if (oldObj != obj && reloadListener != null)
             reloadListener.onReload(oldObj,obj,proxy,method,args);  
 
-        if (args.length == 1)
+        if (args != null && args.length == 1)
         {
             // Conseguimos que en proxy1.equals(proxy2) se usen los objetos asociados no los propios proxies, para ello obtenemos el objeto asociado al parámetro 
             // No hace falta que equals forme parte de la interface
