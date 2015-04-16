@@ -1,6 +1,5 @@
 package com.innowhere.relproxy.jproxy;
 
-import com.innowhere.relproxy.impl.jproxy.JProxyDefaultImpl;
 import javax.script.ScriptEngine;
 
 /**

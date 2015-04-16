@@ -2,9 +2,9 @@
 /build
 /docs_internal
 /tmp
-# .classpath
-# .project
-# .settings/
+.classpath
+.project
+.settings/
 # .gradle/
 
 conf/conf_local.properties

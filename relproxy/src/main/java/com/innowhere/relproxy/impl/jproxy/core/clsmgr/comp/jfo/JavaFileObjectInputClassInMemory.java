@@ -1,7 +1,6 @@
 package com.innowhere.relproxy.impl.jproxy.core.clsmgr.comp.jfo;
 
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;

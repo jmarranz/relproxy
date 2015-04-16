@@ -7,7 +7,6 @@ import com.innowhere.relproxy.impl.jproxy.core.clsmgr.FolderSourceList;
 import com.innowhere.relproxy.impl.jproxy.core.clsmgr.srcunit.SourceScriptRoot;
 import com.innowhere.relproxy.impl.jproxy.core.clsmgr.srcunit.SourceScriptRootInMemory;
 import com.innowhere.relproxy.impl.jproxy.shell.inter.JProxyShellProcessor;
-import java.io.File;
 import java.util.LinkedList;
 
 /**

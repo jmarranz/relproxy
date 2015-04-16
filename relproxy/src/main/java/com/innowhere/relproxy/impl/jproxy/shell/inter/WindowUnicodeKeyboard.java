@@ -1,16 +1,6 @@
 package com.innowhere.relproxy.impl.jproxy.shell.inter;
 
 import static java.awt.event.KeyEvent.VK_ALT;
-import static java.awt.event.KeyEvent.VK_NUMPAD0;
-import static java.awt.event.KeyEvent.VK_NUMPAD1;
-import static java.awt.event.KeyEvent.VK_NUMPAD2;
-import static java.awt.event.KeyEvent.VK_NUMPAD3;
-import static java.awt.event.KeyEvent.VK_NUMPAD4;
-import static java.awt.event.KeyEvent.VK_NUMPAD5;
-import static java.awt.event.KeyEvent.VK_NUMPAD6;
-import static java.awt.event.KeyEvent.VK_NUMPAD7;
-import static java.awt.event.KeyEvent.VK_NUMPAD8;
-import static java.awt.event.KeyEvent.VK_NUMPAD9;
 import java.nio.charset.Charset;
 
 /**
