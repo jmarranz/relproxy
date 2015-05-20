@@ -22,13 +22,23 @@
             <organization>Innowhere Software</organization>
             <organizationUrl>http://www.innowhere.com</organizationUrl>
         </developer>
-        <developer>
+    </developers>
+    
+    <contributors>
+        <contributor>
+            <name>Daniel López (greeneyed)</name>
+            <email></email>
+            <organization></organization>
+            <organizationUrl>https://github.com/Verdoso</organizationUrl>
+        </contributor>
+        <contributor>
             <name>Michael Vorburger</name>
             <email>mike@vorburger.ch</email>
             <organization>Vorburger.CH</organization>
             <organizationUrl>http://www.vorburger.ch</organizationUrl>
-        </developer>
-    </developers>
+        </contributor>           
+    </contributors>    
+    
     <scm>
         <connection>scm:git:git@github.com:jmarranz/relproxy.git</connection>
         <developerConnection>scm:git:git@github.com:jmarranz/relproxy.git</developerConnection>
