@@ -25,15 +25,15 @@ import java.util.LinkedList;
  */
 public class JProxyEngineChangeDetectorAndCompiler
 {
-    protected JProxyEngine engine;
-    protected JProxyCompilerInMemory compiler; 
-    protected FolderSourceList folderSourceList;    
-    protected FolderSourceList requiredExtraJarPaths;
-    protected SourceScriptRoot scriptFile; // Puede ser nulo
-    protected String folderClasses; // Puede ser nulo (es decir NO salvar como .class los cambios)    
-    protected JProxyInputSourceFileExcludedListener excludedListener;    
-    protected JavaSourcesSearch sourcesSearch;
-    protected JProxyCompilerListener compilerListener;    
+    protected final JProxyEngine engine;
+    protected final JProxyCompilerInMemory compiler; 
+    protected final FolderSourceList folderSourceList;    
+    protected final FolderSourceList requiredExtraJarPaths;
+    protected final SourceScriptRoot scriptFile; // Puede ser nulo
+    protected final String folderClasses; // Puede ser nulo (es decir NO salvar como .class los cambios)    
+    protected final JProxyInputSourceFileExcludedListener excludedListener;    
+    protected final JavaSourcesSearch sourcesSearch;
+    protected final JProxyCompilerListener compilerListener;    
     protected ClassDescriptorSourceFileRegistry sourceRegistry;
     
     public JProxyEngineChangeDetectorAndCompiler(JProxyEngine engine,SourceScriptRoot scriptFile,FolderSourceList folderSourceList,FolderSourceList requiredExtraJarPaths,
@@ -107,90 +107,95 @@ public class JProxyEngineChangeDetectorAndCompiler
         compiler.compileSourceFile(sourceFile,context,engine.getCurrentClassLoader(),sourceRegistry);      
     }            
     
-    public synchronized ClassDescriptorSourceScript detectChangesInSources()
+    public ClassDescriptorSourceScript detectChangesInSources()
     {
-        // boolean firstTime = (sourceFileMap == null); // La primera vez sourceFileMap es null
+        Object monitor = getJProxyEngine().getMonitor();
+        synchronized(monitor)
+        {        
 
-        LinkedList<ClassDescriptorSourceUnit> updatedSourceFiles = new LinkedList<ClassDescriptorSourceUnit>();
-        LinkedList<ClassDescriptorSourceUnit> newSourceFiles = new LinkedList<ClassDescriptorSourceUnit>();        
-        LinkedList<ClassDescriptorSourceUnit> deletedSourceFiles = new LinkedList<ClassDescriptorSourceUnit>();
-        
-        ClassDescriptorSourceFileRegistry oldSourceRegistry = this.sourceRegistry; // Puede ser null (la primera vez)
-        ClassDescriptorSourceFileRegistry newSourceRegistry = new ClassDescriptorSourceFileRegistry();
-        
-        ClassDescriptorSourceScript scriptFileDesc = sourcesSearch.sourceFileSearch(scriptFile,oldSourceRegistry,newSourceRegistry,updatedSourceFiles,newSourceFiles,deletedSourceFiles);
-        
-        this.sourceRegistry = newSourceRegistry;
+            // boolean firstTime = (sourceFileMap == null); // La primera vez sourceFileMap es null
 
-        if (!updatedSourceFiles.isEmpty() || !newSourceFiles.isEmpty() || !deletedSourceFiles.isEmpty()) // También el hecho de eliminar una clase debe implicar crear un ClassLoader nuevo para que dicha clase desaparezca de las clases cargadas aunque será muy raro que sólo eliminemos un .java y no añadamos/cambiemos otros, otro motico es porque si tenemos configurado el autosalvado de .class tenemos que eliminar en ese caso
-        {                      
-            LinkedList<ClassDescriptorSourceUnit> sourceFilesToCompile = new LinkedList<ClassDescriptorSourceUnit>();
-            sourceFilesToCompile.addAll(updatedSourceFiles);
-            sourceFilesToCompile.addAll(newSourceFiles);            
-            
-            updatedSourceFiles = null; // Ya no se necesita
-            newSourceFiles = null; // Ya no se necesita
-            
-            if (!sourceFilesToCompile.isEmpty())             
-            {
-                // Eliminamos el estado de la anterior compilación de todas las clases que van a recompilarse antes de compilarlas porque al compilar una clase es posible que
-                // se necesite recompilar al mismo tiempo una dependiente de otra (ej clase base) y luego se intente compilar la dependiente y sería un problema que limpiáramos antes de compilar cada archivo
-                for(ClassDescriptorSourceUnit sourceFile : sourceFilesToCompile)            
-                    cleanBeforeCompile(sourceFile);   
-                
-           
-                JProxyCompilerContext context = compiler.createJProxyCompilerContext();
-                JProxyCompilerListener compilerListener = getJProxyCompilerListener();
-                try
-                {            
-                    
+            LinkedList<ClassDescriptorSourceUnit> updatedSourceFiles = new LinkedList<ClassDescriptorSourceUnit>();
+            LinkedList<ClassDescriptorSourceUnit> newSourceFiles = new LinkedList<ClassDescriptorSourceUnit>();        
+            LinkedList<ClassDescriptorSourceUnit> deletedSourceFiles = new LinkedList<ClassDescriptorSourceUnit>();
+
+            ClassDescriptorSourceFileRegistry oldSourceRegistry = this.sourceRegistry; // Puede ser null (la primera vez)
+            ClassDescriptorSourceFileRegistry newSourceRegistry = new ClassDescriptorSourceFileRegistry();
+
+            ClassDescriptorSourceScript scriptFileDesc = sourcesSearch.sourceFileSearch(scriptFile,oldSourceRegistry,newSourceRegistry,updatedSourceFiles,newSourceFiles,deletedSourceFiles);
+
+            this.sourceRegistry = newSourceRegistry;
+
+            if (!updatedSourceFiles.isEmpty() || !newSourceFiles.isEmpty() || !deletedSourceFiles.isEmpty()) // También el hecho de eliminar una clase debe implicar crear un ClassLoader nuevo para que dicha clase desaparezca de las clases cargadas aunque será muy raro que sólo eliminemos un .java y no añadamos/cambiemos otros, otro motico es porque si tenemos configurado el autosalvado de .class tenemos que eliminar en ese caso
+            {                      
+                LinkedList<ClassDescriptorSourceUnit> sourceFilesToCompile = new LinkedList<ClassDescriptorSourceUnit>();
+                sourceFilesToCompile.addAll(updatedSourceFiles);
+                sourceFilesToCompile.addAll(newSourceFiles);            
+
+                updatedSourceFiles = null; // Ya no se necesita
+                newSourceFiles = null; // Ya no se necesita
+
+                if (!sourceFilesToCompile.isEmpty())             
+                {
+                    // Eliminamos el estado de la anterior compilación de todas las clases que van a recompilarse antes de compilarlas porque al compilar una clase es posible que
+                    // se necesite recompilar al mismo tiempo una dependiente de otra (ej clase base) y luego se intente compilar la dependiente y sería un problema que limpiáramos antes de compilar cada archivo
                     for(ClassDescriptorSourceUnit sourceFile : sourceFilesToCompile)            
-                    {
-                        File file = null;
-                        if (compilerListener != null)
-                        {                           
-                            SourceUnit srcUnit = sourceFile.getSourceUnit();
-                            if (srcUnit instanceof SourceFileJavaNormal)
-                                file = ((SourceFileJavaNormal)srcUnit).getFileExt().getFile();
-                            else if (srcUnit instanceof SourceScriptRootFile)
-                                file = ((SourceScriptRootFile)srcUnit).getFileExt().getFile();
-                            else if (srcUnit instanceof SourceScriptRootInMemory) // Caso de shell interactive y code snippet, en ese caso NO hay listener porque no hay forma de definirlo
-                                file = null;
+                        cleanBeforeCompile(sourceFile);   
+
+
+                    JProxyCompilerContext context = compiler.createJProxyCompilerContext();
+                    JProxyCompilerListener compilerListener = getJProxyCompilerListener();
+                    try
+                    {            
+
+                        for(ClassDescriptorSourceUnit sourceFile : sourceFilesToCompile)            
+                        {
+                            File file = null;
+                            if (compilerListener != null)
+                            {                           
+                                SourceUnit srcUnit = sourceFile.getSourceUnit();
+                                if (srcUnit instanceof SourceFileJavaNormal)
+                                    file = ((SourceFileJavaNormal)srcUnit).getFileExt().getFile();
+                                else if (srcUnit instanceof SourceScriptRootFile)
+                                    file = ((SourceScriptRootFile)srcUnit).getFileExt().getFile();
+                                else if (srcUnit instanceof SourceScriptRootInMemory) // Caso de shell interactive y code snippet, en ese caso NO hay listener porque no hay forma de definirlo
+                                    file = null;
+                            }
+
+                            if (compilerListener != null && file != null)
+                                compilerListener.beforeCompile(file);                        
+
+                            compile(sourceFile,context);        
+
+                            if (compilerListener != null && file != null)
+                                compilerListener.afterCompile(file);                        
                         }
-                        
-                        if (compilerListener != null && file != null)
-                            compilerListener.beforeCompile(file);                        
-                        
-                        compile(sourceFile,context);        
-                        
-                        if (compilerListener != null && file != null)
-                            compilerListener.afterCompile(file);                        
+                    }
+                    finally
+                    {
+                        context.close();
+                    }
+
+                    if (isSaveClassesMode())
+                    {
+                        for(ClassDescriptorSourceUnit sourceFile : sourceFilesToCompile)            
+                        {
+                            saveClasses(sourceFile);                     
+                        }                
                     }
                 }
-                finally
-                {
-                    context.close();
-                }
-                
-                if (isSaveClassesMode())
-                {
-                    for(ClassDescriptorSourceUnit sourceFile : sourceFilesToCompile)            
-                    {
-                        saveClasses(sourceFile);                     
-                    }                
-                }
+
+                if (isSaveClassesMode() && !deletedSourceFiles.isEmpty())
+                    for(ClassDescriptorSourceUnit sourceFile : deletedSourceFiles)
+                        deleteClasses(sourceFile);                     
+
+                deletedSourceFiles = null; // Ya no se necesita
+
+                engine.setNeedReload(true);
             }
 
-            if (isSaveClassesMode() && !deletedSourceFiles.isEmpty())
-                for(ClassDescriptorSourceUnit sourceFile : deletedSourceFiles)
-                    deleteClasses(sourceFile);                     
-            
-            deletedSourceFiles = null; // Ya no se necesita
-                          
-            engine.setNeedReload(true);
+            return scriptFileDesc;
         }
-        
-        return scriptFileDesc;
     }    
     
     private void saveClasses(ClassDescriptorSourceUnit sourceFile)

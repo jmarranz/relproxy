@@ -9,7 +9,7 @@ import com.innowhere.relproxy.impl.jproxy.core.clsmgr.FolderSourceList;
  */
 public abstract class SourceUnit
 {
-    protected String className;
+    protected final String className;
         
     public SourceUnit(String className)
     {

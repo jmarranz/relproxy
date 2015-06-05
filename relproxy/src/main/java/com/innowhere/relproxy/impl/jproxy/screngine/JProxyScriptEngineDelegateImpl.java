@@ -56,11 +56,11 @@ public class JProxyScriptEngineDelegateImpl extends JProxyImpl
     
     public Object execute(String code,ScriptContext context) throws ScriptException
     {    
-        JProxyEngine jproxyEngine = getJProxyEngine();
-        
         Class scriptClass;
-        synchronized(jproxyEngine)
-        {
+        JProxyEngine jproxyEngine = getJProxyEngine();
+        Object monitor = jproxyEngine.getMonitor();
+        synchronized(monitor)
+        {            
             if (!getSourceScriptInMemory().getScriptCode().equals(code))  
             {
                 this.codeBufferModTimestamp = System.currentTimeMillis();

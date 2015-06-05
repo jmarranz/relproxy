@@ -8,9 +8,9 @@ import java.io.File;
  */
 public abstract class ClassDescriptor 
 {
-    protected String className; // El nombre basado en puntos pero usando $ en el caso de innerclasses
-    protected String simpleClassName; // className sin el package
-    protected String packageName; // El package pero acabado en un "." o bien "" si no hay package, el motivo de acabar en un punto es simplemente para poder concatenar ciegamente el package y el simpleClassName
+    protected final String className; // El nombre basado en puntos pero usando $ en el caso de innerclasses
+    protected final String simpleClassName; // className sin el package
+    protected final String packageName; // El package pero acabado en un "." o bien "" si no hay package, el motivo de acabar en un punto es simplemente para poder concatenar ciegamente el package y el simpleClassName
     protected byte[] classBytes;
     protected Class clasz;    
     

@@ -22,7 +22,8 @@ public class JProxyClassLoader extends ClassLoader
     
     public Class defineClass(ClassDescriptor classDesc)
     {    
-        synchronized(engine)
+        Object monitor = engine.getMonitor();
+        synchronized(monitor)
         {
             String className = classDesc.getClassName();
             byte[] classBytes = classDesc.getClassBytes();
@@ -35,7 +36,8 @@ public class JProxyClassLoader extends ClassLoader
     @Override
     protected Class<?> findClass(String name) throws ClassNotFoundException 
     {
-        synchronized(engine)
+        Object monitor = engine.getMonitor();
+        synchronized(monitor)
         {        
             return loadClass(name,true); 
         	
@@ -54,7 +56,8 @@ public class JProxyClassLoader extends ClassLoader
 
     public Class loadClass(ClassDescriptor classDesc,boolean resolve)
     {    
-        synchronized(engine)
+        Object monitor = engine.getMonitor();
+        synchronized(monitor)
         {               
             Class clasz = classDesc.getLastLoadedClass();
             if (clasz != null && clasz.getClassLoader() == this) return clasz; // Glup, ya fue cargada
@@ -68,7 +71,8 @@ public class JProxyClassLoader extends ClassLoader
     
     public Class loadInnerClass(ClassDescriptorSourceUnit parentDesc,String innerClassName)
     {
-        synchronized(engine)
+        Object monitor = engine.getMonitor();
+        synchronized(monitor)
         {         
             ClassDescriptor classDesc = parentDesc.getInnerClassDescriptor(innerClassName,false);
             if (classDesc == null || classDesc.getClassBytes() == null)
@@ -102,7 +106,8 @@ public class JProxyClassLoader extends ClassLoader
         // y tampoco hay problema de auto-salvado del .class o eliminación del mismo puesto que al ser un archivo fuente normal se tratará por si mismo
         // aunque la carga en el class loader se haya hecho a través de una clase derivada quizás antes
         
-        synchronized(engine)
+        Object monitor = engine.getMonitor();
+        synchronized(monitor)
         {        
             Class<?> cls = findLoadedClass(name);
             if (cls == null)

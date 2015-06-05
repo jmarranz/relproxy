@@ -8,7 +8,7 @@ import com.innowhere.relproxy.impl.FileExt;
  */
 public class SourceFileJavaNormal extends SourceUnit
 {
-    protected FileExt sourceFile;
+    protected final FileExt sourceFile;
     
     public SourceFileJavaNormal(FileExt sourceFile,FileExt rootFolderOfSources)
     {

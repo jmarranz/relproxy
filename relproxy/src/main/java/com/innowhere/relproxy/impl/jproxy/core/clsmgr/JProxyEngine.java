@@ -20,16 +20,17 @@ import java.util.TimerTask;
  */
 public class JProxyEngine 
 {
-    protected JProxyImpl parent;
-    protected JProxyEngineChangeDetectorAndCompiler delegateChangeDetector;
-    protected ClassLoader rootClassLoader;
+    protected final Object monitor = new Object(); // Podríamos usar este objeto JProxyEngine directamente pero el monitor es mejor para análisis de dependencias
+    protected final JProxyImpl parent;
+    protected final JProxyEngineChangeDetectorAndCompiler delegateChangeDetector;
+    protected final ClassLoader rootClassLoader;
     protected JProxyClassLoader customClassLoader;
-    protected long scanPeriod;   
-    protected String sourceEncoding = "UTF-8"; // Por ahora, provisional
+    protected final long scanPeriod;   
+    protected final String sourceEncoding = "UTF-8"; // Por ahora, provisional
     public volatile boolean stop = false;
     protected TimerTask task;
     protected boolean needReload = false;     
-    protected boolean enabled;    
+    protected final boolean enabled;    
     
     public JProxyEngine(JProxyImpl parent,boolean enabled,SourceScriptRoot scriptFile,ClassLoader rootClassLoader,FolderSourceList folderSourceList,FolderSourceList requiredExtraJarPaths,
                 String folderClasses,long scanPeriod,JProxyInputSourceFileExcludedListener excludedListener,
@@ -43,6 +44,11 @@ public class JProxyEngine
         this.customClassLoader = null; //new JProxyClassLoader(this);
     }
     
+    public Object getMonitor()
+    {
+        return monitor;
+    }
+    
     public JProxyImpl getJProxy()
     {
         return parent;
@@ -53,15 +59,18 @@ public class JProxyEngine
         return enabled;
     }    
     
-    public synchronized ClassDescriptorSourceScript init()
+    public ClassDescriptorSourceScript init()
     {
-        ClassDescriptorSourceScript scriptFileDesc = detectChangesInSources(); // Primera vez para detectar cambios en los .java respecto a los .class mientras el servidor estaba parado
-        
-        reloadWhenChanged(); // La primera vez cargamos pues el código fuente manda sobre los .class
+        synchronized(getMonitor())
+        {
+            ClassDescriptorSourceScript scriptFileDesc = detectChangesInSources(); // Primera vez para detectar cambios en los .java respecto a los .class mientras el servidor estaba parado
 
-        startScanner();
-        
-        return scriptFileDesc;
+            reloadWhenChanged(); // La primera vez cargamos pues el código fuente manda sobre los .class
+
+            startScanner();
+
+            return scriptFileDesc;
+        }
     }
     
     /*
@@ -81,8 +90,7 @@ public class JProxyEngine
     private boolean startScanner()
     {
         if (scanPeriod > 0)  // Si es 0 o negativo sólo se recargan una vez (la inicial ya ejecutada)
-        {
-            Timer timer = new Timer();  
+        { 
             this.task = new TimerTask()
             {
                 @Override
@@ -104,8 +112,8 @@ public class JProxyEngine
                     }
                 }
             };            
-
-            timer.schedule(task, scanPeriod, scanPeriod);  // Ojo, después de la primera llamada a detectChangesInSources() 
+            
+            new Timer().schedule(task, scanPeriod, scanPeriod);  // Ojo, después de la primera llamada a detectChangesInSources() 
             return true;
         }      
         else
@@ -130,56 +138,71 @@ public class JProxyEngine
         return sourceEncoding;
     }
     
-    public synchronized boolean isRunning()    
+    public boolean isRunning()    
     {    
-        return task != null && scanPeriod > 0;
+        synchronized(getMonitor())
+        {        
+            return task != null && scanPeriod > 0;
+        }
     }
     
-    public synchronized boolean stop()    
+    public boolean stop()    
     {
-        if (task != null)
-        {
-            this.stop = true;
-            task.cancel();
-            this.task = null;
-            return true;
-        }
-        else
-        {
-            return false;
+        synchronized(getMonitor())
+        {        
+            if (task != null)
+            {
+                this.stop = true;
+                task.cancel();
+                this.task = null;
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
     }    
     
-    public synchronized boolean start()    
+    public boolean start()    
     {
-        if (task == null)
-        {
-            this.stop = false;
-            return startScanner();
+        synchronized(getMonitor())
+        {        
+            if (task == null)
+            {
+                this.stop = false;
+                return startScanner();
+            }
+            else return false;
         }
-        else return false;
     }        
     
 
     
-    public synchronized ClassDescriptor getClassDescriptor(String className)
+    public ClassDescriptor getClassDescriptor(String className)
     {
-        return delegateChangeDetector.getClassDescriptor(className);
+        synchronized(getMonitor())
+        {        
+            return delegateChangeDetector.getClassDescriptor(className);
+        }
     }
             
-    public synchronized <T> Class<?> findClass(String className)
+    public <T> Class<?> findClass(String className)
     {     
         // Si ya está cargada la devuelve, y si no se cargó por ningún JProxyClassLoader se intenta cargar por el parent ClassLoader, por lo que siempre devolverá distinto de null si la clase está en el classpath, que debería ser lo normal       
-        try 
-        { 
-            if (customClassLoader != null)
-                return customClassLoader.findClass(className);             
-            else
-                return rootClassLoader.loadClass(className);
-        }
-        catch (ClassNotFoundException ex) 
-        {
-            return null;
+        synchronized(getMonitor())
+        {        
+            try 
+            { 
+                if (customClassLoader != null)
+                    return customClassLoader.findClass(className);             
+                else
+                    return rootClassLoader.loadClass(className);
+            }
+            catch (ClassNotFoundException ex) 
+            {
+                return null;
+            }
         }
     }
     
@@ -239,45 +262,47 @@ public class JProxyEngine
         }     
     }    
     
-    public synchronized ClassDescriptorSourceScript detectChangesInSources()
+    public ClassDescriptorSourceScript detectChangesInSources()
     {
-        return delegateChangeDetector.detectChangesInSources();
+        synchronized(getMonitor())
+        {        
+            return delegateChangeDetector.detectChangesInSources();
+        }
     }    
    
-    public synchronized ClassDescriptorSourceScript detectChangesInSourcesAndReload()
+    public ClassDescriptorSourceScript detectChangesInSourcesAndReload()
     {
-        ClassDescriptorSourceScript res = delegateChangeDetector.detectChangesInSources();
-        reloadWhenChanged();
-        return res;
+        synchronized(getMonitor())
+        {        
+            ClassDescriptorSourceScript res = delegateChangeDetector.detectChangesInSources();
+            reloadWhenChanged();
+            return res;
+        }
     }    
        
-    public synchronized boolean reloadWhenChanged()
+    public boolean reloadWhenChanged()
     {
-        if (needReload)
-        {
-            addNewClassLoader();
-            
-            /*
-            for(ClassDescriptorSourceUnit sourceFile : sourceFilesCompiled)            
+        synchronized(getMonitor())
+        {        
+            if (needReload)
             {
-                reloadSource(sourceFile,false); // No hace falta que detectemos las innerclasses porque al compilar se "descubren" todas                    
-            }            
-            */
-            
-            ClassDescriptorSourceFileRegistry sourceRegistry = delegateChangeDetector.getClassDescriptorSourceFileRegistry();            
-            
-            for(ClassDescriptorSourceUnit sourceFile : sourceRegistry.getClassDescriptorSourceFileColl())  // sourceRegistry NUNCA es nulo pues se ejecuta una primera vez en tiempo de inicialización
-            {
-            //    if (sourceFilesCompiled.contains(sourceFile))
-            //        continue;
-                // las clases deleted no están en sourceFileMap por lo que no hay que filtrarlas
-                reloadSource(sourceFile); // Ponemos detectInnerClasses a true porque son archivos fuente que posiblemente nunca se hayan tocado desde la carga inicial y por tanto quizás se desconocen las innerclasses                 
-            }            
-            
-            this.needReload = false;
-            return true;
+                addNewClassLoader();
+
+                ClassDescriptorSourceFileRegistry sourceRegistry = delegateChangeDetector.getClassDescriptorSourceFileRegistry();            
+
+                for(ClassDescriptorSourceUnit sourceFile : sourceRegistry.getClassDescriptorSourceFileColl())  // sourceRegistry NUNCA es nulo pues se ejecuta una primera vez en tiempo de inicialización
+                {
+                //    if (sourceFilesCompiled.contains(sourceFile))
+                //        continue;
+                    // las clases deleted no están en sourceFileMap por lo que no hay que filtrarlas
+                    reloadSource(sourceFile); // Ponemos detectInnerClasses a true porque son archivos fuente que posiblemente nunca se hayan tocado desde la carga inicial y por tanto quizás se desconocen las innerclasses                 
+                }            
+
+                this.needReload = false;
+                return true;
+            }
+            return false;    
         }
-        return false;         
     }
    
 }

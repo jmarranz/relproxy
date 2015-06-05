@@ -12,9 +12,9 @@ import java.util.LinkedList;
  */
 public abstract class ClassDescriptorSourceUnit extends ClassDescriptor
 {
-    protected JProxyEngine engine;
+    protected final JProxyEngine engine;
     protected long timestamp;
-    protected SourceUnit sourceUnit; 
+    protected final SourceUnit sourceUnit; 
     protected LinkedList<ClassDescriptorInner> innerClasses;
     
     public ClassDescriptorSourceUnit(JProxyEngine engine,String className,SourceUnit sourceFile, long timestamp) 

@@ -10,8 +10,8 @@ import java.io.IOException;
  */
 public class FileExt
 {
-    protected File file;
-    protected String cannonicalPath; // El obtener el cannonicalPath exige acceder al sistema de archivos, por eso nos inventamos esta clase, para evitar sucesivas llamadas a File.getCanonicalPath()
+    protected final File file;
+    protected final String cannonicalPath; // El obtener el cannonicalPath exige acceder al sistema de archivos, por eso nos inventamos esta clase, para evitar sucesivas llamadas a File.getCanonicalPath()
             
     public FileExt(File file)
     {

@@ -10,7 +10,7 @@ import java.util.Map;
  */
 public class ClassDescriptorSourceFileRegistry
 {
-    protected Map<String,ClassDescriptorSourceUnit> sourceUnitMapByClassName;
+    protected final Map<String,ClassDescriptorSourceUnit> sourceUnitMapByClassName;
     
     public ClassDescriptorSourceFileRegistry()
     {

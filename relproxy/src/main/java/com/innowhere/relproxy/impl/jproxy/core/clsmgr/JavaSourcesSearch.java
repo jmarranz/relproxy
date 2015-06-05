@@ -23,7 +23,7 @@ import java.util.LinkedList;
  */
 public class JavaSourcesSearch 
 {
-    protected JProxyEngineChangeDetectorAndCompiler parent;
+    protected final JProxyEngineChangeDetectorAndCompiler parent;
     
     public JavaSourcesSearch(JProxyEngineChangeDetectorAndCompiler parent)
     {
