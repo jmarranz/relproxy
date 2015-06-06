@@ -13,7 +13,7 @@ import java.util.LinkedList;
 public abstract class ClassDescriptorSourceUnit extends ClassDescriptor
 {
     protected final JProxyEngine engine;
-    protected long timestamp;
+    protected volatile long timestamp;
     protected final SourceUnit sourceUnit; 
     protected LinkedList<ClassDescriptorInner> innerClasses;
     

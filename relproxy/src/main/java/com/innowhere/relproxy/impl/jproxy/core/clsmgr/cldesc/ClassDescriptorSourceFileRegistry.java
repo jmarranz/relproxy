@@ -17,6 +17,11 @@ public class ClassDescriptorSourceFileRegistry
         this.sourceUnitMapByClassName = new HashMap<String,ClassDescriptorSourceUnit>();
     }
 
+    public ClassDescriptorSourceFileRegistry(ClassDescriptorSourceFileRegistry origin)
+    {
+        this.sourceUnitMapByClassName = new HashMap<String,ClassDescriptorSourceUnit>( origin.sourceUnitMapByClassName );
+    }    
+    
     public boolean isEmpty()
     {
         return sourceUnitMapByClassName.isEmpty();

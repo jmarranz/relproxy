@@ -129,7 +129,11 @@ public class JavaSourcesSearch
                             
                 if (timestampSourceFile > oldTimestamp)
                 {
-                    sourceFile.updateTimestamp(timestampSourceFile);
+                    Object monitor = engine.getMonitor();
+                    synchronized(monitor)
+                    {
+                        sourceFile.updateTimestamp(timestampSourceFile);
+                    }
                     updatedSourceFiles.add(sourceFile);
                 }
 

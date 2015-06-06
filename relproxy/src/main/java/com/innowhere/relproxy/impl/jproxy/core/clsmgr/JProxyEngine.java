@@ -29,7 +29,7 @@ public class JProxyEngine
     protected final String sourceEncoding = "UTF-8"; // Por ahora, provisional
     public volatile boolean stop = false;
     protected TimerTask task;
-    protected boolean needReload = false;     
+    protected boolean pendingReload = false;     
     protected final boolean enabled;    
     
     public JProxyEngine(JProxyImpl parent,boolean enabled,SourceScriptRoot scriptFile,ClassLoader rootClassLoader,FolderSourceList folderSourceList,FolderSourceList requiredExtraJarPaths,
@@ -104,7 +104,7 @@ public class JProxyEngine
                     
                     try
                     {
-                        detectChangesInSources(); // Está sincronizado
+                        detectChangesInSources(); // Está sincronizado las partes que lo necesitan
                     }        
                     catch(Exception ex)
                     {
@@ -122,9 +122,9 @@ public class JProxyEngine
         }
     }
    
-    public void setNeedReload(boolean needReload)
+    public void setPendingReload()
     {
-        this.needReload = needReload;
+        this.pendingReload = true;
     }        
     
        
@@ -264,27 +264,21 @@ public class JProxyEngine
     
     public ClassDescriptorSourceScript detectChangesInSources()
     {
-        synchronized(getMonitor())
-        {        
-            return delegateChangeDetector.detectChangesInSources();
-        }
+        return delegateChangeDetector.detectChangesInSources();        
     }    
    
     public ClassDescriptorSourceScript detectChangesInSourcesAndReload()
     {
-        synchronized(getMonitor())
-        {        
-            ClassDescriptorSourceScript res = delegateChangeDetector.detectChangesInSources();
-            reloadWhenChanged();
-            return res;
-        }
-    }    
+        ClassDescriptorSourceScript res = delegateChangeDetector.detectChangesInSources();        
+        reloadWhenChanged();
+        return res;        
+     }    
        
     public boolean reloadWhenChanged()
     {
         synchronized(getMonitor())
         {        
-            if (needReload)
+            if (pendingReload)
             {
                 addNewClassLoader();
 
@@ -298,7 +292,7 @@ public class JProxyEngine
                     reloadSource(sourceFile); // Ponemos detectInnerClasses a true porque son archivos fuente que posiblemente nunca se hayan tocado desde la carga inicial y por tanto quizás se desconocen las innerclasses                 
                 }            
 
-                this.needReload = false;
+                this.pendingReload = false;
                 return true;
             }
             return false;    

@@ -1,6 +1,10 @@
 
 RELEASE CHANGES
 
+* 0.8.5
+
+    - Improved performance reducing blocking code when checking source code changes
+
 * 0.8.4
 
     - Added the method JProxyConfig.setRequiredExtraJarPaths(String[] inputJarPaths) to workaround a problem with Liferay 6.2.
