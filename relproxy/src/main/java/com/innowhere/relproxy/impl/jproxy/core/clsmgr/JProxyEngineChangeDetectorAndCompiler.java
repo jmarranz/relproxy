@@ -18,7 +18,9 @@ import com.innowhere.relproxy.jproxy.JProxyDiagnosticsListener;
 import com.innowhere.relproxy.jproxy.JProxyInputSourceFileExcludedListener;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.LinkedList;
+import java.util.Map;
 
 /**
  *
@@ -112,32 +114,52 @@ public class JProxyEngineChangeDetectorAndCompiler
     {
         Object monitor = getJProxyEngine().getMonitor();
      
-        ClassDescriptorSourceFileRegistry oldSourceRegistry = null;
         synchronized(monitor)
         {            
             if (this.sourceRegistry != null) // Puede ser null (la primera vez)
             {
-                oldSourceRegistry = new ClassDescriptorSourceFileRegistry(sourceRegistry); // Copia
+                sourceRegistry.setAllClassDescriptorSourceFilesPendingToRemove( true ); // A medida que los vamos encontrando ponemos a false
             }
-        }
-
-        ClassDescriptorSourceFileRegistry newSourceRegistry = new ClassDescriptorSourceFileRegistry();            
+        }          
 
         LinkedList<ClassDescriptorSourceUnit> updatedSourceFiles = new LinkedList<ClassDescriptorSourceUnit>();
         LinkedList<ClassDescriptorSourceUnit> newSourceFiles = new LinkedList<ClassDescriptorSourceUnit>();        
         LinkedList<ClassDescriptorSourceUnit> deletedSourceFiles = new LinkedList<ClassDescriptorSourceUnit>();
-
-        ClassDescriptorSourceScript scriptFileDesc = sourcesSearch.sourceFileSearch(scriptFile,oldSourceRegistry,newSourceRegistry,updatedSourceFiles,newSourceFiles,deletedSourceFiles);
-
+        
+        ClassDescriptorSourceScript scriptFileDesc = sourcesSearch.sourceFileSearch(scriptFile,sourceRegistry,updatedSourceFiles,newSourceFiles);        
+        
+        synchronized(monitor)
+        {
+            if (sourceRegistry != null)
+            {
+                sourceRegistry.getAllClassDescriptorSourceFilesPendingToRemove(deletedSourceFiles);
+            }
+            else
+            {
+                this.sourceRegistry = new ClassDescriptorSourceFileRegistry();
+            }
+        }
+        
         if (updatedSourceFiles.isEmpty() && newSourceFiles.isEmpty() && deletedSourceFiles.isEmpty())
             return scriptFileDesc;
 
         // También el hecho de eliminar una clase debe implicar crear un ClassLoader nuevo para que dicha clase desaparezca de las clases cargadas aunque será muy raro que sólo eliminemos un .java y no añadamos/cambiemos otros, otro motico es porque si tenemos configurado el autosalvado de .class tenemos que eliminar en ese caso
 
         synchronized(monitor)
-        {        
-            this.sourceRegistry = newSourceRegistry;
+        {   
+            if (!deletedSourceFiles.isEmpty()) // Implica que sourceRegistry no era null inicialmente 
+            {
+                for(ClassDescriptorSourceUnit classDesc : deletedSourceFiles)
+                    sourceRegistry.removeClassDescriptorSourceUnit(classDesc.getClassName());
+            }
 
+            if (!newSourceFiles.isEmpty())
+            {
+                for(ClassDescriptorSourceUnit classDesc : newSourceFiles)
+                    sourceRegistry.addClassDescriptorSourceUnit(classDesc);
+            }            
+            
+            
             ArrayList<ClassDescriptorSourceUnit> sourceFilesToCompile = new ArrayList<ClassDescriptorSourceUnit>(updatedSourceFiles.size() + newSourceFiles.size());
             sourceFilesToCompile.addAll(updatedSourceFiles);
             sourceFilesToCompile.addAll(newSourceFiles);            

@@ -2,6 +2,7 @@ package com.innowhere.relproxy.impl.jproxy.core.clsmgr.cldesc;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.Map;
 
 /**
@@ -46,6 +47,24 @@ public class ClassDescriptorSourceFileRegistry
     {
         sourceUnitMapByClassName.put(sourceFile.getClassName(), sourceFile);
     }
+    
+    public void setAllClassDescriptorSourceFilesPendingToRemove(boolean pending)
+    {
+        for(Map.Entry<String,ClassDescriptorSourceUnit> entries : sourceUnitMapByClassName.entrySet())        
+            entries.getValue().setPendingToRemove(pending);        
+    }
+    
+    public LinkedList<ClassDescriptorSourceUnit> getAllClassDescriptorSourceFilesPendingToRemove(LinkedList<ClassDescriptorSourceUnit> deletedSourceFiles)
+    {      
+        for(Map.Entry<String,ClassDescriptorSourceUnit> entries : sourceUnitMapByClassName.entrySet())        
+        {
+            ClassDescriptorSourceUnit classDesc = entries.getValue();
+            boolean pending = classDesc.isPendingToRemove();  
+            if (pending)
+                deletedSourceFiles.add(classDesc);            
+        }
+        return deletedSourceFiles;
+    }         
     
     public ClassDescriptor getClassDescriptor(String className)
     {

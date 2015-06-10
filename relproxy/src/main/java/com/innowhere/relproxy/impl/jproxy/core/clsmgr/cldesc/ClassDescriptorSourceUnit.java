@@ -16,6 +16,7 @@ public abstract class ClassDescriptorSourceUnit extends ClassDescriptor
     protected volatile long timestamp;
     protected final SourceUnit sourceUnit; 
     protected LinkedList<ClassDescriptorInner> innerClasses;
+    protected boolean pendingToRemove = false; // Se usa como monohilo, no hay problemas de sincronización
     
     public ClassDescriptorSourceUnit(JProxyEngine engine,String className,SourceUnit sourceFile, long timestamp) 
     {
@@ -61,6 +62,17 @@ public abstract class ClassDescriptorSourceUnit extends ClassDescriptor
         this.timestamp = timestamp;
     }
 
+    public boolean isPendingToRemove() 
+    {
+        return pendingToRemove;
+    }
+
+    public void setPendingToRemove(boolean pendingToRemove) 
+    {
+        this.pendingToRemove = pendingToRemove;
+    }
+    
+    
     public void cleanOnSourceCodeChanged()
     {
         // Como ha cambiado la clase, reseteamos las dependencias        
