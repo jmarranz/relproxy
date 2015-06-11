@@ -1,6 +1,10 @@
 
 RELEASE CHANGES
 
+* 0.8.6
+ 
+  UNPUBLISHED
+
 * 0.8.5
 
     - Improved performance reducing blocking code when checking source code changes and no change is detected.
