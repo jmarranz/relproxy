@@ -18,9 +18,7 @@ import com.innowhere.relproxy.jproxy.JProxyDiagnosticsListener;
 import com.innowhere.relproxy.jproxy.JProxyInputSourceFileExcludedListener;
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.LinkedList;
-import java.util.Map;
 
 /**
  *
@@ -161,7 +159,7 @@ public class JProxyEngineChangeDetectorAndCompiler
                         sourceRegistry.removeClassDescriptorSourceUnit(classDesc.getClassName());
                 }
 
-                if (!newSourceFiles.isEmpty()) // En firstTime ya están añadidos en sourceRegistry
+                if (!newSourceFiles.isEmpty()) // En firstTime ya están añadidos en sourceRegistry explícitamente al recorrer los sources
                 {
                     for(ClassDescriptorSourceUnit classDesc : newSourceFiles)
                         sourceRegistry.addClassDescriptorSourceUnit(classDesc);

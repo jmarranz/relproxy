@@ -118,15 +118,18 @@ public class JavaSourcesSearch
         ClassDescriptorSourceUnit sourceFile;
         if (!firstTime)
         {
-            sourceFile = sourceRegistry.getClassDescriptorSourceUnit(className);
-
+            Object monitor = engine.getMonitor();
+            synchronized(monitor)
+            {
+                sourceFile = sourceRegistry.getClassDescriptorSourceUnit(className);
+            }
+            
             if (sourceFile != null) // Cambiado
             {
                 long oldTimestamp = sourceFile.getTimestamp();
                             
                 if (timestampSourceFile > oldTimestamp)
                 {
-                    Object monitor = engine.getMonitor();
                     synchronized(monitor)
                     {
                         sourceFile.updateTimestamp(timestampSourceFile);
@@ -177,7 +180,11 @@ public class JavaSourcesSearch
                 newSourceFiles.add(sourceFile);
             }
             
-            sourceRegistry.addClassDescriptorSourceUnit(sourceFile); // El registro de archivos se hace por primera vez por lo que hay que añadirlos todos inicialmente, updatedSourceFiles y newSourceFiles indicarán en este caso los que hay que recompilar además
+            Object monitor = engine.getMonitor();
+            synchronized(monitor)
+            {                        
+                sourceRegistry.addClassDescriptorSourceUnit(sourceFile); // El registro de archivos se hace por primera vez por lo que hay que añadirlos todos inicialmente, updatedSourceFiles y newSourceFiles indicarán en este caso los que hay que recompilar además
+            }
         }
 
         return sourceFile;
