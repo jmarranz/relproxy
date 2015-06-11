@@ -9,7 +9,7 @@
     <property file="conf/conf_local.properties"/>  <!-- just define property: maven_folder -->
     <property file="conf/conf.properties"/>
 
-    <property name="distribution_folder" value="${program}/../relproxy_gen_dist" />
+    <property name="distribution_folder" value="${program}/../relproxy_dist_tmp" />
     <property name="distribution_tmp_folder" value="${distribution_folder}/relproxy" />
     <property name="maven_dist_folder" value="${distribution_folder}/maven_dist" />    
     <property name="pom" value="${program}/pom.xml" />   

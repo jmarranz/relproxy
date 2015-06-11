@@ -3,7 +3,7 @@ RELEASE CHANGES
 
 * 0.8.5
 
-    - Improved performance reducing blocking code when checking source code changes
+    - Improved performance reducing blocking code when checking source code changes and no change is detected.
 
 * 0.8.4
 

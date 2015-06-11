@@ -19,7 +19,7 @@
 ++++
 
 (C) Jose María Arranz Santamaría
-v0.8.5. February 18, 2015
+v0.8.5. June 11, 2015
 
 _Because Java is also a dynamic language and Groovy can still be a dynamic language in a Java based environment._
 
