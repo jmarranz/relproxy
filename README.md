@@ -21,7 +21,7 @@ Download Binaries and Docs
 
 Distribution file includes binaries, examples, manual and javadocs.
 
-Artefacts are uploaded to [JCenter](https://bintray.com/jmarranz/maven/relproxy/view) and [Maven Central](http://search.maven.org/#browse%7C-260743618) repositories
+Artefacts are uploaded to [JCenter](https://bintray.com/jmarranz/maven/relproxy/view) and [Maven Central](https://oss.sonatype.org/content/repositories/releases/com/innowhere/relproxy/) repositories
 
 Maven: 
 
