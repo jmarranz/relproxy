@@ -114,32 +114,38 @@ public class JProxyEngineChangeDetectorAndCompiler
     {
         Object monitor = getJProxyEngine().getMonitor();
      
+        boolean firstTime;
+        
         synchronized(monitor)
         {            
-            if (this.sourceRegistry != null) // Puede ser null (la primera vez)
+            if (this.sourceRegistry == null) // Es null la primera vez
             {
-                sourceRegistry.setAllClassDescriptorSourceFilesPendingToRemove( true ); // A medida que los vamos encontrando ponemos a false
+                firstTime = true;
+                this.sourceRegistry = new ClassDescriptorSourceFileRegistry();
+            }
+            else 
+            {
+                firstTime = false;
+                sourceRegistry.setAllClassDescriptorSourceFilesPendingToRemove( true ); // A medida que los vamos encontrando ponemos a false, es mucho más rápido que recrear el registro si no ha cambiado nada (lo normal)
             }
         }          
 
         LinkedList<ClassDescriptorSourceUnit> updatedSourceFiles = new LinkedList<ClassDescriptorSourceUnit>();
         LinkedList<ClassDescriptorSourceUnit> newSourceFiles = new LinkedList<ClassDescriptorSourceUnit>();        
+        
+        ClassDescriptorSourceScript scriptFileDesc = sourcesSearch.sourceFileSearch(firstTime,scriptFile,sourceRegistry,updatedSourceFiles,newSourceFiles);        
+
         LinkedList<ClassDescriptorSourceUnit> deletedSourceFiles = new LinkedList<ClassDescriptorSourceUnit>();
         
-        ClassDescriptorSourceScript scriptFileDesc = sourcesSearch.sourceFileSearch(scriptFile,sourceRegistry,updatedSourceFiles,newSourceFiles);        
-        
-        synchronized(monitor)
-        {
-            if (sourceRegistry != null)
+        if (!firstTime)
+        {        
+            synchronized(monitor)
             {
+                // Obtenemos los deletedSourceFiles detectados (si es firstTime no tiene sentido hacer esto no haría nada pero nos ahorramos synchronized y llamada)
                 sourceRegistry.getAllClassDescriptorSourceFilesPendingToRemove(deletedSourceFiles);
             }
-            else
-            {
-                this.sourceRegistry = new ClassDescriptorSourceFileRegistry();
-            }
         }
-        
+    
         if (updatedSourceFiles.isEmpty() && newSourceFiles.isEmpty() && deletedSourceFiles.isEmpty())
             return scriptFileDesc;
 
@@ -147,18 +153,20 @@ public class JProxyEngineChangeDetectorAndCompiler
 
         synchronized(monitor)
         {   
-            if (!deletedSourceFiles.isEmpty()) // Implica que sourceRegistry no era null inicialmente 
+            if (!firstTime)
             {
-                for(ClassDescriptorSourceUnit classDesc : deletedSourceFiles)
-                    sourceRegistry.removeClassDescriptorSourceUnit(classDesc.getClassName());
-            }
+                if (!deletedSourceFiles.isEmpty()) // En firstTime no tiene sentido que haya eliminados
+                {
+                    for(ClassDescriptorSourceUnit classDesc : deletedSourceFiles)
+                        sourceRegistry.removeClassDescriptorSourceUnit(classDesc.getClassName());
+                }
 
-            if (!newSourceFiles.isEmpty())
-            {
-                for(ClassDescriptorSourceUnit classDesc : newSourceFiles)
-                    sourceRegistry.addClassDescriptorSourceUnit(classDesc);
-            }            
-            
+                if (!newSourceFiles.isEmpty()) // En firstTime ya están añadidos en sourceRegistry
+                {
+                    for(ClassDescriptorSourceUnit classDesc : newSourceFiles)
+                        sourceRegistry.addClassDescriptorSourceUnit(classDesc);
+                }            
+            }
             
             ArrayList<ClassDescriptorSourceUnit> sourceFilesToCompile = new ArrayList<ClassDescriptorSourceUnit>(updatedSourceFiles.size() + newSourceFiles.size());
             sourceFilesToCompile.addAll(updatedSourceFiles);

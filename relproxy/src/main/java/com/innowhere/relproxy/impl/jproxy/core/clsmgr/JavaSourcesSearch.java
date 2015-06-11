@@ -35,9 +35,9 @@ public class JavaSourcesSearch
         return parent;
     }
     
-    public ClassDescriptorSourceScript sourceFileSearch(SourceScriptRoot scriptFile,ClassDescriptorSourceFileRegistry sourceRegistry,LinkedList<ClassDescriptorSourceUnit> updatedSourceFiles,LinkedList<ClassDescriptorSourceUnit> newSourceFiles)
+    public ClassDescriptorSourceScript sourceFileSearch(boolean firstTime,SourceScriptRoot scriptFile,ClassDescriptorSourceFileRegistry sourceRegistry,LinkedList<ClassDescriptorSourceUnit> updatedSourceFiles,LinkedList<ClassDescriptorSourceUnit> newSourceFiles)
     {
-        ClassDescriptorSourceScript scriptFileDesc = (scriptFile == null) ? null : processSourceFileScript(scriptFile,sourceRegistry,updatedSourceFiles,newSourceFiles);
+        ClassDescriptorSourceScript scriptFileDesc = (scriptFile == null) ? null : processSourceFileScript(firstTime,scriptFile,sourceRegistry,updatedSourceFiles,newSourceFiles);
         FileExt[] folderSourceList = parent.getFolderSourceList().getArray();
         if (folderSourceList == null) // Es el caso de shell interactivo o code snippet
             return scriptFileDesc;
@@ -54,7 +54,7 @@ public class JavaSourcesSearch
             if (children.length == 0) continue; // Empty
 
             if (allEmpty) allEmpty = false;
-            recursiveSourceFileJavaSearch(scriptFileJavaCannonPath, i ,rootFolderOfSources,children,sourceRegistry,updatedSourceFiles,newSourceFiles);           
+            recursiveSourceFileJavaSearch(firstTime,scriptFileJavaCannonPath, i ,rootFolderOfSources,children,sourceRegistry,updatedSourceFiles,newSourceFiles);           
         }     
         
         if (allEmpty)
@@ -63,7 +63,7 @@ public class JavaSourcesSearch
         return scriptFileDesc;
     }
     
-    private void recursiveSourceFileJavaSearch(String scriptFileJavaCannonPath,int rootFolderOfSourcesIndex,FileExt parentPath,String[] relPathList,ClassDescriptorSourceFileRegistry sourceRegistry,LinkedList<ClassDescriptorSourceUnit> updatedSourceFiles,LinkedList<ClassDescriptorSourceUnit> newSourceFiles)
+    private void recursiveSourceFileJavaSearch(boolean firstTime,String scriptFileJavaCannonPath,int rootFolderOfSourcesIndex,FileExt parentPath,String[] relPathList,ClassDescriptorSourceFileRegistry sourceRegistry,LinkedList<ClassDescriptorSourceUnit> updatedSourceFiles,LinkedList<ClassDescriptorSourceUnit> newSourceFiles)
     {
         FileExt rootFolderOfSources = parent.getFolderSourceList().getArray()[rootFolderOfSourcesIndex];           
         JProxyInputSourceFileExcludedListener listener = parent.getJProxyInputSourceFileExcludedListener();        
@@ -78,7 +78,7 @@ public class JavaSourcesSearch
                     continue;                
                 
                 String[] children = file.list();  // Si está vacío el array está vacío pero existe
-                recursiveSourceFileJavaSearch(scriptFileJavaCannonPath,rootFolderOfSourcesIndex,fileExt,children,sourceRegistry,updatedSourceFiles,newSourceFiles);
+                recursiveSourceFileJavaSearch(firstTime,scriptFileJavaCannonPath,rootFolderOfSourcesIndex,fileExt,children,sourceRegistry,updatedSourceFiles,newSourceFiles);
             }
             else
             {
@@ -94,29 +94,29 @@ public class JavaSourcesSearch
                     continue;
                                 
                 SourceFileJavaNormal sourceFile = new SourceFileJavaNormal(fileExt,rootFolderOfSources);
-                processSourceFileJava(sourceFile,sourceRegistry,updatedSourceFiles,newSourceFiles);
+                processSourceFileJava(firstTime,sourceFile,sourceRegistry,updatedSourceFiles,newSourceFiles);
             }
         }
     }    
     
-    private ClassDescriptorSourceScript processSourceFileScript(SourceScriptRoot file,ClassDescriptorSourceFileRegistry sourceRegistry,LinkedList<ClassDescriptorSourceUnit> updatedSourceFiles,LinkedList<ClassDescriptorSourceUnit> newSourceFiles)
+    private ClassDescriptorSourceScript processSourceFileScript(boolean firstTime,SourceScriptRoot file,ClassDescriptorSourceFileRegistry sourceRegistry,LinkedList<ClassDescriptorSourceUnit> updatedSourceFiles,LinkedList<ClassDescriptorSourceUnit> newSourceFiles)
     {             
-        return (ClassDescriptorSourceScript)processSourceFile(file,true,sourceRegistry,updatedSourceFiles,newSourceFiles);        
+        return (ClassDescriptorSourceScript)processSourceFile(firstTime,file,true,sourceRegistry,updatedSourceFiles,newSourceFiles);        
     }    
     
-    private ClassDescriptorSourceFileJava processSourceFileJava(SourceFileJavaNormal file,ClassDescriptorSourceFileRegistry sourceRegistry,LinkedList<ClassDescriptorSourceUnit> updatedSourceFiles,LinkedList<ClassDescriptorSourceUnit> newSourceFiles)
+    private ClassDescriptorSourceFileJava processSourceFileJava(boolean firstTime,SourceFileJavaNormal file,ClassDescriptorSourceFileRegistry sourceRegistry,LinkedList<ClassDescriptorSourceUnit> updatedSourceFiles,LinkedList<ClassDescriptorSourceUnit> newSourceFiles)
     {    
-        return (ClassDescriptorSourceFileJava)processSourceFile(file,false,sourceRegistry,updatedSourceFiles,newSourceFiles);        
+        return (ClassDescriptorSourceFileJava)processSourceFile(firstTime,file,false,sourceRegistry,updatedSourceFiles,newSourceFiles);        
     }
     
-    private ClassDescriptorSourceUnit processSourceFile(SourceUnit file,boolean script,ClassDescriptorSourceFileRegistry sourceRegistry,LinkedList<ClassDescriptorSourceUnit> updatedSourceFiles,LinkedList<ClassDescriptorSourceUnit> newSourceFiles)
+    private ClassDescriptorSourceUnit processSourceFile(boolean firstTime,SourceUnit file,boolean script,ClassDescriptorSourceFileRegistry sourceRegistry,LinkedList<ClassDescriptorSourceUnit> updatedSourceFiles,LinkedList<ClassDescriptorSourceUnit> newSourceFiles)
     {
         JProxyEngine engine = parent.getJProxyEngine();
         String className = file.getClassName(); 
         
         long timestampSourceFile = file.lastModified();
         ClassDescriptorSourceUnit sourceFile;
-        if (sourceRegistry != null)
+        if (!firstTime)
         {
             sourceFile = sourceRegistry.getClassDescriptorSourceUnit(className);
 
@@ -157,7 +157,7 @@ public class JavaSourcesSearch
                 if (timestampSourceFile > timestampCompiledClass)
                 {
                     sourceFile = ClassDescriptorSourceUnit.create(script,engine,className,file,timestampSourceFile);
-                    updatedSourceFiles.add(sourceFile);
+                    updatedSourceFiles.add(sourceFile); // Hay que recompilar
 //System.out.println("UPDATED: " + className + " " + urlClass.toExternalForm() + " " + (timestampSourceFile - timestampCompiledClass));
                 }
                 else
@@ -171,12 +171,13 @@ public class JavaSourcesSearch
                 }
 
             }
-            else // No hay .class, es un archivo fuente nuevo
+            else // No hay .class, es un archivo fuente nuevo creado antes de cargar la app web, hay que compilar si o si
             {
                 sourceFile = ClassDescriptorSourceUnit.create(script,engine,className,file,timestampSourceFile);
+                newSourceFiles.add(sourceFile);
             }
             
-            newSourceFiles.add(sourceFile); // El registro de archivos se hace por primera vez por lo que hay que añadirlos todos inicialmente
+            sourceRegistry.addClassDescriptorSourceUnit(sourceFile); // El registro de archivos se hace por primera vez por lo que hay que añadirlos todos inicialmente, updatedSourceFiles y newSourceFiles indicarán en este caso los que hay que recompilar además
         }
 
         return sourceFile;
