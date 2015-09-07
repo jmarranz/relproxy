@@ -5,7 +5,10 @@ import com.innowhere.relproxy.jproxy.JProxy;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
+import org.itsnat.core.ItsNatServletRequest;
+import org.itsnat.core.ItsNatServletResponse;
 import org.itsnat.core.event.ItsNatServletRequestListener;
+import org.itsnat.core.html.ItsNatHTMLDocument;
 import org.itsnat.core.http.HttpServletWrapper;
 import org.itsnat.core.tmpl.ItsNatDocumentTemplate;
 
@@ -29,13 +32,12 @@ public class JProxyExampleServlet extends HttpServletWrapper
         
         String pathPrefix = context.getRealPath("/") + "/WEB-INF/javaex/pages/";
 
-        ItsNatDocumentTemplate docTemplate;
-        docTemplate = itsNatServlet.registerItsNatDocumentTemplate("javaex","text/html", pathPrefix + "javaex.html");
-
-        FalseDB db = new FalseDB();        
+        final FalseDB db = new FalseDB();
         
+        ItsNatDocumentTemplate docTemplate;
+        docTemplate = itsNatServlet.registerItsNatDocumentTemplate("javaex","text/html", pathPrefix + "javaex.html");                
         ItsNatServletRequestListener listener = JProxy.create(new example.javaex.JProxyExampleLoadListener(db), ItsNatServletRequestListener.class);
-        docTemplate.addItsNatServletRequestListener(listener);
+        docTemplate.addItsNatServletRequestListener(listener);       
         
         ItsNatServletRequestListener original = new example.javaex.JProxyExampleLoadListener(db);
         ItsNatServletRequestListener proxy = JProxy.create(original, ItsNatServletRequestListener.class);        

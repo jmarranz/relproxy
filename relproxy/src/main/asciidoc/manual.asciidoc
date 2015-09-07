@@ -1028,6 +1028,26 @@ public class JProxyExampleLoadListener implements ItsNatServletRequestListener
 }
 ----
 
+As of version 0.8.6 RelProxy also supports hot reload of inner classes including anonymous inner classes. An example of ItsNat code:
+
+[source,java]
+.JProxyExampleLoadListener.java
+----
+EventListener listener = new EventListener()
+{    
+     @Override
+     public void handleEvent(Event evt) 
+     {
+         ...
+     }
+ };
+
+Element buttonElem = doc.getElementById("buttonId");
+((EventTarget)buttonElem).addEventListener("click", JProxy.create(listener, EventListener.class) ,false); 
+----
+
+Obviously the container (enclosing) class of the inner class must be reloadable.
+
 === Use of JProxy with multiple servlets 
 
 In the previous JProxy example we have supposed one single servlet requiring class reloading and context reloading disabled.

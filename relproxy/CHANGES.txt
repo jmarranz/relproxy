@@ -3,7 +3,9 @@ RELEASE CHANGES
 
 * 0.8.6
  
-  UNPUBLISHED
+    - Support of class reloading in inner classes including anonymous inner classes. Chapter "JProxy or how to be able..." updated accordingly. This feature
+      is used by ItsNat 1.4, this release uses RelProxy internally for user class reloading (mainly listeners).
+
 
 * 0.8.5
 
