@@ -19,7 +19,7 @@
 ++++
 
 (C) Jose María Arranz Santamaría
-v0.8.6 September 8, 2015
+v0.8.7 September 8, 2015
 
 _Because Java is also a dynamic language and Groovy can still be a dynamic language in a Java based environment._
 
@@ -143,7 +143,7 @@ The distribution file includes some example scripts into the folder `cmd_example
 As of v0.8.3 RelProxy is registered in https://bintray.com/bintray/jcenter/[Bintray/JCenter] and Maven Central repositories.
 Add JCenter repository to your POM or Maven settings if you want to import from JCenter, in Gradle just add `jcenter()` to `repositories`.
 
-Examples for version 0.8.6:
+Examples for version 0.8.7:
 
 Maven POM:
 
@@ -152,7 +152,7 @@ Maven POM:
       <dependency>
         <groupId>com.innowhere</groupId>
         <artifactId>relproxy</artifactId>
-        <version>0.8.6</version>
+        <version>0.8.7</version>
       </dependency>
 ----
 
@@ -173,7 +173,7 @@ Gradle build:
 [source,groovy]
 ----
 dependencies {
-  runtime 'com.innowhere:relproxy:0.8.6'
+  compile 'com.innowhere:relproxy:0.8.7'
 }
 ----
 
@@ -343,7 +343,7 @@ to be also included in compilation and copied to the final war, this configurati
 At the time of writing RelProxy is not in Maven Central repository, you must manually include it in your dependencies as a `system` dependency, and copy the jar to the `WEB-INF/lib` 
 folder.
 
-The following POM is a simple example of a ItsNat web application using RelProxy (v0.8.6) and including a published source code folder, `src/main/webapp/WEB-INF/code`, able to 
+The following POM is a simple example of a ItsNat web application using RelProxy (v0.8.7) and including a published source code folder, `src/main/webapp/WEB-INF/code`, able to 
 contain reloadable source code (remember to add `ItsNat-1.3.1.jar` to the `WEB-INF/lib` folder):
 
 [source,xml]
@@ -392,7 +392,7 @@ contain reloadable source code (remember to add `ItsNat-1.3.1.jar` to the `WEB-I
       <dependency>
           <groupId>com.innowhere</groupId>
           <artifactId>relproxy</artifactId>
-          <version>0.8.6</version>
+          <version>0.8.7</version>
       </dependency>    
 
       <dependency>
@@ -1708,7 +1708,7 @@ The following is an example of shell code (into a script file) to execute the pr
 ----
 #!/bin/sh
 
-RELPROXY_JAR=relproxy-0.8.6.jar
+RELPROXY_JAR=relproxy-0.8.7.jar
 
 PROJECT=`dirname $0`/..
 
@@ -1805,7 +1805,7 @@ The following is a shell script included in RelProxy distribution which executes
 ----
 #!/bin/sh
 
-RELPROXY_JAR=relproxy-0.8.6.jar
+RELPROXY_JAR=relproxy-0.8.7.jar
 
 PROJECT=`dirname $0`/..
 
