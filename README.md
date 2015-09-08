@@ -5,13 +5,13 @@ RelProxy is a simple Java and Groovy hot class reloader for Java and Groovy prov
 News
 ------
 
+- 2015-6-12 v0.8.6 Released. Support of class reloading of inner classes including anonymous. [Release Notes](https://github.com/jmarranz/relproxy/blob/master/relproxy/CHANGES.txt)
 - 2015-6-12 v0.8.5 Released. Improved performance when checking source changes and no change is detected. [Release Notes](https://github.com/jmarranz/relproxy/blob/master/relproxy/CHANGES.txt)
 - 2015-2-17 v0.8.4 Released. Added workaround to support Liferay (6.2 tested) [Release Notes](https://github.com/jmarranz/relproxy/blob/master/relproxy/CHANGES.txt).
                    New [Liferay 6.2 example](https://github.com/jmarranz/relproxy_examples/tree/master/relproxy_ex_liferay-portlet) using RelProxy.
 - 2015-1-23 v0.8.3 Released. First release in JCenter and Maven Central [Release Notes](https://github.com/jmarranz/relproxy/blob/master/relproxy/CHANGES.txt)
 - 2015-2-5 [Java Hot Class Reloading with RelProxy in Development Mode, a GWT Example](http://java.dzone.com/articles/java-hot-class-reloading) JavaLobby article
 - 2015-1-30 [Slides](http://www.slideshare.net/jmarranz/relproxy-class-reload-and-easy-java-scripting) in English and [video](http://autentia.com/2015/01/30/relproxy-easy-class-reload-and-scripting-with-java-por-jose-maria-arranz/#) in Spanish of the RelProxy presentation in MadridJUG on January 28!
-- 2015-1-23 v0.8.2 Released! [Release Notes](https://github.com/jmarranz/relproxy/blob/master/relproxy/CHANGES.txt)
 
 
 Download Binaries and Docs
