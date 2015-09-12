@@ -1,11 +1,12 @@
 
 RELEASE CHANGES
 
+* 0.8.7 (UNPUBLISHED)
+
 * 0.8.6
- 
+
     - Support of class reloading in inner classes including anonymous inner classes. Chapter "JProxy or how to be able..." updated accordingly. This feature
       is used by ItsNat 1.4, this release uses RelProxy internally for user class reloading (mainly listeners).
-
 
 * 0.8.5
 
@@ -20,8 +21,8 @@ RELEASE CHANGES
 
 * 0.8.3
 
-    - First release published on bintray.com/JCenter and Maven Central. In Maven just add to your POM: 
-    
+    - First release published on bintray.com/JCenter and Maven Central. In Maven just add to your POM:
+
       <dependency>
         <groupId>com.innowhere</groupId>
         <artifactId>relproxy</artifactId>
@@ -45,7 +46,7 @@ RELEASE CHANGES
 * 0.8.1
 
     - Fixed a problem with class localization and loading of javax.* classes not included in Java core (ex javax.servlet classes)
-    - Support of multiple input folder roots for sources: JProxyConfig.setInputPaths(String[] inputPaths) 
+    - Support of multiple input folder roots for sources: JProxyConfig.setInputPaths(String[] inputPaths)
     - Added listener JProxyConfig.setRelProxyOnReloadListener(RelProxyOnReloadListener) to expecify excluded files
     - Added listener JProxyConfig.setJProxyCompilerListener(JProxyCompilerListener) to monitor when files are compiled
     - Added JProxyConfig.isRunning() to detect whether JProxy is configured and running
