@@ -229,7 +229,23 @@ public class JProxyEngineChangeDetectorAndCompiler
 
             deletedSourceFiles = null; // Ya no se necesita
 
-            engine.setPendingReload();
+            boolean setPendingReload = true;
+            if (sourceFilesToCompile.size() == 1)
+            {
+                ClassDescriptorSourceUnit sourceFile = sourceFilesToCompile.get(0);
+                SourceUnit sourceUnit = sourceFile.getSourceUnit();
+                if ((sourceUnit instanceof SourceScriptRootInMemory) && ((SourceScriptRootInMemory)sourceUnit).isEmptyCode())
+                {
+                    // Leer notas en SourceScriptRootInMemory.isEmptyCode() de esta manera evitamos crear un ClassLoader nuevo inútilmente por culpa de una clase
+                    // root que no sirve para nada, ello impide que el registro/desregistro en colecciones funcione bien pues la instancia
+                    // en el proxy que añade se ha recreado y es diferente por tanto a la instancia del proxy que elimina pues hace lo mismo por su parte
+                    // aunque el ClassLoader sea el mismo. Si hemos cambiado el código del listener tiene sentido, pero inútilmente por una clase estúpida es tontería
+                    setPendingReload = false;
+                }
+            }
+            
+            if (setPendingReload)
+                engine.setPendingReload();
         }
 
         return scriptFileDesc;

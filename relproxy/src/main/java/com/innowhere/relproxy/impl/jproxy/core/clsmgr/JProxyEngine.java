@@ -269,7 +269,7 @@ public class JProxyEngine
    
     public ClassDescriptorSourceScript detectChangesInSourcesAndReload()
     {
-        ClassDescriptorSourceScript res = delegateChangeDetector.detectChangesInSources();        
+        ClassDescriptorSourceScript res = detectChangesInSources();        
         reloadWhenChanged();
         return res;        
      }    

@@ -42,7 +42,8 @@ public abstract class GenericProxyInvocationHandler implements InvocationHandler
         if (args != null && args.length == 1)
         {
             // Conseguimos que en proxy1.equals(proxy2) se usen los objetos asociados no los propios proxies, para ello obtenemos el objeto asociado al parámetro 
-            // No hace falta que equals forme parte de la interface
+            // No hace falta que equals forme parte de la interface, pero está ahí implícitamente
+            // hashCode() como no tiene params es llamado sin problema de conversiones
             Object param = args[0];
             if (param instanceof Proxy &&  // Si es una clase generada com.sun.proxy.$ProxyN (N=1,2...) es también derivada de Proxy
                 method.getName().equals("equals") && 

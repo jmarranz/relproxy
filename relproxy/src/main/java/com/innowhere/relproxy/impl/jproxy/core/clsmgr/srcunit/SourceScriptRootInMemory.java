@@ -35,6 +35,14 @@ public class SourceScriptRootInMemory extends SourceScriptRoot
         return code;
     }
     
+    public boolean isEmptyCode()
+    {
+        // Si code es "" la clase especial se genera pero no hace nada simplemente devuelve un null.
+        // Este es el caso en el que utilizamos RelProxy embebido en un framework utilizando la API ScriptEngine pero únicamente porque se usa una API basada 
+        // en interfaces, pero tiene el inconveniente de generarse un SourceScriptRootInMemory inútil que no hace nada        
+        return code.isEmpty();
+    }
+    
     public String getScriptCode()
     {
         return code;
