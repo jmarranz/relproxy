@@ -1,6 +1,9 @@
 
 RELEASE CHANGES
 
+* 0.8.8 (UNPUBLISHED)
+
+
 * 0.8.7
 
     - Some improvement needed when embedding RelProxy Java using the scripting API (avoiding one unnecessary first class reload).

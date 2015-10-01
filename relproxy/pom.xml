@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.innowhere</groupId>
     <artifactId>relproxy</artifactId>
-    <version>0.8.7</version>
+    <version>0.8.8</version>
     <packaging>jar</packaging>
     
     <name>relproxy</name>
