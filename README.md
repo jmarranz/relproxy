@@ -5,6 +5,7 @@ RelProxy is a simple Java and Groovy hot class reloader for Java and Groovy prov
 News
 ------
 
+- 2015-10-1 v0.8.7 Released. Some improvement needed when embedding RelProxy Java using the scripting API. [Release Notes](https://github.com/jmarranz/relproxy/blob/master/relproxy/CHANGES.txt)
 - 2015-6-12 v0.8.6 Released. Support of class reloading of inner classes including anonymous. [Release Notes](https://github.com/jmarranz/relproxy/blob/master/relproxy/CHANGES.txt)
 - 2015-6-12 v0.8.5 Released. Improved performance when checking source changes and no change is detected. [Release Notes](https://github.com/jmarranz/relproxy/blob/master/relproxy/CHANGES.txt)
 - 2015-2-17 v0.8.4 Released. Added workaround to support Liferay (6.2 tested) [Release Notes](https://github.com/jmarranz/relproxy/blob/master/relproxy/CHANGES.txt).

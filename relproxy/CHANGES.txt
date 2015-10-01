@@ -3,7 +3,7 @@ RELEASE CHANGES
 
 * 0.8.7
 
-    - Some improvement needed when embedding RelProxy Java using the scripting API.
+    - Some improvement needed when embedding RelProxy Java using the scripting API (avoiding one unnecessary first class reload).
     - Added chapter to Manual: "Embedding RelProxy Java in your Java framework to provide hot reload".
     - Added new example in RelProxy Examples repository named relproxy_builtin_ex on how to embed RelProxy.
 
