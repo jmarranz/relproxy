@@ -2067,7 +2067,13 @@ System.out.println("RETURNED: " + result);
 
 If you need two or more different configurations, create two or more `JProxyScriptEngine` with different configurations.
 
+
+
 == Embedding RelProxy Java in your Java framework to provide hot reload
+
+RelProxy use requires some RelProxy explicit code to provide hot class reloading. If you are a developer of a Java framework, or an autonomous Java service 
+module in general, you can built-in RelProxy Java in your framework to transparently provide code autoreload to end user code using your framework without 
+explicit use of the RelProxy API in your end user code beyond some required configuration.
 
 There are two kind of APIs for using the Java part of RelProxy:
 
@@ -2077,10 +2083,12 @@ There are two kind of APIs for using the Java part of RelProxy:
 The second option is preferred to embed RelProxy Java in your Java framework because it is based on interfaces, no public class of RelProxy is needed to expose
 in your API, because bootstrap can be executed into your framework. We are going to use the simplified version of the API using `JProxyScriptEngineFactory.create()`.
 
+
 The `JProxyScriptEngine` has been designed to provided the same functionality than `JProxy`, that is, the same methods, but in this case using a pure interface.
 
-A simple example is the best path to show how to embed RelProxy, this example, RelProxyBuiltin (project relproxy_builtin_ex), is included in the RelProxy Examples repository.
-It defines two listeners to be implemented and registered by code of end user, one listener to show the options and the other to execute the corresponding selected action.
+A simple example is the best way to show how to embed RelProxy, this example, RelProxyBuiltin (project relproxy_builtin_ex), is included in the RelProxy Examples repository. 
+It defines two listeners to be implemented and registered by end user code, one listener is to show the options and the other to execute the corresponding selected action.
+
 This mini framework and use example is developed using NetBeans and Maven.
 
 There are two packages:
@@ -2311,13 +2319,13 @@ These three methods are enough to explain how to bootstrap RelProxy Java engine 
     }
 ----
 
-The public method `RelProxyBuiltin.getJProxyScriptEngine()` must be called in starting time to configure RelProxy. RelProxy is not configured and enabled there is no performance penalty.
+The public method `RelProxyBuiltin.getJProxyScriptEngine()` must be called in starting time to configure RelProxy. If RelProxy is not configured and enabled there is no performance penalty.
 
 Remember that the proxy object returned by `create(...)` method correctly calls the method `hashCode()` and `equals(Object)` in the internal true listener object for
 identity purposes required by the listener collection/registry.
 
 
-This is the example code of this console based program (names are inspired on JUnit but is not really JUnit test example):
+This is the example code of this console based program (names are inspired on JUnit but is not really a JUnit test example):
 
 [source,java]
 .Main.java
@@ -2559,8 +2567,10 @@ We get and later register the root folder of the source code of our application,
 
 We need to exclude the source code of the framework because is not obviously end user code (not reloadable), and the `Main.java` file containing
 the test code, this class is not reloadable, only the class `TestListener.java` (in the same folder than Main.java) will be (and must be) reloadable.
+We could simplify this `isExcluded` method just excluding anything different to the file `TestListener.java`, but excluding whole folders is recommended to
+speed the traversing of the source code file tree because otherwise all not reloadable files, into not reloadable folders, are checked.
 
-Finally the class `TestListener.java` containing both listeners, the `CommandListener` implemented is forced to be an anonymous inner class just for documented purposes:
+Finally the class `TestListener.java` containing both listeners, the `CommandListener` implemented is forced to be an anonymous inner class just for demonstrative purposes:
 
 [source,java]
 .TestListener.java
@@ -2600,7 +2610,7 @@ public class TestListener implements OutputListener
 
 ----
 
-Execute the Main class and try the predefined options, then to check if RelProxy is working fine try to add a new option "same" without stopping the program:
+Execute the Main class and try the predefined options. To check if RelProxy is working fine try to add a new option "same" without stopping the program:
 
 [source,java]
 ----
@@ -2639,3 +2649,6 @@ Execute the Main class and try the predefined options, then to check if RelProxy
 ----
 
 The next phrase to process includes now the "same" action with no need of stopping the console application.
+
+Note: use RelProxy 0.8.7 or upper, this release adds an improvement when embedding by this way.
+
