@@ -5,6 +5,7 @@ RelProxy is a simple Java and Groovy hot class reloader for Java and Groovy prov
 News
 ------
 
+- 2015-10-6 DZone article: [Improve Productivity With RelProxy for Java](https://dzone.com/articles/embedding-relproxy-in-your-java-framework-to-provi). About embedding RelProxy in your own Java framework.
 - 2015-10-1 v0.8.7 Released. Some improvement needed when embedding RelProxy Java using the scripting API. [Release Notes](https://github.com/jmarranz/relproxy/blob/master/relproxy/CHANGES.txt)
 - 2015-6-12 v0.8.6 Released. Support of class reloading of inner classes including anonymous. [Release Notes](https://github.com/jmarranz/relproxy/blob/master/relproxy/CHANGES.txt)
 - 2015-6-12 v0.8.5 Released. Improved performance when checking source changes and no change is detected. [Release Notes](https://github.com/jmarranz/relproxy/blob/master/relproxy/CHANGES.txt)
@@ -110,6 +111,8 @@ Use this GitHub project.
 
 Articles/Blogs/Presentations
 ------
+
+- Oct  6,2015 [Improve Productivity With RelProxy for Java](https://dzone.com/articles/embedding-relproxy-in-your-java-framework-to-provi). About embedding RelProxy in your own Java framework.
 
 - Feb 19,2015 [No longer virgin, uploaded my first jar to Maven Central, and it was not nice](http://jmarranz.blogspot.com.es/2015/02/no-longer-virgin-uploaded-my-first-jar.html). [JavaLobby](http://java.dzone.com/articles/no-longer-virgin-uploaded-my). [Bintray Quote](http://blog.bintray.com/2015/02/19/another-one-bites-the-maven-central-dust-and-saved-by-bintray/).
 
