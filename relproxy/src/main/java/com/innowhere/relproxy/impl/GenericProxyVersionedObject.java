@@ -4,6 +4,7 @@ import com.innowhere.relproxy.RelProxyException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -69,77 +70,96 @@ public abstract class GenericProxyVersionedObject
     
     private Object copy(Class oldClass,Object oldObj,Class newClass) throws IllegalAccessException, InstantiationException, IllegalArgumentException, InvocationTargetException
     {
-            Object newObj;
-            
-            ArrayList<Field> fieldListOld = new ArrayList<Field>();
-            ArrayList<Object> valueListOld = new ArrayList<Object>();              
+        Object newObj;
 
-            getTreeFields(oldClass,oldObj,fieldListOld,valueListOld);
+        ArrayList<Field> fieldListOld = new ArrayList<Field>();
+        ArrayList<Object> valueListOld = new ArrayList<Object>();              
 
-            Class<?> enclosingClassNew = newClass.getEnclosingClass();
-            if (enclosingClassNew == null)
+        getTreeFields(oldClass,oldObj,fieldListOld,valueListOld);
+
+        Class<?> enclosingClassNew = newClass.getEnclosingClass();
+        if (enclosingClassNew == null)
+        {
+            Constructor construc;
+            try
             {
-                Constructor construc;
-                try
-                {
-                    construc = newClass.getConstructor(new Class[0]);
-                }
-                catch(NoSuchMethodException ex)
-                {                
-                    throw new RelProxyException("Cannot reload " + newClass.getName() + " a default empty of params constructor is required",ex);
-                }                
-                newObj = construc.newInstance();                
+                construc = newClass.getConstructor(new Class[0]);
             }
-            else
+            catch(NoSuchMethodException ex)
+            {                
+                throw new RelProxyException("Cannot reload " + newClass.getName() + " a default empty of params constructor is required",ex);
+            }                
+            newObj = construc.newInstance();                
+        }
+        else
+        {
+            // En el caso de inner class o anonymous inner class el constructor por defecto se obtiene de forma diferente, útil para los EventListener de ItsNat
+            Constructor construc;
+            try
             {
-                // En el caso de inner class o anonymous inner class el constructor por defecto se obtiene de forma diferente, útil para los EventListener de ItsNat
-                Constructor construc;
-                try
-                {
-                    construc = newClass.getDeclaredConstructor(new Class[]{enclosingClassNew});                 
-                }
-                catch(NoSuchMethodException ex) // Yo creo que nunca ocurre al menos no en anonymous inner classes pero por si acaso
-                {                
-                    throw new RelProxyException("Cannot reload " + newClass.getName() + " a default empty of params constructor is required",ex);
-                }
-                construc.setAccessible(true);  // Necesario
-                
-                // http://stackoverflow.com/questions/1816458/getting-hold-of-the-outer-class-object-from-the-inner-class-object    
-                
-                
-                Field enclosingFieldOld;
-                try { enclosingFieldOld = oldClass.getDeclaredField("this$0"); }
-                catch (NoSuchFieldException ex) { throw new RelProxyException(ex);  }
-                enclosingFieldOld.setAccessible(true);
-                Object enclosingObjectOld = enclosingFieldOld.get(oldObj);                
-                Object enclosingObjectNew = copy(enclosingObjectOld.getClass(),enclosingObjectOld,enclosingClassNew);              
-
-                newObj = construc.newInstance(enclosingObjectNew);                
+                construc = newClass.getDeclaredConstructor(new Class[]{enclosingClassNew});                 
             }
-            
+            catch(NoSuchMethodException ex) // Yo creo que nunca ocurre al menos no en anonymous inner classes pero por si acaso
+            {                
+                throw new RelProxyException("Cannot reload " + newClass.getName() + " a default empty of params constructor is required",ex);
+            }
+            construc.setAccessible(true);  // Necesario
 
-            ArrayList<Field> fieldListNew = new ArrayList<Field>();
+            // http://stackoverflow.com/questions/1816458/getting-hold-of-the-outer-class-object-from-the-inner-class-object    
 
-            getTreeFields(newClass,newObj,fieldListNew,null);                
 
-            if (fieldListOld.size() != fieldListNew.size()) throw new RelProxyException("Cannot reload " + newClass.getName() + " number of fields have changed, redeploy");
+            Field enclosingFieldOld;
+            try { enclosingFieldOld = oldClass.getDeclaredField("this$0"); }
+            catch (NoSuchFieldException ex) { throw new RelProxyException(ex);  }
+            enclosingFieldOld.setAccessible(true);
+            Object enclosingObjectOld = enclosingFieldOld.get(oldObj);                
+            Object enclosingObjectNew = copy(enclosingObjectOld.getClass(),enclosingObjectOld,enclosingClassNew);              
 
-            for(int i = 0; i < fieldListOld.size(); i++) 
+            newObj = construc.newInstance(enclosingObjectNew);                
+        }
+
+
+        ArrayList<Field> fieldListNew = new ArrayList<Field>();
+
+        getTreeFields(newClass,newObj,fieldListNew,null);                
+
+        if (fieldListOld.size() != fieldListNew.size()) throw new RelProxyException("Cannot reload " + newClass.getName() + " number of fields have changed, redeploy");
+
+        for(int i = 0; i < fieldListOld.size(); i++) 
+        {
+            Field fieldOld = fieldListOld.get(i);
+            Field fieldNew = fieldListNew.get(i);
+            if (enclosingClassNew != null && fieldOld.getName().equals("this$0") && fieldNew.getName().equals("this$0")) 
+                continue; // Ya están correctamente definidos
+
+            if ( (!ignoreField(fieldOld) && !fieldOld.getName().equals(fieldNew.getName())) || 
+                  !fieldOld.getType().equals(fieldNew.getType()))
+                throw new RelProxyException("Cannot reload " + newClass.getName() + " fields have changed, redeploy");
+
+            Object fieldObj = valueListOld.get(i);
+            fieldNew.setAccessible(true);
+            int modifiersNew = fieldNew.getModifiers();                
+            boolean isStaticFinal = Modifier.isStatic(modifiersNew) && Modifier.isFinal(modifiersNew);
+            Field modifiersField = null;
+            if (isStaticFinal) 
             {
-                Field fieldOld = fieldListOld.get(i);
-                Field fieldNew = fieldListNew.get(i);
-                if (enclosingClassNew != null && fieldOld.getName().equals("this$0") && fieldNew.getName().equals("this$0")) 
-                    continue; // Ya están correctamente definidos
-                
-                if ( (!ignoreField(fieldOld) && !fieldOld.getName().equals(fieldNew.getName())) || 
-                      !fieldOld.getType().equals(fieldNew.getType()))
-                    throw new RelProxyException("Cannot reload " + newClass.getName() + " fields have changed, redeploy");
+                // http://stackoverflow.com/questions/3301635/change-private-static-final-field-using-java-reflection
+                try {
+                    modifiersField = Field.class.getDeclaredField("modifiers");
+                }
+                catch (NoSuchFieldException ex) { throw new RelProxyException(ex); }
+                modifiersField.setAccessible(true);
+                modifiersField.setInt(fieldNew, fieldNew.getModifiers() & ~Modifier.FINAL);  // Quitamos el modifier final
+            }                  
 
-                Object fieldObj = valueListOld.get(i);
-                fieldNew.setAccessible(true);
-                fieldNew.set(newObj, fieldObj);
-            }    
-            return newObj;
+            fieldNew.set(newObj, fieldObj);
+
+            if (modifiersField != null)
+            {
+                modifiersField.setInt(fieldNew, fieldNew.getModifiers() & ~Modifier.FINAL);  // Restauramos el modifier final
+            }
+        }    
+        return newObj;
     }
     
     protected abstract <T> Class<T> reloadClass();    
