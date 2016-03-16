@@ -5,6 +5,7 @@ RelProxy is a simple Java and Groovy hot class reloader for Java and Groovy prov
 News
 ------
 
+- 2016-3-16 v0.8.8 Released. Support of static final fields in reloadable proxies. [Release Notes](https://github.com/jmarranz/relproxy/blob/master/relproxy/CHANGES.txt)
 - 2015-10-6 DZone article: [Improve Productivity With RelProxy for Java](https://dzone.com/articles/embedding-relproxy-in-your-java-framework-to-provi). About embedding RelProxy in your own Java framework.
 - 2015-10-1 v0.8.7 Released. Some improvement needed when embedding RelProxy Java using the scripting API. [Release Notes](https://github.com/jmarranz/relproxy/blob/master/relproxy/CHANGES.txt)
 - 2015-6-12 v0.8.6 Released. Support of class reloading of inner classes including anonymous. [Release Notes](https://github.com/jmarranz/relproxy/blob/master/relproxy/CHANGES.txt)
@@ -120,7 +121,7 @@ Articles/Blogs/Presentations
 
 - Jan 28,2015 [Slides](http://www.slideshare.net/jmarranz/relproxy-class-reload-and-easy-java-scripting) in English and [video](http://autentia.com/2015/01/30/relproxy-easy-class-reload-and-scripting-with-java-por-jose-maria-arranz/#) ([youtube](https://www.youtube.com/watch?v=dyUhX6t5t-Y)) in Spanish of the RelProxy presentation in MadridJUG 
 
-- Dec 31,2014 [RelProxy v0.8.1 reduce el número de redeploys en GWT-RPC y otros Java web frameworks](http://www.javahispano.org/portada/2014/12/31/relproxy-v081-reduce-el-numero-de-redeploys-en-gwt-rpc-y-otr.html) Published at javaHispano
+- Dec 31,2014 [RelProxy v0.8.1 reduce el numero de redeploys en GWT-RPC y otros Java web frameworks](http://www.javahispano.org/portada/2014/12/31/relproxy-v081-reduce-el-numero-de-redeploys-en-gwt-rpc-y-otr.html) Published at javaHispano
 
 - Feb 15,2014 [v0.8 announce at JavaLobby](http://java.dzone.com/articles/presenting-relproxy-hot-class)
 

@@ -1,8 +1,9 @@
 
 RELEASE CHANGES
 
-* 0.8.8 (UNPUBLISHED)
+* 0.8.8 
 
+    - Support of static final fields in reloadable proxies.
 
 * 0.8.7
 
